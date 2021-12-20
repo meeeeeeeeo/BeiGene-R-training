@@ -1,0 +1,486 @@
+---
+title: "stringr"
+output:
+  html_document:
+    toc: TRUE
+    toc_depth: 2
+    toc_float: TRUE
+    css: [config/style.css, config/multi-columns.css]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = T,
+                      eval = TRUE,          # run (or not) the code in the chunk
+                      echo = TRUE,          # display (or not) the code of the chunk
+                      message = TRUE,       # display (or not) the messages of the chunk
+                      warning = TRUE,       # display (or not) the warning message of the chunk
+                      error = FALSE,        # display (or not) the error message of the chunk
+                      collapse = TRUE,      # collapse (or not) all the source and output blocks in to a single block
+                      comment = '#>'        # the start of each line of results in the final document)
+)
+```
+
+```{r message=FALSE}
+library(tidyverse)
+```
+
+## Overview
+
+__stringr__ is built on top of __stringi__, which uses the ICU C library to provide fast, correct implementations of common string manipulations. stringr focusses on the most important and commonly used string manipulation functions whereas stringi provides a comprehensive set covering almost anything you can imagine. If you find that stringr is missing a function that you need, try looking in stringi. Both packages share similar conventions, so once you’ve mastered stringr, you should find stringi similarly easy to use.
+
+#### generate data
+```{r}
+fruit <- stringr::fruit[1:30]
+
+sentences <- stringr::sentences[1:20]
+
+foo <- c('   a   bc   d   ')
+```
+
+## Regular Expressions
+
+#### `str_view(string, pattern, match = NA)`
+#### `str_view_all(string, pattern, match = NA)`
+
+```{r, collapse=FALSE}
+str_view(fruit[1:5], '[aeiou]')
+str_view_all(fruit[1:5], '[aeiou]')
+```
+
+#### special character---------`[ ]` `\` `^` `$` `.` `|` `?` `*` `+` `( )`
+
+* `\` (learn more about escaped characters: `?'"'`)
+    ```{r, collapse=FALSE}
+    quote <- c(" ' ", ' " ', ' \' ', " \" ")
+    writeLines(quote)
+    
+    str_view_all(c("ab\nc", "12d", "ae2"), "\n")
+    str_view_all(c("ab\nc", "12\bd", "ae2"), "\b")
+    str_view_all(c("ab\nc", "12\bd", "ae2"), "\\b")
+    str_view_all(c("ab\nc", "12\\d", "ae2"), "\\\\")
+    ```
+
+* `\d` matches any digit(`\D`)
+* `\s` matches any whitespace (e.g. space, tab, newline)(`\S`)
+* `\w` match any word character,which includes alphabetic characters, marks and decimal numbers(`\W`)
+* `\b` matches word boundaries, the transition between word and non-word characters(`\B`)
+
+    ```{r, collapse=FALSE}
+    str_view_all(c("abc", "12d", "ae2"), "\\d")
+    str_view_all(c("abc", "\\12d", "1e2"), "\\w")
+    str_view_all(c("a c", "\\1\td", "1e2"), "\\s")
+    str_view_all(c("a c", "\\1\td", "1e2"), "\\b")
+    ```
+
+
+* `| [] ()`
+    ```{r, collapse=FALSE}
+    str_view(c("longest", "lonlest", "lonaest"), "lon(g|l)est")
+    str_view(c("longest", "lonlest", "lonaest"), "lon[gal]est")
+    str_view(c("longest", "lonlest", "lonaest"), "lon[a-g]est")
+    str_view(c("longest", "lonlest", "lonaest"), "lon[^a-g]est")
+    ```
+
+* `.` matches any character (except a newline)
+    ```{r, collapse=FALSE}
+    x <- c("apple", "ba\nnana", "pear")
+    writeLines(x)
+    str_view_all(x, ".a.")
+    str_view_all(x, ".a\\b")
+    str_view_all(x, ".a\\n")
+    ```
+
+* `^`/`$` match the start/end of the string
+    ```{r, collapse=FALSE}
+    str_view(c("a\\abpl^e", "bbna\bna", "pear", "aaa"), "^a")
+    str_view(c("apple", "banana", "pear"), "a$")
+    str_view(c("$^$"), "\\$\\^\\$")
+    ```
+
+* Repetition
+
+  `?`: 0 or 1
+  
+  `+`: 1 or more
+  
+  `*`: 0 or more
+  
+  `{n}`/`{n,}`/`{n,m}`
+  
+    ```{r, collapse=FALSE}
+    str_view("1888 is the longest year in Roman numerals: MDCCCLXXXVIII", "CC?")
+    str_view("1888 is the longest year in Roman numerals: MDCCCCLXXXVIII", "CC+")
+    str_view("1888 is the longest year in Roman numerals: MDCCCLXXXVIII", "CC*")
+    str_view("1888 is the longest year in Roman numerals: MDCCCLXXXVIII", "C{2,3}")
+    ```
+
+* Grouping and backreferences
+    ```{r, collapse=FALSE}
+    str_view(fruit[16:25], "(..)\\1")
+    str_view(c("bacdb","bacdbacd"), "^(.).*\\1$")
+    ```
+
+#### `regex(pattern, ignore_case = FALSE, multiline = FALSE, comments = FALSE, dotall = FALSE)`
+
+* `ignore_case`:	Should case differences be ignored in the match?
+* `multiline`:  If `TRUE`, "$" and "^" match the beginning and end of each line.
+                If `FALSE`, the default, only match the start and end of the input.
+* `comments`:  If `TRUE`, white space and comments beginning with "#" are ignored. Escape literal spaces with "\\".
+* `dotall`:  If `TRUE`, "." will also match line terminators.
+
+```{r, collapse=FALSE}
+x <- c("apple", "ba\nnana", "pear")
+
+str_view_all(x, regex(".A.", ignore_case=T, dotall = T))
+str_view_all("A\nb", regex("^b", multiline=T))
+```
+
+
+## Detect Matches
+* `str_detect(string, pattern, negate = FALSE)`:	Detect the presence or absence of a pattern in a string.
+* `str_which(string, pattern, negate = FALSE)`: find positions.
+* `str_count(string, pattern = "")`: Count the number of matches in a string.
+* `str_locate(string, pattern)`: returns an integer matrix
+* `str_locate_all(string, pattern)`: returns a list of integer matrices
+
+```{r}
+fruit
+```
+
+#### `str_detect(string, pattern, negate = FALSE)`
+```{r}
+str_detect(fruit[1:5], 'a', negate = T)
+
+test <- matrix(fruit[1:10],nrow=5)
+str_detect(test,'a')
+
+str_detect('appleapricot', fruit[1:5])
+
+str_detect(fruit[1:5], c('a', 'b', 'c', 'd', 'e'))
+```
+
+#### `str_which(string, pattern, negate = FALSE)`
+```{r}
+str_which(fruit[1:5], 'a')
+
+str_which(fruit, 'a', negate = T)
+```
+
+#### `str_count(string, pattern = "")`
+```{r}
+str_count(fruit[1:5], 'a')
+
+str_count('abababa', 'aba')
+```
+#### `str_locate(string, pattern)`
+
+#### `str_locate_all(string, pattern)`
+```{r}
+str_locate(fruit[1:5], 'a')
+
+str_locate_all(fruit[1:5], 'a')
+```
+
+## Subset Strings
+* `str_sub(string, start = 1L, end = -1L)`  Extract and replace substrings from a character vector.
+* `str_subset(string, pattern, negate = FALSE)` Keep strings matching a pattern, or find positions.
+* `str_extract(string, pattern)` Extract matched groups from a string.
+* `str_extract_all(string, pattern, simplify = FALSE)` Extract matched groups from a string.
+```{r}
+fruit
+```
+
+#### `str_sub(string, start = 1L, end = -1L)`
+```{r}
+str_sub(fruit[1:5], 1, 3)
+
+str_sub(fruit[1:5], end = -2)
+
+str_sub(fruit[1:5], -2)
+
+str_sub(fruit[1:5], c(1, 2, 3, 1, 1), c(3, 3, 4, 3, 3))
+
+# str_locate(fruit[1:5], '(..)\\1')
+# str_sub(fruit[1:5], str_locate(fruit[1:5], '(..)\\1'))
+```
+
+#### `str_subset(string, pattern, negate = FALSE)`
+```{r}
+str_subset(fruit, 'b')
+
+# fruit[str_detect(fruit,'b')]
+```
+
+#### `str_extract(string, pattern)`
+#### `str_extract_all(string, pattern, simplify = FALSE)`
+```{r}
+str_extract(c('aeaebcbc','bcaebc','abcccc'),'(..)\\1')
+str_extract(sentences, '\\w+(es|s)\\b')
+
+str_extract_all(c('aeaebcbc','bcaebc','abcccc'),'(..)\\1')
+
+str_extract_all(c('aeaebcbc','bcaebc','abcccc'),'(..)\\1', simplify = T)
+
+```
+
+#### `str_match(string, pattern)` Extract matched groups from a string.
+#### `str_match_all(string, pattern)`
+```{r}
+sentences[1:10]
+
+str_match(sentences[1:10], '(a|the) ([^ ]+)')
+
+# str_extract(sentences[1:10], '(a|the) ([^ ]+)')
+# str_match(sentences[1:10], '(a|the) ([^ ]+)')[,1]
+
+str_match_all(sentences[1:5], '(a|the) ([^ ]+)')
+```
+
+## Mutate Strings
+* `str_sub(string, start = 1L, end = -1L, omit_na=FALSE) <- value`
+* `str_replace(string, pattern, replacement)`
+* `str_replace_all(string, pattern, replacement)`
+* `str_remove(string, pattern)`
+* `str_remove_all(string, pattern)`
+* `str_to_upper(string, locale = "en")`
+* `str_to_lower(string, locale = "en")`
+* `str_to_title(string, locale = "en")`
+```{r}
+fruit
+fruit_temp <- fruit
+```
+
+#### `str_sub(string, start = 1L, end = -1L, omit_na=FALSE) <- value`
+```{r}
+str_sub(fruit_temp,1,3) <- 'str'
+fruit_temp
+```
+
+#### `str_replace(string, pattern, replacement)`
+#### `str_replace_all(string, pattern, replacement)`
+```{r}
+str_replace(fruit[1:5], 'a', '-')
+
+str_replace_all(fruit[1:5], 'a', '-')
+```
+
+#### `str_remove(string, pattern)`
+#### `str_remove_all(string, pattern)`
+```{r}
+example <- c("apple", "apap", "ap")
+str_remove(example, 'ap') 
+
+str_remove_all(example, 'ap')
+
+str_remove_all(example, '[ap]')
+```
+
+#### `str_to_upper(string, locale = "en")`
+#### `str_to_lower(string, locale = "en")`
+#### `str_to_title(string, locale = "en")`
+```{r}
+sentences[1:5]
+
+str_to_upper(sentences[1:5])
+
+str_to_lower(sentences[1:5])
+
+str_to_title(sentences[1:5])
+```
+
+## Join and Split
+
+join
+
+* `str_c(..., sep = "", collapse = NULL)`
+
+* `str_dup(string, times)`
+
+* `str_glue(...)`
+
+* `str_glue_data(.x, ..., .na = "NA")`
+
+Split
+
+* `str_split(string, pattern, n = Inf, simplify = FALSE)`
+
+* `str_split_fixed(string, pattern, n)`
+
+`str_c(..., sep = "", collapse = NULL)`:
+
+```{r}
+letters[1:5]
+
+LETTERS[1:5]
+
+# for one part
+str_c(letters[1:5], collapse =' ')
+
+# for two or more part
+str_c(letters[1:5], LETTERS[1:5], sep = '/')
+
+str_c(letters[1:5], LETTERS[1:5], sep = '/', collapse = ' ')
+
+```
+
+`str_dup(string, times)`:
+
+```{r}
+str_dup(fruit[1:6], times = 2)
+
+str_dup(fruit[1:6], 1:3)
+```
+
+#### `str_glue(...)`
+
+#### `str_glue_data(.x, ..., .na = "NA")`
+```{r}
+name <- 'Bob'
+age <- 50
+anniversary <- as.Date("1991-10-12")
+str_glue(
+  "My name is {name}, ",
+  "my age next year is {age + 1}, ",
+  "and my anniversary is {format(anniversary, '%A, %B %d, %Y')}."
+)
+
+str_glue(
+  "My name is {name}, ",
+  "and my age next year is {age + 1}.",
+  name = "Joe",
+  age = 40
+)
+
+str_glue('the {i}th letter is {letters[1:5]}', i = 1:5)
+
+# here str_glue() is more readable than str_c()
+str_c('the ', 1:5, 'th letter is ', letters[1:5])
+
+str_glue('the {i}th {{letter}} is {{{letters[1:5]}}', i=1:5)
+
+str_glue_data(mtcars[1:5, ], '{hp} hp')
+
+mtcars[1:5, ] %>% str_glue_data('the {rownames(.)} has {hp} hp')
+```
+
+#### `str_split(string, pattern, n = Inf, simplify = FALSE)`
+#### `str_split_fixed(string, pattern, n)`
+
+`str_split(string, pattern, simplify = T)` is equivalent to `str_split_fixed(string, pattern, n = Inf)`
+
+```{r}
+fruits_split <- c(
+  "apples and oranges and pears and bananas",
+  "pineapples and mangos and guavas"
+)
+
+str_split(fruits_split, " and ")
+
+str_split(fruits_split, " and ", simplify = TRUE)
+
+
+# Specify n to restrict the number of possible matches
+str_split(fruits_split, " and ", n = 3)
+
+str_split(fruits_split, " and ", n = 2)
+
+# If n greater than number of pieces, no padding occurs
+str_split(fruits_split, " and ", n = 5)
+
+
+# Use str_split_fixed() to return a character matrix
+str_split_fixed(fruits_split, " and ", 3)
+
+str_split_fixed(fruits_split, " and ", 4)
+
+```
+
+## Manage Lengths
+
+* `str_length(string)`
+* `str_pad(string, width, side = c("left", "right", "both"), pad =" ")` Pad a string
+* `str_trunc(string, width, side = c("right", "left", "center"), ellipsis = "...")` Truncate a character string.
+* `str_trim(string, side = c("both", "left", "right"))` Trim whitespace from a string
+* `str_squish(string)`
+
+```{r}
+fruit
+```
+
+#### `str_length(string)`
+```{r}
+x <- c('adv', 'ss', 'awsd')
+writeLines(x)
+
+length(x)
+
+str_length(x)
+```
+
+#### `str_pad(string, width, side = c("left", "right", "both"), pad =" ")` Pad a string
+```{r}
+str_pad(c("a", "abc", "abcdef"), 10, side = 'right')
+
+str_pad("a", c(5, 7, 10))
+
+str_pad("a", 10, pad = c("-", "_", " "))
+
+```
+
+#### `str_trunc(string, width, side = c("right", "left", "center"), ellipsis = "...")` Truncate a character string.
+```{r}
+str_trunc(fruit, 7)
+
+str_trunc(fruit, 7, side = 'left', ellipsis = '**')
+```
+
+#### `str_trim(string, side = c("both", "left", "right"))` Trim whitespace from a string
+#### `str_squish(string)`
+```{r}
+str_trim(c('    a', 'b     ', 'c   d'))
+
+str_trim(c('    a', 'b     ', 'c   d'), side = 'left')
+
+str_squish(c('    a', 'b     ', 'c   d'))
+
+#str_replace_all(c('    a', 'b     ', 'c   d'), '\\s', '')
+```
+
+## Order Strings
+
+* `str_order(x, decreasing = FALSE, na_last = TRUE, locale = "en", numeric = FALSE, ...)`
+* `str_sort(x, decreasing = FALSE, na_last = TRUE, locale = "en", numeric = FALSE, ...)`
+
+```{r}
+bar <- c('b', 'c', 'a', 'd')
+
+str_order(bar)
+
+bar[str_order(bar)]
+
+x <- c("100a10", "100a5", "2b", "2a")
+str_sort(x)
+str_sort(x, numeric = TRUE)
+
+```
+
+
+## Exercise
+1. Use `str_length()` and `str_sub()` to extract the middle character from a string. What will you do if the string has an even number of characters?
+2. Find all words that start with a __vowel__ and end with a __consonant__ (words).
+
+
+## Helpers
+More details about regular expressions:
+[CRAN | stringr/Regular expressions](https://cran.r-project.org/web/packages/stringr/vignettes/regular-expressions.html){target="_blank"}
+
+
+## Reference
+
+[cheatsheet - stringr](https://github.com/rstudio/cheatsheets/blob/master/strings.pdf){target="_blank"}
+
+[GitHub - tidyverse/stringr](https://github.com/tidyverse/stringr){target="_blank"}
+
+[14 Strings | R for Data Science](https://r4ds.had.co.nz/strings.html){target="_blank"}
+
+[Simple, Consistent Wrappers for Common String Operations • stringr](https://stringr.tidyverse.org/){target="_blank"}

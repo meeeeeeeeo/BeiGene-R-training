@@ -1,0 +1,555 @@
+---
+title: "sqldf"
+#author: "Jinzhi Zhou"
+output:
+  html_document:
+    toc: TRUE
+    toc_depth: 1        # the lowest level of table of contents
+    toc_float: TRUE
+    css: [config/style.css, config/multi-columns.css]
+---
+
+```{r setup, include=FALSE}
+# global settings for this document
+
+# options for r code chunk
+knitr::opts_chunk$set(
+  eval = TRUE,          # run (or not) the code in the chunk
+  echo = TRUE,          # display (or not) the code of the chunk
+  message = TRUE,       # display (or not) the messages of the chunk
+  warning = TRUE,       # display (or not) the warning message of the chunk
+  error = FALSE,        # display (or not) the error message of the chunk
+  collapse = TRUE,      # collapse (or not) all the source and output blocks in to a single block
+  comment = '#>'        # the start of each line of results in the final document
+)
+# for each r chunk, you can add setting respectively, overriding the global settings
+# like: {r eval=FALSE}
+# or:   {r eval=TRUE, collapse=FALSE}
+
+# options for tibble print
+# 10 rows will be print now
+options(tibble.print_min = 10L, tibble.print_max = 10L)
+
+# random seed
+set.seed(233)
+```
+
+# Description
+
+```{r}
+library(sqldf)
+```
+
+The `sqldf()` function is typically passed a single argument which is an SQL select statement where the table names are ordinary R data frame names. `sqldf()` transparently sets up a database, imports the data frames into that database, performs the SQL select or other statement and returns the result using a heuristic to determine which class to assign to each column of the returned data frame. The `sqldf()` or `read.csv.sql()` functions can also be used to read filtered files into R even if the original files are larger than R itself can handle.
+
+'RSQLite', 'RH2', 'RMySQL' and 'RPostgreSQL' backends are supported.
+
+# sqldf Usage
+
+## Read a file by `read.csv.sql()`
+
+Read a file into R filtering it with an sql statement. Only the filtered portion is processed by R so that files larger than R can otherwise handle can be accommodated. [read_sql.csv](./data/read_sql.csv)
+
+```{r}
+df <- read.csv.sql(
+  './data/read_sql.csv',
+  sql = "select * from file",
+  header = TRUE,
+  sep = ","
+)
+head(df)
+```
+
+## create a data frame
+
+```{r}
+df <- data.frame(a = 1:5, b = letters[1:5])
+
+sqldf("select * from df")
+
+sqldf("select avg(a) mean, variance(a) var from df")
+```
+
+```{r}
+DF <- data.frame(
+  index=1:12,
+  date=rep(c(Sys.Date() - 1, Sys.Date()), 6),
+  group=c("A", "B", "C"),
+  value=round(rnorm(12), 2)
+)
+
+sqldf("select * from DF")
+```
+
+## select var from dataset
+
+```{r}
+# select all vars from iris dataset
+df <- sqldf('select * from iris')
+head(df)
+
+# select "Sepal.Length", Species from iris dataset
+df <- sqldf('select Species, "Sepal.Length" from iris ')
+head(df)
+```
+
+What will happen when running the below code?
+
+```{r, eval=FALSE}
+sqldf('select Species, Sepal.Length from iris')
+```
+
+## head in basic R vs limit in sql
+
+```{r}
+a1r <- head(warpbreaks, 6)
+a1r
+
+a1s <- sqldf("select * from warpbreaks limit 6")
+a1s
+
+identical(a1r, a1s)
+```
+
+## filter record by where or having stament
+
+```{r}
+df1 <- sqldf('select * from iris where "Sepal.Width" > 3')
+head(df1)
+
+df2 <- sqldf('select * from iris group by Species having "Sepal.Width" > 3')
+df2
+```
+
+## create new var
+
+```{r}
+df2 <- sqldf('
+  select Species, "Sepal.Length", avg("Sepal.Length") `col1`
+  from iris
+  group by Species
+  order by Species
+')
+df2
+
+df21 <- sqldf("
+  select Species, 'Sepal.Length', 'new' as col1
+  from iris
+  group by Species
+  order by Species
+")
+df21
+```
+
+## create new var by case when
+
+```{r}
+df3 <- sqldf('
+  select Species, "Sepal.Length"
+  from iris
+  group by Species
+  order by Species
+')
+df3
+
+df4 <- sqldf("
+  select Species, 'Sepal.Length',
+  CASE
+    WHEN Species = 'setosa' THEN 'specy1'
+    ELSE 'other'
+  END as setosa,
+  case
+    when Species = 'setosa' then 1
+    else 0
+  end as setosan
+  from iris
+")
+head(df4)
+```
+
+## group by, order by
+
+```{r}
+df <- sqldf('select * from iris')
+
+df0 <- sqldf('select * from df group by Species')
+df0
+
+df01 <- sqldf('select * from df group by "Sepal.Length"')
+head(df01)
+
+df1 <- sqldf('select * from df group by Species order by "Sepal.Length" desc, Species')
+df1
+
+```
+
+## distinct : eliminate duplicate records
+
+```{r}
+sqldf("select DISTINCT Species from iris")
+```
+
+## except
+
+```{r}
+one <- head(iris)
+two <- iris
+nrow(one)
+nrow(two)
+
+# if a and not b
+EXCEPT <- sqldf("select * from one EXCEPT select * from two")
+EXCEPT
+
+EXCEPT2 <- sqldf("select * from two EXCEPT select * from one")
+nrow(EXCEPT2)
+head(EXCEPT2)
+```
+
+## intersect
+
+```{r}
+INTERSECT <- sqldf("select * from one INTERSECT select * from two")
+INTERSECT
+```
+
+## SQL Joins
+
+![](./figures/sqldf/join.jpg)
+
+### inner join
+
+```{r}
+df1 <- head(iris)
+df2 <- iris
+
+# 筛选相同id，all = F为只连接匹配到的，all = T为没有匹配到的赋值NA
+inner1 <- merge(df1, df2, by = "Species", all = F)
+head(inner1)
+
+# 内连接
+inner3 <- sqldf("select * from df1 as a inner join df2 as b on a.Species=b.Species")
+head(inner3)
+
+# 笛卡尔积
+inner4 <- sqldf("select * from df1 as a,df2 as b where a.Species=b.Species")
+head(inner4)
+
+identical(inner3, inner4)
+```
+
+### left join
+
+```{r}
+left1 <- merge(df1, df2, by = "Species", all.x = TRUE)
+head(left1)
+
+left3 <- sqldf("select * from df1 as a left join df2 as b on a.Species=b.Species")
+head(left3)
+```
+
+**Note**: 基础包中的`merge`，当`all = F`就是内连接，`all = T`就是全连接，`all.x = T`就是左联结，`all.y = T`就是右连接；
+
+Below examples show how to run a variety of data frame manipulations in R without SQL and then again with SQL
+
+## subset statment vs where statment
+
+```{r}
+a2r <- subset(CO2, grepl("^Qn", Plant))
+head(a2r, 10)
+
+a2s <- sqldf("select * from CO2 where Plant like 'Qn%'")
+head(a2s, 10)
+
+all.equal(as.data.frame(a2r), a2s)
+
+
+data(farms, package = "MASS")
+
+a3r <- subset(farms, Manag %in% c("BF", "HF"))
+row.names(a3r) <- NULL
+a3r
+
+a3s <- sqldf("select * from farms where Manag in ('BF', 'HF')")
+a3s
+
+identical(a3r, a3s)
+
+
+a4r <- subset(warpbreaks, breaks >= 20 & breaks <= 30)
+head(a4r, 10)
+
+a4s <- sqldf("select * from warpbreaks where breaks between 20 and 30", row.names = TRUE)
+head(a4s, 10)
+
+identical(a4r, a4s)
+
+
+a5r <- subset(farms, Mois == 'M1')
+a5r
+
+a5s <- sqldf("select * from farms where Mois = 'M1'", row.names = TRUE)
+a5s
+
+identical(a5r, a5s)
+
+
+a6r <- subset(farms, Mois == 'M2')
+a6r
+
+a6s <- sqldf("select * from farms where Mois = 'M2'", row.names = TRUE)
+a6s
+
+identical(a6r, a6s)
+```
+
+## rbind
+
+```{r}
+a7r <- rbind(a5r, a6r)
+a7r
+
+a7s <- sqldf("select * from a5s union all select * from a6s", row.names = TRUE)
+a7s
+
+identical(a7r, a7s)
+```
+
+## aggregate - avg conc and uptake by Plant and Type
+
+```{r}
+a8r <- aggregate(iris[1:2], iris[5], mean)
+a8r
+
+a8s <- sqldf('
+  select Species, avg("Sepal.Length") `Sepal.Length`, avg("Sepal.Width") `Sepal.Width`
+  from iris
+  group by Species
+')
+a8s
+
+all.equal(a8r, a8s)
+```
+
+## by - avg conc and total uptake by Plant and Type
+
+```{r}
+a9r <- do.call(
+  rbind,
+  by(iris, iris[5], function(x) {
+    with(
+      x,
+      data.frame(
+        Species = Species[1],
+        mean.Sepal.Length = mean(Sepal.Length),
+        mean.Sepal.Width = mean(Sepal.Width),
+        mean.Sepal.ratio = mean(Sepal.Length / Sepal.Width)
+      )
+    )
+  })
+)
+row.names(a9r) <- NULL
+a9r
+
+a9s <- sqldf('
+  select Species,
+  avg("Sepal.Length") `mean.Sepal.Length`,
+  avg("Sepal.Width") `mean.Sepal.Width`,
+  avg("Sepal.Length"/"Sepal.Width") `mean.Sepal.ratio`
+  from iris
+  group by Species
+')
+a9s
+
+all.equal(a9r, a9s)
+```
+
+## head - top 3 breaks
+
+```{r}
+a10r <- head(warpbreaks[order(warpbreaks$breaks, decreasing = TRUE), ], 3)
+row.names(a10r) <- NULL
+a10r
+
+a10s <- sqldf("select * from warpbreaks order by breaks desc limit 3")
+a10s
+
+identical(a10r, a10s)
+```
+
+## head - bottom 3 breaks
+
+```{r}
+a11r <- head(warpbreaks[order(warpbreaks$breaks), ], 3)
+row.names(a11r) <- NULL
+a11r
+
+a11s <- sqldf("select * from warpbreaks order by breaks limit 3")
+a11s
+
+identical(a11r, a11s)
+```
+
+## ave - rows for which v exceeds its group average where g is group
+
+```{r}
+DF <- data.frame(g = rep(1:2, each = 5), t = rep(1:5, 2), v = 1:10)
+DF
+
+a12r <- subset(DF, v > ave(v, g, FUN = mean))
+row.names(a12r) <- NULL
+a12r
+
+Gavg <- sqldf("select g, avg(v) as avg_v from DF group by g")
+a12s <- sqldf("select DF.g, t, v from DF, Gavg where DF.g = Gavg.g and v > avg_v")
+a12s
+
+identical(a12r, a12s)
+```
+
+## same but reduce the two select statements to one using a subquery
+
+```{r}
+a13s <- sqldf("
+  select g, t, v
+  from DF d1, (select g as g2, avg(v) as avg_v from DF group by g)
+  where d1.g = g2 and v > avg_v
+")
+a13s
+
+identical(a12r, a13s)
+```
+
+## same but shorten using natural join
+
+```{r}
+a14s <- sqldf("
+  select g, t, v
+  from DF
+  natural join (select g, avg(v) as avg_v from DF group by g)
+  where v > avg_v
+")
+a14s
+
+identical(a12r, a14s)
+```
+
+## table
+
+```{r}
+a15r <- table(warpbreaks$tension, warpbreaks$wool)
+a15r
+
+a15s <- sqldf("
+  select sum(wool = 'A'), sum(wool = 'B')
+  from warpbreaks
+  group by tension
+")
+a15s
+
+all.equal(as.data.frame.matrix(a15r), a15s, check.attributes = FALSE)
+```
+
+## reshape
+
+```{r}
+DF
+
+t.names <- paste("t", unique(as.character(DF$t)), sep = "_")
+
+a16r <- reshape(DF, direction = "wide", timevar = "t", idvar = "g", varying = list(t.names))
+a16r
+
+a16s <- sqldf("
+  select g,
+  sum((t == 1) * v) t_1,
+  sum((t == 2) * v) t_2,
+  sum((t == 3) * v) t_3,
+  sum((t == 4) * v) t_4,
+  sum((t == 5) * v) t_5
+  from DF
+  group by g
+")
+a16s
+
+all.equal(a16r, a16s, check.attributes = FALSE)
+```
+
+## order
+
+```{r}
+a17r <- Formaldehyde[order(Formaldehyde$optden, decreasing = TRUE), ]
+row.names(a17r) <- NULL
+a17r
+
+a17s <- sqldf("select * from Formaldehyde order by optden desc")
+a17s
+
+identical(a17r, a17s)
+```
+
+## centered moving average of length 7
+
+```{r}
+set.seed(1)
+
+DF <- data.frame(x = rnorm(15, 1:15))
+DF
+
+s18 <- sqldf("
+  select a.x x, avg(b.x) movavgx
+  from DF a, DF b
+  where a.row_names - b.row_names between -3 and 3
+  group by a.row_names having count(*) = 7
+  order by a.row_names+0
+", row.names = TRUE
+)
+s18
+
+r18 <- data.frame(x = DF[4:12,], movavgx = rowMeans(embed(DF$x, 7)))
+row.names(r18) <- NULL
+r18
+
+all.equal(r18, s18)
+```
+
+## merge. `a19r` and `a19s` are same except row order and row names
+
+```{r}
+A <- data.frame(a1 = c(1, 2, 1), a2 = c(2, 3, 3), a3 = c(3, 1, 2))
+B <- data.frame(b1 = 1:2, b2 = 2:1)
+
+a19s <- sqldf("select * from A, B")
+a19s
+
+a19r <- merge(A, B)
+a19r
+
+Sort <- function(DF) {DF[do.call(order, DF),]}
+all.equal(Sort(a19s), Sort(a19r), check.attributes = FALSE)
+```
+
+
+# R interact with Linux command
+
+```{r, eval=FALSE}
+system('mkdir ./data/folder1')
+
+system('cd ./data/;cp read_sql.csv ./folder1')
+
+system("cd ./data/;echo 'echo test'> echo.sh")
+
+system('cd ./data/;mv echo.sh echo2.sh')
+
+system('rm -rf ./data/folder1')
+```
+
+
+
+# Reference
+
+[GitHub - sqldf](https://github.com/ggrothendieck/sqldf){target="_blank"}
+
+[cran-r sqldf](https://cran.r-project.org/web/packages/sqldf/sqldf.pdf){target="_blank"}
+
+[sqldf package - R documentation](https://www.rdocumentation.org/packages/sqldf/versions/0.4-11){target="_blank"}

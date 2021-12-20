@@ -1,0 +1,2988 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>dplyr</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="config/style.css" type="text/css" />
+<link rel="stylesheet" href="config/click-zoom.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R training</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="RStudioIDE.html">RStudio IDE</a>
+</li>
+<li>
+  <a href="base_R.html">Base R</a>
+</li>
+<li>
+  <a href="tidyverse-base.html">tidyverse base</a>
+</li>
+<li>
+  <a href="stringr_hs.html">stringr</a>
+</li>
+<li>
+  <a href="datetime_qw.html">date and time</a>
+</li>
+<li>
+  <a href="read-write.html">data import/export</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    ggplot2
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ggplot2_basic.html">basic</a>
+    </li>
+    <li>
+      <a href="ggplot2_layers.html">layers</a>
+    </li>
+    <li>
+      <a href="arranging-plots.html">arranging plots</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    More
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="pipe.html">Using pipe</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">focusing on package</li>
+    <li>
+      <a href="data-process-dplyr.html">data process - dplyr</a>
+    </li>
+    <li>
+      <a href="data-process-tidyr.html">data process - tidyr</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Use SQL in R</li>
+    <li>
+      <a href="sqldf.html">sqldf</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">dplyr</h1>
+
+</div>
+
+
+<pre class="r"><code># install.packages(&quot;dplyr&quot;)
+library(tidyverse)</code></pre>
+<div id="this-document-is-based-on-package-version-of-dplyr" class="section level3 unnumbered">
+<h3 class="unnumbered">This document is based on package version of dplyr:</h3>
+<pre class="r"><code>packageVersion(&quot;dplyr&quot;)
+#&gt; [1] &#39;1.0.6&#39;</code></pre>
+</div>
+<div id="why-dplyr" class="section level1" number="1">
+<h1 number="1"><span class="header-section-number">1</span> Why dplyr</h1>
+<p>When working with data you must:</p>
+<ul>
+<li><p>Figure out what you want to do.</p></li>
+<li><p>Describe those tasks in the form of a computer program.</p></li>
+<li><p>Execute the program.</p></li>
+</ul>
+<p>The dplyr package makes these steps fast and easy:</p>
+<ul>
+<li><p>By constraining your options, it helps you think about your data manipulation challenges.</p></li>
+<li><p>It provides simple “verbs”, functions that correspond to the most common data manipulation tasks, to help you translate your thoughts into code.</p></li>
+<li><p>It uses efficient backends, so you spend less time waiting for the computer.</p></li>
+</ul>
+<div id="dplyr-codes-usually-looks-like" class="section level3 unnumbered">
+<h3 class="unnumbered">dplyr codes usually looks like:</h3>
+<pre class="r"><code>starwars %&gt;% 
+  select(name, height, species) %&gt;% 
+  filter(species %in% c(&#39;Human&#39;, &#39;Droid&#39;)) %&gt;% 
+  mutate(mean_height = mean(height, na.rm = T)) %&gt;% 
+  group_by(species) %&gt;% 
+  mutate(mean_height_by_species = mean(height, na.rm = T)) %&gt;% 
+  ungroup()</code></pre>
+<p>Here we use several dplyr “verbs” (<code>select()</code> <code>filter()</code> <code>mutate()</code>) to operate the “data” <code>starwars</code> step by step, and string them together into a pipeline by <code>%&gt;%</code>. We also finish one “by-group” work by wrapping <code>mutate()</code> with <code>group_by()</code> and <code>ungroup()</code>. This code block looks like working left-to-right, top-to-bottom and you can easily find what is done to the data.</p>
+<p>So how dplyr do this?</p>
+<ol style="list-style-type: decimal">
+<li><p>The code dplyr verbs input and output data frames.</p></li>
+<li><p>dplyr relies heavily on “non-standard evaluation” so that you don’t need to use <code>$</code> to refer to columns in the “current” data frame.</p></li>
+<li><p>dplyr solutions tend to use a variety of single purpose verbs.</p></li>
+<li><p>Multiple dplyr verbs are often strung together into a pipeline by <code>%&gt;%</code>.</p></li>
+<li><p>All dplyr verbs handle “grouped” data frames so that the code to perform a computation per-group looks very similar to code that works on a whole data frame.</p></li>
+</ol>
+</div>
+</div>
+<div id="tibble" class="section level1" number="2">
+<h1 number="2"><span class="header-section-number">2</span> Tibble</h1>
+<p>A <strong>tibble</strong>, or <code>tbl_df</code>, is a modern reimagining of the data.frame, keeping what time has proven to be effective, and throwing out what is not. Tibbles are data.frames that are lazy and surly: they do less (i.e. they don’t change variable names or types, and don’t do partial matching) and complain more (e.g. when a variable does not exist). This forces you to confront problems earlier, typically leading to cleaner, more expressive code. Tibbles also have an enhanced <code>print()</code> method which makes them easier to use with large datasets containing complex objects.</p>
+<pre class="r"><code>mtcars %&gt;% class()
+#&gt; [1] &quot;data.frame&quot;
+mtcars %&gt;% as_tibble() %&gt;% class()
+#&gt; [1] &quot;tbl_df&quot;     &quot;tbl&quot;        &quot;data.frame&quot;</code></pre>
+<p>You can refer to <a href="https://r4ds.had.co.nz/tibbles.html" target="_blank">tibbles chapter</a> in <em>R for data science</em> or <a href="https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html" target="_blank"><code>vignette("tibble")</code></a> to find the difference between <code>tibble</code> and <code>data.frame</code>.</p>
+<p><strong>Tibble is the central data structure for the set of packages known as the <a href="https://www.tidyverse.org/packages/" target="_blank">tidyverse</a>, including <a href="https://dplyr.tidyverse.org/" target="_blank">dplyr</a>, <a href="https://ggplot2.tidyverse.org/" target="_blank">ggplot2</a>, <a href="https://tidyr.tidyverse.org/" target="_blank">tidyr</a>, and <a href="https://readr.tidyverse.org/" target="_blank">readr</a>.</strong></p>
+<div id="creating-tibbles" class="section level2" number="2.1">
+<h2 number="2.1"><span class="header-section-number">2.1</span> Creating tibbles</h2>
+<p>Create a tibble from an existing object with <code>as_tibble()</code>. This will work for reasonable inputs that are already data.frames, lists, matrices, or tables.</p>
+<pre class="r"><code>as_tibble(iris)
+#&gt; # A tibble: 150 x 5
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+#&gt;          &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt; &lt;fct&gt;  
+#&gt; 1          5.1         3.5          1.4         0.2 setosa 
+#&gt; 2          4.9         3            1.4         0.2 setosa 
+#&gt; 3          4.7         3.2          1.3         0.2 setosa 
+#&gt; 4          4.6         3.1          1.5         0.2 setosa 
+#&gt; # … with 146 more rows</code></pre>
+<p>You can also create a new tibble from column vectors with <code>tibble()</code>. <code>tibble()</code> <strong>will automatically recycle inputs of length 1</strong>, and allows you to refer to variables that you just created, as shown below.</p>
+<pre class="r"><code>tibble(x = 1:5, y = 1, z = x ^ 2 + y)
+#&gt; # A tibble: 5 x 3
+#&gt;       x     y     z
+#&gt;   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1     1     1     2
+#&gt; 2     2     1     5
+#&gt; 3     3     1    10
+#&gt; 4     4     1    17
+#&gt; # … with 1 more row</code></pre>
+<p>You can define a tibble row-by-row with <code>tribble()</code>, short for <strong>tr</strong>ansposed tibble. <code>tribble()</code> is customised for data entry in code: column headings are defined by formulas (i.e. they start with <code>~</code>), and entries are separated by commas. This makes it possible to lay out small amounts of data in easy to read form.</p>
+<pre class="r"><code>tribble(
+  ~x, ~y,  ~z,
+  &quot;a&quot;, 2,  3.6,
+  &quot;b&quot;, 1,  8.5
+)
+#&gt; # A tibble: 2 x 3
+#&gt;   x         y     z
+#&gt;   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1 a         2   3.6
+#&gt; 2 b         1   8.5</code></pre>
+</div>
+<div id="display" class="section level2" number="2.2">
+<h2 number="2.2"><span class="header-section-number">2.2</span> Display</h2>
+<p>Tibbles have a refined print method that shows only the first 10 rows (we set it to 4 in this document), and all the columns that fit on screen (by default). This makes it much easier to work with large data. In addition to its name, each column reports its type, a nice feature borrowed from <code>str()</code>:</p>
+<pre class="r"><code>starwars
+#&gt; # A tibble: 87 x 14
+#&gt;   name     height  mass hair_color skin_color  eye_color birth_year sex   gender
+#&gt;   &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 Luke Sk…    172    77 blond      fair        blue            19   male  mascu…
+#&gt; 2 C-3PO       167    75 &lt;NA&gt;       gold        yellow         112   none  mascu…
+#&gt; 3 R2-D2        96    32 &lt;NA&gt;       white, blue red             33   none  mascu…
+#&gt; 4 Darth V…    202   136 none       white       yellow          41.9 male  mascu…
+#&gt; # … with 83 more rows, and 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;,
+#&gt; #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;</code></pre>
+<p>You can also control the default print behaviour by setting options:</p>
+<ul>
+<li><p><code>options(tibble.print_max = n, tibble.print_min = m)</code>: if more than n rows, print only m rows. Use <code>options(tibble.print_min = Inf)</code> to always show all rows.</p></li>
+<li><p>Use <code>options(tibble.width = Inf)</code> to always print all columns, regardless of the width of the screen.</p></li>
+</ul>
+<p>You can see a complete list of options by looking at the package help with <a href="https://tibble.tidyverse.org/reference/tibble-package.html#package-options" target="_blank"><code>package?tibble</code></a>.</p>
+<p>A final option is to use RStudio’s built-in data viewer to get a scrollable view of the complete dataset. This is also often useful at the end of a long chain of manipulations.</p>
+<pre class="r"><code>starwars %&gt;% view()</code></pre>
+<div class="click-zoom-2-0">
+<p><label> <input type="checkbox"> <img src="figures/dplyr/view_dataset.png"> </label></p>
+</div>
+</div>
+<div id="column-data-types" class="section level2" number="2.3">
+<h2 number="2.3"><span class="header-section-number">2.3</span> Column data types</h2>
+<p>Refer to <a href="https://cran.r-project.org/web/packages/tibble/vignettes/types.html" target="_blank"><code>vignette("types")</code></a>, you can find all kinds of column data type in <code>tibble</code>, common are <code>&lt;lgl&gt;</code> for logical, <code>&lt;int&gt;</code> for integer, <code>&lt;dbl&gt;</code> for double, <code>&lt;chr&gt;</code> for character, <code>&lt;date&gt;</code> for Date and so on.</p>
+<pre class="r"><code>tibble(x1 = T, x2 = 1L, x3 = 1.5, x4 = &#39;a&#39;, x5 = as.Date(&#39;2021-03-10&#39;))
+#&gt; # A tibble: 1 x 5
+#&gt;   x1       x2    x3 x4    x5        
+#&gt;   &lt;lgl&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt; &lt;date&gt;    
+#&gt; 1 TRUE      1   1.5 a     2021-03-10</code></pre>
+<p>And sometimes you would find <code>&lt;list&gt;</code> for list (list-columns).</p>
+<pre class="r"><code>tibble(x = list(1, 2:3))
+#&gt; # A tibble: 2 x 1
+#&gt;   x        
+#&gt;   &lt;list&gt;   
+#&gt; 1 &lt;dbl [1]&gt;
+#&gt; 2 &lt;int [2]&gt;
+
+mtcars %&gt;% nest_by(cyl)
+#&gt; # A tibble: 3 x 2
+#&gt; # Rowwise:  cyl
+#&gt;     cyl                data
+#&gt;   &lt;dbl&gt; &lt;list&lt;tibble[,10]&gt;&gt;
+#&gt; 1     4           [11 × 10]
+#&gt; 2     6            [7 × 10]
+#&gt; 3     8           [14 × 10]</code></pre>
+<p>list-columns might be confusing but sometimes it would be useful in modeling while the input are multi tibbles, you can see more details in <a href="https://cran.r-project.org/web/packages/dplyr/vignettes/rowwise.html#list-columns" target="_blank"><code>vignette("rowwise")</code></a> and <a href="https://r4ds.had.co.nz/many-models.html#list-columns-1" target="_blank">Many models chapter</a> in <em>R for data science</em>. Later we will also meet list-columns with “nest” data while study the package <code>tidyr</code>.</p>
+</div>
+<div id="column-names" class="section level2" number="2.4">
+<h2 number="2.4"><span class="header-section-number">2.4</span> Column names</h2>
+<p>The name repair described below is exposed to users via the <code>.name_repair</code> argument of <code>tibble::tibble()</code>, <code>tibble::as_tibble()</code>, <code>readxl::read_excel()</code>, and, eventually other packages in the tidyverse.</p>
+<p>Tidyverse deals with a few levels of name repair that are practically useful:</p>
+<ul>
+<li><p><code>minimal</code>: The <code>names</code> attribute is not <code>NULL</code>. The name of an unnamed element is <code>""</code> (the empty string) and never <code>NA</code>.</p></li>
+<li><p><code>unique</code>: No element of <code>names</code> appears more than once. A couple specific names are also forbidden in unique names, such as <code>""</code> (the empty string).</p>
+<ul>
+<li>All columns can be accessed by name via <code>df[["name"]]</code> and, more generally, by quoting with backticks: <code>df$`name`</code>, <code>subset(df, select = `name`)</code>, and <code>dplyr::select(df, `name`)</code>.</li>
+</ul></li>
+<li><p><code>check_unique</code>: It doesn’t perform any name repair. Instead, an error is raised if the names don’t suit the “unique” criteria.</p></li>
+<li><p><code>universal</code>: The <code>names</code> are unique and syntactic.</p>
+<ul>
+<li>Names work everywhere, without quoting: <code>df$name</code> and <code>lm(name1 ~ name2, data = df)</code> and <code>dplyr::select(df, name)</code> all work.</li>
+</ul></li>
+</ul>
+<pre class="r"><code>c(&#39;a&#39;, &#39;&#39;, NA) %&gt;% vctrs::vec_as_names(repair = &#39;minimal&#39;)
+#&gt; [1] &quot;a&quot; &quot;&quot;  &quot;&quot;
+
+c(&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;a&#39;) %&gt;% vctrs::vec_as_names(repair = &#39;unique&#39;)
+#&gt; New names:
+#&gt; * a -&gt; a...1
+#&gt; * a -&gt; a...4
+#&gt; [1] &quot;a...1&quot; &quot;b&quot;     &quot;c&quot;     &quot;a...4&quot;
+
+c(&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;a&#39;) %&gt;% vctrs::vec_as_names(repair = &#39;check_unique&#39;)
+#&gt; Error: Names must be unique.
+#&gt; x These names are duplicated:
+#&gt;   * &quot;a&quot; at locations 1 and 4.
+
+c(&#39;(a)&#39;, &#39;b c&#39;, &#39;&#39;) %&gt;% vctrs::vec_as_names(repair = &#39;universal&#39;)
+#&gt; New names:
+#&gt; * `(a)` -&gt; .a.
+#&gt; * `b c` -&gt; b.c
+#&gt; * `` -&gt; ...3
+#&gt; [1] &quot;.a.&quot;  &quot;b.c&quot;  &quot;...3&quot;</code></pre>
+<p>You can see more details in <a href="https://vctrs.r-lib.org/reference/vec_as_names.html" target="_blank"><code>?vctrs::vec_as_names</code></a> and <a href="https://design.tidyverse.org/names-attribute.html" target="_blank">Names attribute chapter</a> in <em>Tidyverse design guide</em>.</p>
+</div>
+</div>
+<div id="single-table-verbs" class="section level1" number="3">
+<h1 number="3"><span class="header-section-number">3</span> Single table verbs</h1>
+<div id="arrange-rows-by-column-values-arrange" class="section level2" number="3.1">
+<h2 number="3.1"><span class="header-section-number">3.1</span> Arrange rows by column values: <code>arrange()</code></h2>
+<p><code>arrange()</code> orders the rows of a data frame by the values of selected columns.</p>
+<pre class="r"><code>starwars %&gt;% arrange(height, mass)
+#&gt; # A tibble: 87 x 14
+#&gt;   name      height  mass hair_color skin_color eye_color birth_year sex   gender
+#&gt;   &lt;chr&gt;      &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 Yoda          66    17 white      green      brown            896 male  mascu…
+#&gt; 2 Ratts Ty…     79    15 none       grey, blue unknown           NA male  mascu…
+#&gt; 3 Wicket S…     88    20 brown      brown      brown              8 male  mascu…
+#&gt; 4 Dud Bolt      94    45 none       blue, grey yellow            NA male  mascu…
+#&gt; # … with 83 more rows, and 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;,
+#&gt; #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;
+
+starwars %&gt;% arrange(desc(height))
+#&gt; # A tibble: 87 x 14
+#&gt;   name     height  mass hair_color skin_color eye_color birth_year sex   gender 
+#&gt;   &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  
+#&gt; 1 Yarael …    264    NA none       white      yellow            NA male  mascul…
+#&gt; 2 Tarfful     234   136 brown      brown      blue              NA male  mascul…
+#&gt; 3 Lama Su     229    88 none       grey       black             NA male  mascul…
+#&gt; 4 Chewbac…    228   112 brown      unknown    blue             200 male  mascul…
+#&gt; # … with 83 more rows, and 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;,
+#&gt; #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;</code></pre>
+</div>
+<div id="subset-distinctunique-rows-distinct" class="section level2" number="3.2">
+<h2 number="3.2"><span class="header-section-number">3.2</span> Subset distinct/unique rows: <code>distinct()</code></h2>
+<p><code>distinct()</code> select only unique/distinct rows from a data frame.</p>
+<pre class="r"><code>df &lt;- tibble(
+  x = sample(10, 100, rep = TRUE),
+  y = sample(10, 100, rep = TRUE)
+)
+df
+#&gt; # A tibble: 100 x 2
+#&gt;       x     y
+#&gt;   &lt;int&gt; &lt;int&gt;
+#&gt; 1     6     8
+#&gt; 2     8     2
+#&gt; 3     5     8
+#&gt; 4     3     6
+#&gt; # … with 96 more rows
+
+df %&gt;% nrow()
+#&gt; [1] 100
+
+df %&gt;% distinct()
+#&gt; # A tibble: 64 x 2
+#&gt;       x     y
+#&gt;   &lt;int&gt; &lt;int&gt;
+#&gt; 1     6     8
+#&gt; 2     8     2
+#&gt; 3     5     8
+#&gt; 4     3     6
+#&gt; # … with 60 more rows
+
+df %&gt;% distinct() %&gt;% nrow()
+#&gt; [1] 64
+
+
+df %&gt;% distinct(x)
+#&gt; # A tibble: 10 x 1
+#&gt;       x
+#&gt;   &lt;int&gt;
+#&gt; 1     6
+#&gt; 2     8
+#&gt; 3     5
+#&gt; 4     3
+#&gt; # … with 6 more rows
+
+df %&gt;% distinct(y)
+#&gt; # A tibble: 10 x 1
+#&gt;       y
+#&gt;   &lt;int&gt;
+#&gt; 1     8
+#&gt; 2     2
+#&gt; 3     6
+#&gt; 4     1
+#&gt; # … with 6 more rows
+
+
+df %&gt;% distinct(x, .keep_all = T)
+#&gt; # A tibble: 10 x 2
+#&gt;       x     y
+#&gt;   &lt;int&gt; &lt;int&gt;
+#&gt; 1     6     8
+#&gt; 2     8     2
+#&gt; 3     5     8
+#&gt; 4     3     6
+#&gt; # … with 6 more rows
+
+df %&gt;% distinct(y, .keep_all = T)
+#&gt; # A tibble: 10 x 2
+#&gt;       x     y
+#&gt;   &lt;int&gt; &lt;int&gt;
+#&gt; 1     6     8
+#&gt; 2     8     2
+#&gt; 3     3     6
+#&gt; 4     2     1
+#&gt; # … with 6 more rows</code></pre>
+</div>
+<div id="subset-rows-using-column-values-filter" class="section level2" number="3.3">
+<h2 number="3.3"><span class="header-section-number">3.3</span> Subset rows using column values: <code>filter()</code></h2>
+<p>The <code>filter()</code> function is used to subset a data frame, retaining all rows that satisfy your conditions. To be retained, the row must produce a value of <code>TRUE</code> for all conditions. Note that when a condition evaluates to <code>NA</code> the row will be dropped.</p>
+<pre class="r"><code>starwars %&gt;% 
+  filter(hair_color == &quot;none&quot; &amp; eye_color == &quot;black&quot;)
+#&gt; # A tibble: 9 x 14
+#&gt;   name    height  mass hair_color skin_color  eye_color birth_year sex   gender 
+#&gt;   &lt;chr&gt;    &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  
+#&gt; 1 Nien N…    160    68 none       grey        black             NA male  mascul…
+#&gt; 2 Gasgano    122    NA none       white, blue black             NA male  mascul…
+#&gt; 3 Kit Fi…    196    87 none       green       black             NA male  mascul…
+#&gt; 4 Plo Ko…    188    80 none       orange      black             22 male  mascul…
+#&gt; # … with 5 more rows, and 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;,
+#&gt; #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;
+
+starwars %&gt;% 
+  filter(hair_color == &quot;none&quot; | eye_color == &quot;black&quot;)
+#&gt; # A tibble: 38 x 14
+#&gt;   name     height  mass hair_color skin_color eye_color birth_year sex   gender 
+#&gt;   &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  
+#&gt; 1 Darth V…    202   136 none       white      yellow          41.9 male  mascul…
+#&gt; 2 Greedo      173    74 &lt;NA&gt;       green      black           44   male  mascul…
+#&gt; 3 IG-88       200   140 none       metal      red             15   none  mascul…
+#&gt; 4 Bossk       190   113 none       green      red             53   male  mascul…
+#&gt; # … with 34 more rows, and 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;,
+#&gt; #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;</code></pre>
+</div>
+<div id="subset-columns-using-their-names-and-types-select" class="section level2" number="3.4">
+<h2 number="3.4"><span class="header-section-number">3.4</span> Subset columns using their names and types: <code>select()</code></h2>
+<p><code>select()</code> select variables in a data frame</p>
+<pre class="r"><code>starwars %&gt;% select(hair_color, skin_color, eye_color)
+#&gt; # A tibble: 87 x 3
+#&gt;   hair_color skin_color  eye_color
+#&gt;   &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;    
+#&gt; 1 blond      fair        blue     
+#&gt; 2 &lt;NA&gt;       gold        yellow   
+#&gt; 3 &lt;NA&gt;       white, blue red      
+#&gt; 4 none       white       yellow   
+#&gt; # … with 83 more rows</code></pre>
+</div>
+<div id="create-modify-and-delete-columns-mutate-transmute" class="section level2" number="3.5">
+<h2 number="3.5"><span class="header-section-number">3.5</span> Create, modify, and delete columns: <code>mutate()</code> <code>transmute()</code></h2>
+<p><code>mutate()</code> adds new variables and preserves existing ones; <code>transmute()</code> adds new variables and drops existing ones. New variables overwrite existing variables of the same name. Variables can be removed by setting their value to <code>NULL</code>.</p>
+<pre class="r"><code>starwars %&gt;% 
+  select(name, mass) %&gt;% 
+  mutate(
+    mass2 = mass * 2,
+    mass2_squared = mass2 * mass2
+  )
+#&gt; # A tibble: 87 x 4
+#&gt;   name            mass mass2 mass2_squared
+#&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;dbl&gt;         &lt;dbl&gt;
+#&gt; 1 Luke Skywalker    77   154         23716
+#&gt; 2 C-3PO             75   150         22500
+#&gt; 3 R2-D2             32    64          4096
+#&gt; 4 Darth Vader      136   272         73984
+#&gt; # … with 83 more rows
+
+starwars %&gt;% 
+  transmute(mass2 = mass * 2)
+#&gt; # A tibble: 87 x 1
+#&gt;   mass2
+#&gt;   &lt;dbl&gt;
+#&gt; 1   154
+#&gt; 2   150
+#&gt; 3    64
+#&gt; 4   272
+#&gt; # … with 83 more rows
+
+starwars %&gt;% 
+  select(name, height, mass, homeworld) %&gt;% 
+  mutate(
+    mass = NULL,
+    height = height * 0.0328084
+  )
+#&gt; # A tibble: 87 x 3
+#&gt;   name           height homeworld
+#&gt;   &lt;chr&gt;           &lt;dbl&gt; &lt;chr&gt;    
+#&gt; 1 Luke Skywalker   5.64 Tatooine 
+#&gt; 2 C-3PO            5.48 Tatooine 
+#&gt; 3 R2-D2            3.15 Naboo    
+#&gt; 4 Darth Vader      6.63 Tatooine 
+#&gt; # … with 83 more rows</code></pre>
+</div>
+<div id="extract-a-single-column-pull" class="section level2" number="3.6">
+<h2 number="3.6"><span class="header-section-number">3.6</span> Extract a single column: <code>pull()</code></h2>
+<p><code>pull()</code> is similar to <code>$</code>. It’s mostly useful because it looks a little nicer in pipes, it can optionally name the output.</p>
+<pre class="r"><code>mtcars %&gt;% as_tibble()
+#&gt; # A tibble: 32 x 11
+#&gt;     mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1  21       6   160   110  3.9   2.62  16.5     0     1     4     4
+#&gt; 2  21       6   160   110  3.9   2.88  17.0     0     1     4     4
+#&gt; 3  22.8     4   108    93  3.85  2.32  18.6     1     1     4     1
+#&gt; 4  21.4     6   258   110  3.08  3.22  19.4     1     0     3     1
+#&gt; # … with 28 more rows
+
+mtcars %&gt;% pull(-1)
+#&gt;  [1] 4 4 1 1 2 1 4 2 2 4 4 3 3 3 4 4 4 1 2 1 1 2 2 4 2 1 2 2 4 6 8 2
+
+mtcars %&gt;% pull(1)
+#&gt;  [1] 21.0 21.0 22.8 21.4 18.7 18.1 14.3 24.4 22.8 19.2 17.8 16.4 17.3 15.2 10.4
+#&gt; [16] 10.4 14.7 32.4 30.4 33.9 21.5 15.5 15.2 13.3 19.2 27.3 26.0 30.4 15.8 19.7
+#&gt; [31] 15.0 21.4
+
+mtcars %&gt;% pull(cyl)
+#&gt;  [1] 6 6 4 6 8 6 8 4 4 6 6 8 8 8 8 8 8 4 4 4 4 8 8 8 8 4 4 4 8 6 8 4</code></pre>
+</div>
+<div id="change-column-order-relocate" class="section level2" number="3.7">
+<h2 number="3.7"><span class="header-section-number">3.7</span> Change column order: <code>relocate()</code></h2>
+<p>Use <code>relocate()</code> to change column positions.</p>
+<pre class="r"><code>df &lt;- tibble(a = 1, b = 1, c = 1, d = &quot;a&quot;, e = &quot;a&quot;, f = &quot;a&quot;)
+
+df %&gt;% relocate(f)
+#&gt; # A tibble: 1 x 6
+#&gt;   f         a     b     c d     e    
+#&gt;   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;
+#&gt; 1 a         1     1     1 a     a
+
+df %&gt;% relocate(a, .after = c)
+#&gt; # A tibble: 1 x 6
+#&gt;       b     c     a d     e     f    
+#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;
+#&gt; 1     1     1     1 a     a     a
+
+df %&gt;% relocate(f, .before = b)
+#&gt; # A tibble: 1 x 6
+#&gt;       a f         b     c d     e    
+#&gt;   &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;
+#&gt; 1     1 a         1     1 a     a</code></pre>
+</div>
+<div id="rename-columns-rename-rename_with" class="section level2" number="3.8">
+<h2 number="3.8"><span class="header-section-number">3.8</span> Rename columns: <code>rename()</code> <code>rename_with()</code></h2>
+<p><code>rename()</code> changes the names of individual variables using <code>new_name = old_name</code> syntax; <code>rename_with()</code> renames columns using a function.</p>
+<pre class="r"><code>starwars %&gt;% rename(home_world = homeworld) %&gt;% relocate(home_world)
+#&gt; # A tibble: 87 x 14
+#&gt;   home_world name  height  mass hair_color skin_color eye_color birth_year sex  
+#&gt;   &lt;chr&gt;      &lt;chr&gt;  &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;
+#&gt; 1 Tatooine   Luke…    172    77 blond      fair       blue            19   male 
+#&gt; 2 Tatooine   C-3PO    167    75 &lt;NA&gt;       gold       yellow         112   none 
+#&gt; 3 Naboo      R2-D2     96    32 &lt;NA&gt;       white, bl… red             33   none 
+#&gt; 4 Tatooine   Dart…    202   136 none       white      yellow          41.9 male 
+#&gt; # … with 83 more rows, and 5 more variables: gender &lt;chr&gt;, species &lt;chr&gt;,
+#&gt; #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;
+
+starwars %&gt;% rename_with(str_to_upper)
+#&gt; # A tibble: 87 x 14
+#&gt;   NAME     HEIGHT  MASS HAIR_COLOR SKIN_COLOR  EYE_COLOR BIRTH_YEAR SEX   GENDER
+#&gt;   &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 Luke Sk…    172    77 blond      fair        blue            19   male  mascu…
+#&gt; 2 C-3PO       167    75 &lt;NA&gt;       gold        yellow         112   none  mascu…
+#&gt; 3 R2-D2        96    32 &lt;NA&gt;       white, blue red             33   none  mascu…
+#&gt; 4 Darth V…    202   136 none       white       yellow          41.9 male  mascu…
+#&gt; # … with 83 more rows, and 5 more variables: HOMEWORLD &lt;chr&gt;, SPECIES &lt;chr&gt;,
+#&gt; #   FILMS &lt;list&gt;, VEHICLES &lt;list&gt;, STARSHIPS &lt;list&gt;</code></pre>
+</div>
+<div id="subset-rows-using-their-positions-slice-slice_head-slice_tail-slice_min-slice_max-slice_sample" class="section level2" number="3.9">
+<h2 number="3.9"><span class="header-section-number">3.9</span> Subset rows using their positions: <code>slice()</code> <code>slice_head()</code> <code>slice_tail()</code> <code>slice_min()</code> <code>slice_max()</code> <code>slice_sample()</code></h2>
+<p><code>slice()</code> lets you index rows by their (integer) locations. It allows you to select, remove, and duplicate rows. It is accompanied by a number of helpers for common use cases:</p>
+<ul>
+<li><p><code>slice_head()</code> and <code>slice_tail()</code> select the first or last rows.</p></li>
+<li><p><code>slice_sample()</code> randomly selects rows. Use the option <code>prop</code> to choose a certain proportion of the cases.</p></li>
+<li><p><code>slice_min()</code> and <code>slice_max()</code> select rows with highest or lowest values of a variable.</p></li>
+</ul>
+<pre class="r"><code>starwars %&gt;% slice(5:10)
+#&gt; # A tibble: 6 x 14
+#&gt;   name     height  mass hair_color  skin_color eye_color birth_year sex   gender
+#&gt;   &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 Leia Or…    150    49 brown       light      brown             19 fema… femin…
+#&gt; 2 Owen La…    178   120 brown, grey light      blue              52 male  mascu…
+#&gt; 3 Beru Wh…    165    75 brown       light      blue              47 fema… femin…
+#&gt; 4 R5-D4        97    32 &lt;NA&gt;        white, red red               NA none  mascu…
+#&gt; # … with 2 more rows, and 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;,
+#&gt; #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;
+
+starwars %&gt;% slice_head(n = 3)
+#&gt; # A tibble: 3 x 14
+#&gt;   name     height  mass hair_color skin_color  eye_color birth_year sex   gender
+#&gt;   &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 Luke Sk…    172    77 blond      fair        blue              19 male  mascu…
+#&gt; 2 C-3PO       167    75 &lt;NA&gt;       gold        yellow           112 none  mascu…
+#&gt; 3 R2-D2        96    32 &lt;NA&gt;       white, blue red               33 none  mascu…
+#&gt; # … with 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;, films &lt;list&gt;,
+#&gt; #   vehicles &lt;list&gt;, starships &lt;list&gt;
+
+starwars %&gt;% slice_tail(n = 3)
+#&gt; # A tibble: 3 x 14
+#&gt;   name     height  mass hair_color skin_color eye_color birth_year sex    gender
+#&gt;   &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt; 
+#&gt; 1 BB8          NA    NA none       none       black             NA none   mascu…
+#&gt; 2 Captain…     NA    NA unknown    unknown    unknown           NA &lt;NA&gt;   &lt;NA&gt;  
+#&gt; 3 Padmé A…    165    45 brown      light      brown             46 female femin…
+#&gt; # … with 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;, films &lt;list&gt;,
+#&gt; #   vehicles &lt;list&gt;, starships &lt;list&gt;
+
+starwars %&gt;% slice_sample(n = 5)
+#&gt; # A tibble: 5 x 14
+#&gt;   name    height  mass hair_color skin_color   eye_color birth_year sex   gender
+#&gt;   &lt;chr&gt;    &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;        &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 Watto      137    NA black      blue, grey   yellow            NA male  mascu…
+#&gt; 2 Mace W…    188    84 none       dark         brown             72 male  mascu…
+#&gt; 3 Ben Qu…    163    65 none       grey, green… orange            NA male  mascu…
+#&gt; 4 Dud Bo…     94    45 none       blue, grey   yellow            NA male  mascu…
+#&gt; # … with 1 more row, and 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;,
+#&gt; #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;
+
+starwars %&gt;% slice_sample(prop = 0.1)
+#&gt; # A tibble: 8 x 14
+#&gt;   name    height  mass hair_color  skin_color  eye_color birth_year sex   gender
+#&gt;   &lt;chr&gt;    &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 Ben Qu…    163    65 none        grey, gree… orange            NA male  mascu…
+#&gt; 2 Padmé …    165    45 brown       light       brown             46 fema… femin…
+#&gt; 3 Obi-Wa…    182    77 auburn, wh… fair        blue-gray         57 male  mascu…
+#&gt; 4 Qui-Go…    193    89 brown       fair        blue              92 male  mascu…
+#&gt; # … with 4 more rows, and 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;,
+#&gt; #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;
+
+starwars %&gt;% slice_min(height, n = 3)
+#&gt; # A tibble: 3 x 14
+#&gt;   name      height  mass hair_color skin_color eye_color birth_year sex   gender
+#&gt;   &lt;chr&gt;      &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 Yoda          66    17 white      green      brown            896 male  mascu…
+#&gt; 2 Ratts Ty…     79    15 none       grey, blue unknown           NA male  mascu…
+#&gt; 3 Wicket S…     88    20 brown      brown      brown              8 male  mascu…
+#&gt; # … with 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;, films &lt;list&gt;,
+#&gt; #   vehicles &lt;list&gt;, starships &lt;list&gt;
+
+starwars %&gt;% slice_max(height, n = 3)
+#&gt; # A tibble: 3 x 14
+#&gt;   name     height  mass hair_color skin_color eye_color birth_year sex   gender 
+#&gt;   &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  
+#&gt; 1 Yarael …    264    NA none       white      yellow            NA male  mascul…
+#&gt; 2 Tarfful     234   136 brown      brown      blue              NA male  mascul…
+#&gt; 3 Lama Su     229    88 none       grey       black             NA male  mascul…
+#&gt; # … with 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;, films &lt;list&gt;,
+#&gt; #   vehicles &lt;list&gt;, starships &lt;list&gt;</code></pre>
+</div>
+<div id="summarise-each-group-to-fewer-rows-summarise-summarize" class="section level2" number="3.10">
+<h2 number="3.10"><span class="header-section-number">3.10</span> Summarise each group to fewer rows: <code>summarise()</code> <code>summarize()</code></h2>
+<p><code>summarise()</code> creates a new data frame. It will have one (or more) rows for each combination of grouping variables; if there are no grouping variables, the output will have a single row summarising all observations in the input. It will contain one column for each grouping variable and one column for each of the summary statistics that you have specified.</p>
+<p><code>summarise()</code> and <code>summarize()</code> are synonyms.</p>
+<p><code>summarise()</code> often work together with <code>group_by()</code>.</p>
+<pre class="r"><code>starwars %&gt;% 
+  summarise(mean_height = mean(height, na.rm = TRUE))
+#&gt; # A tibble: 1 x 1
+#&gt;   mean_height
+#&gt;         &lt;dbl&gt;
+#&gt; 1        174.
+
+starwars %&gt;% 
+  group_by(species) %&gt;% 
+  summarise(mean_height = mean(height, na.rm = TRUE))
+#&gt; # A tibble: 38 x 2
+#&gt;   species  mean_height
+#&gt;   &lt;chr&gt;          &lt;dbl&gt;
+#&gt; 1 Aleena            79
+#&gt; 2 Besalisk         198
+#&gt; 3 Cerean           198
+#&gt; 4 Chagrian         196
+#&gt; # … with 34 more rows</code></pre>
+</div>
+<div id="count-observations-by-group-count-tally-add_count-add_tally" class="section level2" number="3.11">
+<h2 number="3.11"><span class="header-section-number">3.11</span> Count observations by group: <code>count()</code> <code>tally()</code> <code>add_count()</code> <code>add_tally()</code></h2>
+<p><code>count()</code> lets you quickly count the unique values of one or more variables, <code>tally()</code> count number of rows. <code>add_count()</code> and <code>add_tally()</code> add a new column with group-wise counts.</p>
+<pre class="r"><code>starwars %&gt;% count(species)
+#&gt; # A tibble: 38 x 2
+#&gt;   species      n
+#&gt;   &lt;chr&gt;    &lt;int&gt;
+#&gt; 1 Aleena       1
+#&gt; 2 Besalisk     1
+#&gt; 3 Cerean       1
+#&gt; 4 Chagrian     1
+#&gt; # … with 34 more rows
+
+starwars %&gt;% tally()
+#&gt; # A tibble: 1 x 1
+#&gt;       n
+#&gt;   &lt;int&gt;
+#&gt; 1    87
+
+
+df &lt;- tribble(
+  ~name,    ~gender,   ~runs,
+  &quot;Max&quot;,    &quot;male&quot;,       10,
+  &quot;Sandra&quot;, &quot;female&quot;,      1,
+  &quot;Susan&quot;,  &quot;female&quot;,      4
+)
+
+df %&gt;% count(gender)
+#&gt; # A tibble: 2 x 2
+#&gt;   gender     n
+#&gt;   &lt;chr&gt;  &lt;int&gt;
+#&gt; 1 female     2
+#&gt; 2 male       1
+
+df %&gt;% count(gender, wt = runs)
+#&gt; # A tibble: 2 x 2
+#&gt;   gender     n
+#&gt;   &lt;chr&gt;  &lt;dbl&gt;
+#&gt; 1 female     5
+#&gt; 2 male      10
+
+
+df %&gt;% add_count(gender)
+#&gt; # A tibble: 3 x 4
+#&gt;   name   gender  runs     n
+#&gt;   &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;int&gt;
+#&gt; 1 Max    male      10     1
+#&gt; 2 Sandra female     1     2
+#&gt; 3 Susan  female     4     2
+
+df %&gt;% add_tally()
+#&gt; # A tibble: 3 x 4
+#&gt;   name   gender  runs     n
+#&gt;   &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;int&gt;
+#&gt; 1 Max    male      10     3
+#&gt; 2 Sandra female     1     3
+#&gt; 3 Susan  female     4     3</code></pre>
+<p>You can also do it by using <code>group_by()</code> <code>summarise()</code> <code>mutate()</code>:</p>
+<pre class="r"><code>df %&gt;% 
+  group_by(gender) %&gt;% 
+  summarise(n = n()) %&gt;% 
+  ungroup()
+#&gt; # A tibble: 2 x 2
+#&gt;   gender     n
+#&gt;   &lt;chr&gt;  &lt;int&gt;
+#&gt; 1 female     2
+#&gt; 2 male       1
+
+df %&gt;% 
+  group_by(gender) %&gt;% 
+  mutate(n = n()) %&gt;% 
+  ungroup()
+#&gt; # A tibble: 3 x 4
+#&gt;   name   gender  runs     n
+#&gt;   &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;int&gt;
+#&gt; 1 Max    male      10     1
+#&gt; 2 Sandra female     1     2
+#&gt; 3 Susan  female     4     2</code></pre>
+</div>
+</div>
+<div id="twomulti-table-verbs" class="section level1" number="4">
+<h1 number="4"><span class="header-section-number">4</span> Two(multi) table verbs</h1>
+<div id="efficiently-bind-multiple-data-frames-by-row-and-column-bind_rows-bind_cols" class="section level2" number="4.1">
+<h2 number="4.1"><span class="header-section-number">4.1</span> Efficiently bind multiple data frames by row and column: <code>bind_rows()</code> <code>bind_cols()</code></h2>
+<pre class="r"><code>one &lt;- starwars[1:2, 1:4]
+two &lt;- starwars[9:10, 1:4]
+
+bind_rows(one, two)
+#&gt; # A tibble: 4 x 4
+#&gt;   name              height  mass hair_color   
+#&gt;   &lt;chr&gt;              &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;        
+#&gt; 1 Luke Skywalker       172    77 blond        
+#&gt; 2 C-3PO                167    75 &lt;NA&gt;         
+#&gt; 3 Biggs Darklighter    183    84 black        
+#&gt; 4 Obi-Wan Kenobi       182    77 auburn, white
+
+bind_rows(list(one, two))
+#&gt; # A tibble: 4 x 4
+#&gt;   name              height  mass hair_color   
+#&gt;   &lt;chr&gt;              &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;        
+#&gt; 1 Luke Skywalker       172    77 blond        
+#&gt; 2 C-3PO                167    75 &lt;NA&gt;         
+#&gt; 3 Biggs Darklighter    183    84 black        
+#&gt; 4 Obi-Wan Kenobi       182    77 auburn, white
+
+
+bind_rows(list(one, two), .id = &quot;id&quot;)
+#&gt; # A tibble: 4 x 5
+#&gt;   id    name              height  mass hair_color   
+#&gt;   &lt;chr&gt; &lt;chr&gt;              &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;        
+#&gt; 1 1     Luke Skywalker       172    77 blond        
+#&gt; 2 1     C-3PO                167    75 &lt;NA&gt;         
+#&gt; 3 2     Biggs Darklighter    183    84 black        
+#&gt; 4 2     Obi-Wan Kenobi       182    77 auburn, white
+
+bind_rows(&quot;group 1&quot; = one, &quot;group 2&quot; = two, .id = &quot;groups&quot;)
+#&gt; # A tibble: 4 x 5
+#&gt;   groups  name              height  mass hair_color   
+#&gt;   &lt;chr&gt;   &lt;chr&gt;              &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;        
+#&gt; 1 group 1 Luke Skywalker       172    77 blond        
+#&gt; 2 group 1 C-3PO                167    75 &lt;NA&gt;         
+#&gt; 3 group 2 Biggs Darklighter    183    84 black        
+#&gt; 4 group 2 Obi-Wan Kenobi       182    77 auburn, white
+
+
+bind_cols(one, two)
+#&gt; New names:
+#&gt; * name -&gt; name...1
+#&gt; * height -&gt; height...2
+#&gt; * mass -&gt; mass...3
+#&gt; * hair_color -&gt; hair_color...4
+#&gt; * name -&gt; name...5
+#&gt; * ...
+#&gt; # A tibble: 2 x 8
+#&gt;   name...1    height...2 mass...3 hair_color...4 name...5    height...6 mass...7
+#&gt;   &lt;chr&gt;            &lt;int&gt;    &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt;            &lt;int&gt;    &lt;dbl&gt;
+#&gt; 1 Luke Skywa…        172       77 blond          Biggs Dark…        183       84
+#&gt; 2 C-3PO              167       75 &lt;NA&gt;           Obi-Wan Ke…        182       77
+#&gt; # … with 1 more variable: hair_color...8 &lt;chr&gt;</code></pre>
+</div>
+<div id="set-operations-intersect-union-union_all-setdiff" class="section level2" number="4.2">
+<h2 number="4.2"><span class="header-section-number">4.2</span> Set operations: <code>intersect()</code> <code>union()</code> <code>union_all()</code> <code>setdiff()</code></h2>
+<p>Set operation functions expect the <code>x</code> and <code>y</code> inputs to <strong>have the same variables</strong>, and treat the observations like sets:</p>
+<ul>
+<li><code>intersect(x, y)</code>: return only observations in both <code>x</code> and <code>y</code></li>
+<li><code>union(x, y)</code>: return unique observations in <code>x</code> and <code>y</code></li>
+<li><code>union_all(x, y)</code>: return all observations in <code>x</code> and <code>y</code></li>
+<li><code>setdiff(x, y)</code>: return observations in <code>x</code>, but not in <code>y</code>.</li>
+</ul>
+<p>Beware that <code>intersect()</code>, <code>union()</code> and <code>setdiff()</code> remove duplicates.</p>
+<pre class="r"><code>(df1 &lt;- tibble(x = 1:2, y = c(1L, 1L)))
+#&gt; # A tibble: 2 x 2
+#&gt;       x     y
+#&gt;   &lt;int&gt; &lt;int&gt;
+#&gt; 1     1     1
+#&gt; 2     2     1
+
+(df2 &lt;- tibble(x = 1:2, y = 1:2))
+#&gt; # A tibble: 2 x 2
+#&gt;       x     y
+#&gt;   &lt;int&gt; &lt;int&gt;
+#&gt; 1     1     1
+#&gt; 2     2     2
+
+
+intersect(df1, df2)
+#&gt; # A tibble: 1 x 2
+#&gt;       x     y
+#&gt;   &lt;int&gt; &lt;int&gt;
+#&gt; 1     1     1
+
+union(df1, df2)
+#&gt; # A tibble: 3 x 2
+#&gt;       x     y
+#&gt;   &lt;int&gt; &lt;int&gt;
+#&gt; 1     1     1
+#&gt; 2     2     1
+#&gt; 3     2     2
+
+union_all(df1, df2)
+#&gt; # A tibble: 4 x 2
+#&gt;       x     y
+#&gt;   &lt;int&gt; &lt;int&gt;
+#&gt; 1     1     1
+#&gt; 2     2     1
+#&gt; 3     1     1
+#&gt; 4     2     2
+
+setdiff(df1, df2)
+#&gt; # A tibble: 1 x 2
+#&gt;       x     y
+#&gt;   &lt;int&gt; &lt;int&gt;
+#&gt; 1     2     1
+
+setdiff(df2, df1)
+#&gt; # A tibble: 1 x 2
+#&gt;       x     y
+#&gt;   &lt;int&gt; &lt;int&gt;
+#&gt; 1     2     2</code></pre>
+</div>
+<div id="mutating-joins-inner_join-left_join-right_join-full_join" class="section level2" number="4.3">
+<h2 number="4.3"><span class="header-section-number">4.3</span> Mutating joins: <code>inner_join()</code> <code>left_join()</code> <code>right_join()</code> <code>full_join()</code></h2>
+<p>The mutating joins add columns from <code>y</code> to <code>x</code>, matching rows based on the keys:</p>
+<ul>
+<li><p><code>inner_join()</code>: includes all rows in <code>x</code> and <code>y</code>.</p></li>
+<li><p><code>left_join()</code>: includes all rows in <code>x</code>.</p></li>
+<li><p><code>right_join()</code>: includes all rows in <code>y</code>.</p></li>
+<li><p><code>full_join()</code>: includes all rows in <code>x</code> or <code>y</code>.</p></li>
+</ul>
+<p>If a row in <code>x</code> matches multiple rows in <code>y</code>, all the rows in <code>y</code> will be returned once for each matching row in <code>x</code>.</p>
+<pre class="r"><code>band_members
+#&gt; # A tibble: 3 x 2
+#&gt;   name  band   
+#&gt;   &lt;chr&gt; &lt;chr&gt;  
+#&gt; 1 Mick  Stones 
+#&gt; 2 John  Beatles
+#&gt; 3 Paul  Beatles
+
+band_instruments
+#&gt; # A tibble: 3 x 2
+#&gt;   name  plays 
+#&gt;   &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 John  guitar
+#&gt; 2 Paul  bass  
+#&gt; 3 Keith guitar
+
+
+band_members %&gt;% inner_join(band_instruments)
+#&gt; Joining, by = &quot;name&quot;
+#&gt; # A tibble: 2 x 3
+#&gt;   name  band    plays 
+#&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; 
+#&gt; 1 John  Beatles guitar
+#&gt; 2 Paul  Beatles bass
+
+band_members %&gt;% left_join(band_instruments)
+#&gt; Joining, by = &quot;name&quot;
+#&gt; # A tibble: 3 x 3
+#&gt;   name  band    plays 
+#&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; 
+#&gt; 1 Mick  Stones  &lt;NA&gt;  
+#&gt; 2 John  Beatles guitar
+#&gt; 3 Paul  Beatles bass
+
+band_members %&gt;% right_join(band_instruments)
+#&gt; Joining, by = &quot;name&quot;
+#&gt; # A tibble: 3 x 3
+#&gt;   name  band    plays 
+#&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; 
+#&gt; 1 John  Beatles guitar
+#&gt; 2 Paul  Beatles bass  
+#&gt; 3 Keith &lt;NA&gt;    guitar
+
+band_members %&gt;% full_join(band_instruments)
+#&gt; Joining, by = &quot;name&quot;
+#&gt; # A tibble: 4 x 3
+#&gt;   name  band    plays 
+#&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; 
+#&gt; 1 Mick  Stones  &lt;NA&gt;  
+#&gt; 2 John  Beatles guitar
+#&gt; 3 Paul  Beatles bass  
+#&gt; 4 Keith &lt;NA&gt;    guitar</code></pre>
+<p>The value of these mutating join functions are an object of the same type as <code>x</code>. The order of the rows and columns of <code>x</code> is preserved as much as possible. The output has the following properties:</p>
+<ul>
+<li><p>For <code>inner_join()</code>, a subset of <code>x</code> rows. For <code>left_join()</code>, all <code>x</code> rows. For <code>right_join()</code>, a subset of <code>x</code> rows, followed by unmatched <code>y</code> rows. For <code>full_join()</code>, all <code>x</code> rows, followed by unmatched <code>y</code> rows.</p></li>
+<li><p>For all joins, rows will be duplicated if one or more rows in <code>x</code> matches multiple rows in <code>y</code>.</p></li>
+<li><p>Output columns include all <code>x</code> columns and all <code>y</code> columns. If columns in <code>x</code> and <code>y</code> have the same name (and aren’t included in <code>by</code>), <code>suffix</code>es are added to disambiguate.</p></li>
+<li><p>Output columns included in <code>by</code> are coerced to common type across <code>x</code> and <code>y</code>.</p></li>
+<li><p>Groups are taken from <code>x</code>.</p></li>
+</ul>
+<pre class="r"><code>band_members
+#&gt; # A tibble: 3 x 2
+#&gt;   name  band   
+#&gt;   &lt;chr&gt; &lt;chr&gt;  
+#&gt; 1 Mick  Stones 
+#&gt; 2 John  Beatles
+#&gt; 3 Paul  Beatles
+
+band_instruments
+#&gt; # A tibble: 3 x 2
+#&gt;   name  plays 
+#&gt;   &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 John  guitar
+#&gt; 2 Paul  bass  
+#&gt; 3 Keith guitar
+
+band_instruments2
+#&gt; # A tibble: 3 x 2
+#&gt;   artist plays 
+#&gt;   &lt;chr&gt;  &lt;chr&gt; 
+#&gt; 1 John   guitar
+#&gt; 2 Paul   bass  
+#&gt; 3 Keith  guitar
+
+
+band_members %&gt;% inner_join(band_instruments)
+#&gt; Joining, by = &quot;name&quot;
+#&gt; # A tibble: 2 x 3
+#&gt;   name  band    plays 
+#&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; 
+#&gt; 1 John  Beatles guitar
+#&gt; 2 Paul  Beatles bass
+
+band_members %&gt;% inner_join(band_instruments, by = &quot;name&quot;)
+#&gt; # A tibble: 2 x 3
+#&gt;   name  band    plays 
+#&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; 
+#&gt; 1 John  Beatles guitar
+#&gt; 2 Paul  Beatles bass
+
+band_members %&gt;% inner_join(band_instruments2, by = c(&quot;name&quot; = &quot;artist&quot;))
+#&gt; # A tibble: 2 x 3
+#&gt;   name  band    plays 
+#&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt; 
+#&gt; 1 John  Beatles guitar
+#&gt; 2 Paul  Beatles bass
+
+
+band_members %&gt;%
+  inner_join(band_instruments2, by = c(&quot;name&quot; = &quot;artist&quot;), keep = TRUE)
+#&gt; # A tibble: 2 x 4
+#&gt;   name  band    artist plays 
+#&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt; 
+#&gt; 1 John  Beatles John   guitar
+#&gt; 2 Paul  Beatles Paul   bass
+
+band_members %&gt;%
+  inner_join(band_instruments, by = &quot;name&quot;, keep = TRUE)
+#&gt; # A tibble: 2 x 4
+#&gt;   name.x band    name.y plays 
+#&gt;   &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt; 
+#&gt; 1 John   Beatles John   guitar
+#&gt; 2 Paul   Beatles Paul   bass
+
+band_members %&gt;%
+  inner_join(band_instruments, by = &quot;name&quot;, keep = TRUE, suffix = c(&#39;_members&#39;, &#39;_instruments&#39;))
+#&gt; # A tibble: 2 x 4
+#&gt;   name_members band    name_instruments plays 
+#&gt;   &lt;chr&gt;        &lt;chr&gt;   &lt;chr&gt;            &lt;chr&gt; 
+#&gt; 1 John         Beatles John             guitar
+#&gt; 2 Paul         Beatles Paul             bass</code></pre>
+</div>
+<div id="filtering-joins-semi_join-anti_join" class="section level2" number="4.4">
+<h2 number="4.4"><span class="header-section-number">4.4</span> Filtering joins: <code>semi_join()</code> <code>anti_join()</code></h2>
+<p>Filtering joins filter rows from <code>x</code> based on the presence or absence of matches in <code>y</code>:</p>
+<ul>
+<li><p><code>semi_join()</code> return all rows from <code>x</code> with a match in <code>y</code>.</p></li>
+<li><p><code>anti_join()</code> return all rows from <code>x</code> without a match in <code>y</code>.</p></li>
+</ul>
+<pre class="r"><code>band_members
+#&gt; # A tibble: 3 x 2
+#&gt;   name  band   
+#&gt;   &lt;chr&gt; &lt;chr&gt;  
+#&gt; 1 Mick  Stones 
+#&gt; 2 John  Beatles
+#&gt; 3 Paul  Beatles
+
+band_instruments
+#&gt; # A tibble: 3 x 2
+#&gt;   name  plays 
+#&gt;   &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 John  guitar
+#&gt; 2 Paul  bass  
+#&gt; 3 Keith guitar
+
+
+band_members %&gt;% semi_join(band_instruments)
+#&gt; Joining, by = &quot;name&quot;
+#&gt; # A tibble: 2 x 2
+#&gt;   name  band   
+#&gt;   &lt;chr&gt; &lt;chr&gt;  
+#&gt; 1 John  Beatles
+#&gt; 2 Paul  Beatles
+
+band_members %&gt;% anti_join(band_instruments)
+#&gt; Joining, by = &quot;name&quot;
+#&gt; # A tibble: 1 x 2
+#&gt;   name  band  
+#&gt;   &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 Mick  Stones</code></pre>
+<p>Filtering joins perform like <code>filter()</code> rather than mutating joins.</p>
+<pre class="r"><code>band_members %&gt;% filter(name %in% band_instruments$name)
+#&gt; # A tibble: 2 x 2
+#&gt;   name  band   
+#&gt;   &lt;chr&gt; &lt;chr&gt;  
+#&gt; 1 John  Beatles
+#&gt; 2 Paul  Beatles
+
+band_members %&gt;% filter(!(name %in% band_instruments$name))
+#&gt; # A tibble: 1 x 2
+#&gt;   name  band  
+#&gt;   &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 Mick  Stones</code></pre>
+</div>
+<div id="nest-join-nest_join" class="section level2" number="4.5">
+<h2 number="4.5"><span class="header-section-number">4.5</span> Nest join: <code>nest_join()</code></h2>
+<p><code>nest_join()</code> returns all rows and columns in <code>x</code> with a new nested-df column that contains all matches from <code>y</code>. When there is no match, the list column is a 0-row tibble.</p>
+<pre class="r"><code>band_members %&gt;% nest_join(band_instruments)
+#&gt; Joining, by = &quot;name&quot;
+#&gt; # A tibble: 3 x 3
+#&gt;   name  band    band_instruments    
+#&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;list&gt;              
+#&gt; 1 Mick  Stones  &lt;tibble[,1] [0 × 1]&gt;
+#&gt; 2 John  Beatles &lt;tibble[,1] [1 × 1]&gt;
+#&gt; 3 Paul  Beatles &lt;tibble[,1] [1 × 1]&gt;</code></pre>
+<p>In some sense, a <code>nest_join()</code> is the most fundamental join since you can recreate the other joins from it:</p>
+<ul>
+<li><p><code>inner_join()</code> is a <code>nest_join()</code> plus <code>tidyr::unnest()</code>,</p></li>
+<li><p><code>left_join()</code> is a <code>nest_join()</code> plus <code>unnest(.drop = FALSE)</code>,</p></li>
+<li><p><code>semi_join()</code> is a <code>nest_join()</code> plus a <code>filter()</code> where you check that every element of data has at least one row,</p></li>
+<li><p><code>anti_join()</code> is a <code>nest_join()</code> plus a <code>filter()</code> where you check every element has zero rows.</p></li>
+</ul>
+</div>
+</div>
+<div id="tidy-evaluation" class="section level1" number="5">
+<h1 number="5"><span class="header-section-number">5</span> Tidy evaluation</h1>
+<p>Most dplyr verbs use <strong>tidy evaluation</strong> in some way. Tidy evaluation is a special type of non-standard evaluation used throughout the tidyverse. There are two basic forms found in dplyr:</p>
+<ul>
+<li><p><code>arrange()</code>, <code>count()</code>, <code>add_count()</code>, <code>distinct()</code>, <code>filter()</code>, <code>group_by()</code>, <code>mutate()</code>, <code>transmute()</code>, and <code>summarise()</code> use <strong>data masking</strong> so that you can use data variables as if they were variables in the environment (i.e. you write <code>my_variable</code> not <code>df$my_variable</code>).</p></li>
+<li><p><code>across()</code>, <code>if_any()</code>, <code>if_all()</code>, <code>relocate()</code>, <code>rename()</code>, <code>select()</code>, and <code>pull()</code> use <strong>tidy selection</strong> so you can easily choose variables based on their position, name, or type (e.g. <code>starts_with("x")</code> or <code>is.numeric</code>).</p></li>
+</ul>
+<p>To determine whether a function argument uses data masking or tidy selection, look at the documentation: in the arguments list, you’ll see <code>&lt;data-masking&gt;</code> or <code>&lt;tidy-select&gt;</code>.</p>
+<div id="data-masking" class="section level2" number="5.1">
+<h2 number="5.1"><span class="header-section-number">5.1</span> Data masking</h2>
+<p>Data masking makes data manipulation faster because it requires less typing. In most (but not all) base R functions you need to refer to variables with <code>$</code>, leading to code that repeats the name of the data frame many times:</p>
+<pre class="r"><code>starwars[starwars$homeworld == &quot;Naboo&quot; &amp; starwars$species == &quot;Human&quot;, ]</code></pre>
+<p>The dplyr equivalent of this code is more concise because data masking allows you to need to type <code>starwars</code> once:</p>
+<pre class="r"><code>starwars %&gt;% filter(homeworld == &quot;Naboo&quot;, species == &quot;Human&quot;)</code></pre>
+<div id="data--and-env-variables" class="section level3" number="5.1.1">
+<h3 number="5.1.1"><span class="header-section-number">5.1.1</span> Data- and env-variables</h3>
+<p>The key idea behind data masking is that it blurs the line between the two different meanings of the word “variable”:</p>
+<ul>
+<li><p><strong>env-variables</strong> are “programming” variables that live in an environment. They are usually created with <code>&lt;-</code>.</p></li>
+<li><p><strong>data-variables</strong> are “statistical” variables that live in a data frame. They usually come from data files (e.g. <code>.csv</code>, <code>.xls</code>), or are created manipulating existing variables.</p></li>
+</ul>
+<p>To make those definitions a little more concrete, take this piece of code:</p>
+<pre class="r"><code>df &lt;- tibble(x = runif(3), y = runif(3))
+df$x
+#&gt; [1] 0.63847545 0.06882137 0.57590635</code></pre>
+<p>It creates a env-variable, <code>df</code>, that contains two data-variables, <code>x</code> and <code>y</code>. Then it extracts the data-variable <code>x</code> out of the env-variable <code>df</code> using <code>$</code>.</p>
+<p>This blurring of the meaning of “variable” is a really nice feature for interactive data analysis because it allows you to refer to data-vars as is, without any prefix. And this seems to be fairly intuitive since many newer R users will attempt to write <code>starwars[homeworld == "Naboo" &amp; species == "Human", ]</code>.</p>
+</div>
+<div id="call-data--or-env-variables-straightforwardly" class="section level3" number="5.1.2">
+<h3 number="5.1.2"><span class="header-section-number">5.1.2</span> Call data- or env-variables straightforwardly</h3>
+<p>Data masking is convenient in most cases, but it would be dangerous if you want to use both data-variables and env-variables in the same time. They might own the same variable name so it’s confused which variable has been used.</p>
+<p>Let’s begin with this code block</p>
+<pre class="r"><code>df &lt;- tibble(x = 1:3)
+min_x &lt;- 2
+
+df %&gt;% filter(x &gt;= min_x)
+#&gt; # A tibble: 2 x 1
+#&gt;       x
+#&gt;   &lt;int&gt;
+#&gt; 1     2
+#&gt; 2     3</code></pre>
+<p>It works well, but what would happen if there is a data-variable <code>min_x</code> in <code>df</code>?</p>
+<pre class="r"><code>df &lt;- tibble(x = 1:3, min_x = 0)
+min_x &lt;- 2
+
+df %&gt;% filter(x &gt;= min_x)
+#&gt; # A tibble: 3 x 2
+#&gt;       x min_x
+#&gt;   &lt;int&gt; &lt;dbl&gt;
+#&gt; 1     1     0
+#&gt; 2     2     0
+#&gt; 3     3     0</code></pre>
+<p>There are no rows been dropped now. So it would be dangerous if you want to use both data-variables and env-variables in the same time, especially working with user-supplied data.</p>
+<p>In this case, you need use <code>.data</code> and <code>.env</code> to declare witch variable you want to use.</p>
+<pre class="r"><code>df %&gt;% filter(.data$x &gt;= .env$min_x)
+#&gt; # A tibble: 2 x 2
+#&gt;       x min_x
+#&gt;   &lt;int&gt; &lt;dbl&gt;
+#&gt; 1     2     0
+#&gt; 2     3     0</code></pre>
+</div>
+</div>
+<div id="tidy-selection" class="section level2" number="5.2">
+<h2 number="5.2"><span class="header-section-number">5.2</span> Tidy selection</h2>
+<p>Data masking makes it easy to compute on values within a dataset. Tidy selection is a complementary tool that makes it easy to work with the (group of) columns of a dataset. It provides a concise dialect of R for selecting variables based on their <strong>names</strong> or <strong>properties</strong>.</p>
+<div id="overview-of-selection-features" class="section level3" number="5.2.1">
+<h3 number="5.2.1"><span class="header-section-number">5.2.1</span> Overview of selection features</h3>
+<p>Tidyverse selections implement a dialect of R where operators make it easy to select variables:</p>
+<ul>
+<li><p><code>:</code> for selecting a range of consecutive variables.</p></li>
+<li><p><code>!</code> for taking the complement of a set of variables.</p></li>
+<li><p><code>&amp;</code> and <code>|</code> for selecting the intersection or the union of two sets of variables.</p></li>
+<li><p><code>c()</code> for combining selections.</p>
+<pre class="r"><code>iris &lt;- iris %&gt;% as_tibble()
+
+starwars %&gt;% select(name:mass)
+#&gt; # A tibble: 87 x 3
+#&gt;   name           height  mass
+#&gt;   &lt;chr&gt;           &lt;int&gt; &lt;dbl&gt;
+#&gt; 1 Luke Skywalker    172    77
+#&gt; 2 C-3PO             167    75
+#&gt; 3 R2-D2              96    32
+#&gt; 4 Darth Vader       202   136
+#&gt; # … with 83 more rows
+
+starwars %&gt;% select(!(name:mass))
+#&gt; # A tibble: 87 x 11
+#&gt;   hair_color skin_color  eye_color birth_year sex   gender    homeworld species
+#&gt;   &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt;  
+#&gt; 1 blond      fair        blue            19   male  masculine Tatooine  Human  
+#&gt; 2 &lt;NA&gt;       gold        yellow         112   none  masculine Tatooine  Droid  
+#&gt; 3 &lt;NA&gt;       white, blue red             33   none  masculine Naboo     Droid  
+#&gt; 4 none       white       yellow          41.9 male  masculine Tatooine  Human  
+#&gt; # … with 83 more rows, and 3 more variables: films &lt;list&gt;, vehicles &lt;list&gt;,
+#&gt; #   starships &lt;list&gt;
+
+iris %&gt;% select(starts_with(&quot;Petal&quot;) &amp; ends_with(&quot;Width&quot;))
+#&gt; # A tibble: 150 x 1
+#&gt;   Petal.Width
+#&gt;         &lt;dbl&gt;
+#&gt; 1         0.2
+#&gt; 2         0.2
+#&gt; 3         0.2
+#&gt; 4         0.2
+#&gt; # … with 146 more rows
+
+iris %&gt;% select(starts_with(&quot;Petal&quot;) | ends_with(&quot;Width&quot;))
+#&gt; # A tibble: 150 x 3
+#&gt;   Petal.Length Petal.Width Sepal.Width
+#&gt;          &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
+#&gt; 1          1.4         0.2         3.5
+#&gt; 2          1.4         0.2         3  
+#&gt; 3          1.3         0.2         3.2
+#&gt; 4          1.5         0.2         3.1
+#&gt; # … with 146 more rows
+
+iris %&gt;% select(c(starts_with(&quot;Petal&quot;), Species))
+#&gt; # A tibble: 150 x 3
+#&gt;   Petal.Length Petal.Width Species
+#&gt;          &lt;dbl&gt;       &lt;dbl&gt; &lt;fct&gt;  
+#&gt; 1          1.4         0.2 setosa 
+#&gt; 2          1.4         0.2 setosa 
+#&gt; 3          1.3         0.2 setosa 
+#&gt; 4          1.5         0.2 setosa 
+#&gt; # … with 146 more rows</code></pre></li>
+</ul>
+<p>In addition, you can use selection helpers. Some helpers select specific columns:</p>
+<ul>
+<li><p><code>everything()</code>: Matches all variables.</p></li>
+<li><p><code>last_col()</code>: Select last variable, possibly with an offset.</p>
+<pre class="r"><code>iris %&gt;% select(everything())
+#&gt; # A tibble: 150 x 5
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+#&gt;          &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt; &lt;fct&gt;  
+#&gt; 1          5.1         3.5          1.4         0.2 setosa 
+#&gt; 2          4.9         3            1.4         0.2 setosa 
+#&gt; 3          4.7         3.2          1.3         0.2 setosa 
+#&gt; 4          4.6         3.1          1.5         0.2 setosa 
+#&gt; # … with 146 more rows
+
+iris %&gt;% select(last_col())
+#&gt; # A tibble: 150 x 1
+#&gt;   Species
+#&gt;   &lt;fct&gt;  
+#&gt; 1 setosa 
+#&gt; 2 setosa 
+#&gt; 3 setosa 
+#&gt; 4 setosa 
+#&gt; # … with 146 more rows
+
+iris %&gt;% select(last_col(0:2))
+#&gt; # A tibble: 150 x 3
+#&gt;   Species Petal.Width Petal.Length
+#&gt;   &lt;fct&gt;         &lt;dbl&gt;        &lt;dbl&gt;
+#&gt; 1 setosa          0.2          1.4
+#&gt; 2 setosa          0.2          1.4
+#&gt; 3 setosa          0.2          1.3
+#&gt; 4 setosa          0.2          1.5
+#&gt; # … with 146 more rows</code></pre></li>
+</ul>
+<p>These helpers select variables by matching patterns in their names:</p>
+<ul>
+<li><p><code>starts_with()</code>: Starts with a prefix.</p></li>
+<li><p><code>ends_with()</code>: Ends with a suffix.</p></li>
+<li><p><code>contains()</code>: Contains a literal string.</p></li>
+<li><p><code>matches()</code>: Matches a regular expression.</p></li>
+<li><p><code>num_range()</code>: Matches a numerical range like x01, x02, x03.</p>
+<pre class="r"><code>iris %&gt;% select(starts_with(&quot;Sepal&quot;))
+#&gt; # A tibble: 150 x 2
+#&gt;   Sepal.Length Sepal.Width
+#&gt;          &lt;dbl&gt;       &lt;dbl&gt;
+#&gt; 1          5.1         3.5
+#&gt; 2          4.9         3  
+#&gt; 3          4.7         3.2
+#&gt; 4          4.6         3.1
+#&gt; # … with 146 more rows
+
+iris %&gt;% select(ends_with(&quot;Width&quot;))
+#&gt; # A tibble: 150 x 2
+#&gt;   Sepal.Width Petal.Width
+#&gt;         &lt;dbl&gt;       &lt;dbl&gt;
+#&gt; 1         3.5         0.2
+#&gt; 2         3           0.2
+#&gt; 3         3.2         0.2
+#&gt; 4         3.1         0.2
+#&gt; # … with 146 more rows
+
+iris %&gt;% select(starts_with(c(&quot;Petal&quot;, &quot;Sepal&quot;)))
+#&gt; # A tibble: 150 x 4
+#&gt;   Petal.Length Petal.Width Sepal.Length Sepal.Width
+#&gt;          &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt;
+#&gt; 1          1.4         0.2          5.1         3.5
+#&gt; 2          1.4         0.2          4.9         3  
+#&gt; 3          1.3         0.2          4.7         3.2
+#&gt; 4          1.5         0.2          4.6         3.1
+#&gt; # … with 146 more rows
+
+iris %&gt;% select(ends_with(c(&quot;Width&quot;, &quot;Length&quot;)))
+#&gt; # A tibble: 150 x 4
+#&gt;   Sepal.Width Petal.Width Sepal.Length Petal.Length
+#&gt;         &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;        &lt;dbl&gt;
+#&gt; 1         3.5         0.2          5.1          1.4
+#&gt; 2         3           0.2          4.9          1.4
+#&gt; 3         3.2         0.2          4.7          1.3
+#&gt; 4         3.1         0.2          4.6          1.5
+#&gt; # … with 146 more rows
+
+iris %&gt;% select(contains(&quot;al&quot;))
+#&gt; # A tibble: 150 x 4
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width
+#&gt;          &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt;
+#&gt; 1          5.1         3.5          1.4         0.2
+#&gt; 2          4.9         3            1.4         0.2
+#&gt; 3          4.7         3.2          1.3         0.2
+#&gt; 4          4.6         3.1          1.5         0.2
+#&gt; # … with 146 more rows
+
+iris %&gt;% select(matches(&quot;[pt]al&quot;))
+#&gt; # A tibble: 150 x 4
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width
+#&gt;          &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt;
+#&gt; 1          5.1         3.5          1.4         0.2
+#&gt; 2          4.9         3            1.4         0.2
+#&gt; 3          4.7         3.2          1.3         0.2
+#&gt; 4          4.6         3.1          1.5         0.2
+#&gt; # … with 146 more rows
+
+billboard %&gt;% select(starts_with(&quot;wk&quot;))
+#&gt; # A tibble: 317 x 76
+#&gt;     wk1   wk2   wk3   wk4   wk5   wk6   wk7   wk8   wk9  wk10  wk11  wk12  wk13
+#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1    87    82    72    77    87    94    99    NA    NA    NA    NA    NA    NA
+#&gt; 2    91    87    92    NA    NA    NA    NA    NA    NA    NA    NA    NA    NA
+#&gt; 3    81    70    68    67    66    57    54    53    51    51    51    51    47
+#&gt; 4    76    76    72    69    67    65    55    59    62    61    61    59    61
+#&gt; # … with 313 more rows, and 63 more variables: wk14 &lt;dbl&gt;, wk15 &lt;dbl&gt;,
+#&gt; #   wk16 &lt;dbl&gt;, wk17 &lt;dbl&gt;, wk18 &lt;dbl&gt;, wk19 &lt;dbl&gt;, wk20 &lt;dbl&gt;, wk21 &lt;dbl&gt;,
+#&gt; #   wk22 &lt;dbl&gt;, wk23 &lt;dbl&gt;, wk24 &lt;dbl&gt;, wk25 &lt;dbl&gt;, wk26 &lt;dbl&gt;, wk27 &lt;dbl&gt;,
+#&gt; #   wk28 &lt;dbl&gt;, wk29 &lt;dbl&gt;, wk30 &lt;dbl&gt;, wk31 &lt;dbl&gt;, wk32 &lt;dbl&gt;, wk33 &lt;dbl&gt;,
+#&gt; #   wk34 &lt;dbl&gt;, wk35 &lt;dbl&gt;, wk36 &lt;dbl&gt;, wk37 &lt;dbl&gt;, wk38 &lt;dbl&gt;, wk39 &lt;dbl&gt;,
+#&gt; #   wk40 &lt;dbl&gt;, wk41 &lt;dbl&gt;, wk42 &lt;dbl&gt;, wk43 &lt;dbl&gt;, wk44 &lt;dbl&gt;, wk45 &lt;dbl&gt;,
+#&gt; #   wk46 &lt;dbl&gt;, wk47 &lt;dbl&gt;, wk48 &lt;dbl&gt;, wk49 &lt;dbl&gt;, wk50 &lt;dbl&gt;, wk51 &lt;dbl&gt;,
+#&gt; #   wk52 &lt;dbl&gt;, wk53 &lt;dbl&gt;, wk54 &lt;dbl&gt;, wk55 &lt;dbl&gt;, wk56 &lt;dbl&gt;, wk57 &lt;dbl&gt;,
+#&gt; #   wk58 &lt;dbl&gt;, wk59 &lt;dbl&gt;, wk60 &lt;dbl&gt;, wk61 &lt;dbl&gt;, wk62 &lt;dbl&gt;, wk63 &lt;dbl&gt;,
+#&gt; #   wk64 &lt;dbl&gt;, wk65 &lt;dbl&gt;, wk66 &lt;lgl&gt;, wk67 &lt;lgl&gt;, wk68 &lt;lgl&gt;, wk69 &lt;lgl&gt;,
+#&gt; #   wk70 &lt;lgl&gt;, wk71 &lt;lgl&gt;, wk72 &lt;lgl&gt;, wk73 &lt;lgl&gt;, wk74 &lt;lgl&gt;, wk75 &lt;lgl&gt;,
+#&gt; #   wk76 &lt;lgl&gt;
+
+billboard %&gt;% select(num_range(&quot;wk&quot;, 10:15))
+#&gt; # A tibble: 317 x 6
+#&gt;    wk10  wk11  wk12  wk13  wk14  wk15
+#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1    NA    NA    NA    NA    NA    NA
+#&gt; 2    NA    NA    NA    NA    NA    NA
+#&gt; 3    51    51    51    47    44    38
+#&gt; 4    61    61    59    61    66    72
+#&gt; # … with 313 more rows</code></pre></li>
+</ul>
+<p>These helpers select variables from a character vector:</p>
+<ul>
+<li><p><code>all_of()</code>: Matches variable names in a character vector. All names must be present, otherwise an out-of-bounds error is thrown.</p></li>
+<li><p><code>any_of()</code>: Same as <code>all_of()</code>, except that no error is thrown for names that don’t exist.</p>
+<pre class="r"><code>vars &lt;- c(&quot;Sepal.Length&quot;, &quot;Sepal.Width&quot;)
+
+iris %&gt;% select(all_of(vars))
+#&gt; # A tibble: 150 x 2
+#&gt;   Sepal.Length Sepal.Width
+#&gt;          &lt;dbl&gt;       &lt;dbl&gt;
+#&gt; 1          5.1         3.5
+#&gt; 2          4.9         3  
+#&gt; 3          4.7         3.2
+#&gt; 4          4.6         3.1
+#&gt; # … with 146 more rows
+
+starwars %&gt;% select(all_of(vars))
+#&gt; Error: Can&#39;t subset columns that don&#39;t exist.
+#&gt; x Columns `Sepal.Length` and `Sepal.Width` don&#39;t exist.
+
+starwars %&gt;% select(any_of(vars))
+#&gt; # A tibble: 87 x 0</code></pre></li>
+</ul>
+<p>This helper selects variables with a function:</p>
+<ul>
+<li><p><code>where()</code>: Applies a function to all variables and selects those for which the function returns <code>TRUE</code>.</p>
+<pre class="r"><code>iris %&gt;% select(where(is.factor))
+#&gt; # A tibble: 150 x 1
+#&gt;   Species
+#&gt;   &lt;fct&gt;  
+#&gt; 1 setosa 
+#&gt; 2 setosa 
+#&gt; 3 setosa 
+#&gt; 4 setosa 
+#&gt; # … with 146 more rows
+
+iris %&gt;% select(where(is.numeric))
+#&gt; # A tibble: 150 x 4
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width
+#&gt;          &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt;
+#&gt; 1          5.1         3.5          1.4         0.2
+#&gt; 2          4.9         3            1.4         0.2
+#&gt; 3          4.7         3.2          1.3         0.2
+#&gt; 4          4.6         3.1          1.5         0.2
+#&gt; # … with 146 more rows
+
+iris %&gt;% select(where(~ is.numeric(.x)))
+#&gt; # A tibble: 150 x 4
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width
+#&gt;          &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt;
+#&gt; 1          5.1         3.5          1.4         0.2
+#&gt; 2          4.9         3            1.4         0.2
+#&gt; 3          4.7         3.2          1.3         0.2
+#&gt; 4          4.6         3.1          1.5         0.2
+#&gt; # … with 146 more rows
+
+iris %&gt;% select(where(~ is.numeric(.x) &amp;&amp; mean(.x) &gt; 3.5))
+#&gt; # A tibble: 150 x 2
+#&gt;   Sepal.Length Petal.Length
+#&gt;          &lt;dbl&gt;        &lt;dbl&gt;
+#&gt; 1          5.1          1.4
+#&gt; 2          4.9          1.4
+#&gt; 3          4.7          1.3
+#&gt; 4          4.6          1.5
+#&gt; # … with 146 more rows</code></pre></li>
+</ul>
+</div>
+</div>
+<div id="column-wise-operations" class="section level2" number="5.3">
+<h2 number="5.3"><span class="header-section-number">5.3</span> Column-wise operations</h2>
+<p>You can also use ‘tidy-select’ semantics in ‘data-masking’ functions, with the help of <code>across()</code> <code>if_any()</code> <code>if_all()</code>. They make it easy to apply the same transformation to multiple columns.</p>
+<div id="basic-usage" class="section level3" number="5.3.1">
+<h3 number="5.3.1"><span class="header-section-number">5.3.1</span> Basic usage</h3>
+<p><code>across()</code> has two primary arguments:</p>
+<ul>
+<li><p>The first argument, <code>.cols</code>, selects the columns you want to operate on. It uses tidy selection (like <code>select()</code>) so you can pick variables by position, name, and type.</p></li>
+<li><p>The second argument, <code>.fns</code>, is a function or list of functions to apply to each column. This can also be a purrr style formula (or list of formulas) like <code>~ .x / 2</code>. (This argument is optional, and you can omit it if you just want to get the underlying data.)</p></li>
+</ul>
+</div>
+<div id="omit-.fns" class="section level3" number="5.3.2">
+<h3 number="5.3.2"><span class="header-section-number">5.3.2</span> Omit <code>.fns</code></h3>
+<p>You can use ‘tidy-select’ semantics to select columns and then do future work based on the verb itself by omitting <code>.fns</code>.</p>
+<pre class="r"><code>starwars %&gt;% distinct(across(contains(&quot;color&quot;)))
+#&gt; # A tibble: 67 x 3
+#&gt;   hair_color skin_color  eye_color
+#&gt;   &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;    
+#&gt; 1 blond      fair        blue     
+#&gt; 2 &lt;NA&gt;       gold        yellow   
+#&gt; 3 &lt;NA&gt;       white, blue red      
+#&gt; 4 none       white       yellow   
+#&gt; # … with 63 more rows
+
+starwars %&gt;% count(across(contains(&quot;color&quot;)), sort = TRUE)
+#&gt; # A tibble: 67 x 4
+#&gt;   hair_color skin_color eye_color     n
+#&gt;   &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;     &lt;int&gt;
+#&gt; 1 brown      light      brown         6
+#&gt; 2 brown      fair       blue          4
+#&gt; 3 none       grey       black         4
+#&gt; 4 black      dark       brown         3
+#&gt; # … with 63 more rows
+
+iris %&gt;% 
+  as_tibble() %&gt;% 
+  mutate(sum_length = rowSums(across(ends_with(&#39;Length&#39;))))
+#&gt; # A tibble: 150 x 6
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species sum_length
+#&gt;          &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt; &lt;fct&gt;        &lt;dbl&gt;
+#&gt; 1          5.1         3.5          1.4         0.2 setosa         6.5
+#&gt; 2          4.9         3            1.4         0.2 setosa         6.3
+#&gt; 3          4.7         3.2          1.3         0.2 setosa         6  
+#&gt; 4          4.6         3.1          1.5         0.2 setosa         6.1
+#&gt; # … with 146 more rows</code></pre>
+</div>
+<div id="usage-of-.fns" class="section level3" number="5.3.3">
+<h3 number="5.3.3"><span class="header-section-number">5.3.3</span> Usage of <code>.fns</code></h3>
+<p>You can use <code>.fns</code> to generate new column (usually used in combination with <code>summarise()</code> and <code>mutate()</code>).</p>
+<pre class="r"><code>starwars %&gt;% 
+  summarise(across(where(is.character), ~ length(unique(.x))))
+#&gt; # A tibble: 1 x 8
+#&gt;    name hair_color skin_color eye_color   sex gender homeworld species
+#&gt;   &lt;int&gt;      &lt;int&gt;      &lt;int&gt;     &lt;int&gt; &lt;int&gt;  &lt;int&gt;     &lt;int&gt;   &lt;int&gt;
+#&gt; 1    87         13         31        15     5      3        49      38
+
+starwars %&gt;% 
+  summarise(across(where(is.character), ~ length(unique(.x)), .names = &#39;count_{.col}&#39;))
+#&gt; # A tibble: 1 x 8
+#&gt;   count_name count_hair_color count_skin_color count_eye_color count_sex
+#&gt;        &lt;int&gt;            &lt;int&gt;            &lt;int&gt;           &lt;int&gt;     &lt;int&gt;
+#&gt; 1         87               13               31              15         5
+#&gt; # … with 3 more variables: count_gender &lt;int&gt;, count_homeworld &lt;int&gt;,
+#&gt; #   count_species &lt;int&gt;
+
+starwars %&gt;% 
+  mutate(across(!where(is.list), as.character))
+#&gt; # A tibble: 87 x 14
+#&gt;   name     height mass  hair_color skin_color  eye_color birth_year sex   gender
+#&gt;   &lt;chr&gt;    &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;     &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 Luke Sk… 172    77    blond      fair        blue      19         male  mascu…
+#&gt; 2 C-3PO    167    75    &lt;NA&gt;       gold        yellow    112        none  mascu…
+#&gt; 3 R2-D2    96     32    &lt;NA&gt;       white, blue red       33         none  mascu…
+#&gt; 4 Darth V… 202    136   none       white       yellow    41.9       male  mascu…
+#&gt; # … with 83 more rows, and 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;,
+#&gt; #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;
+
+starwars %&gt;% 
+  mutate(across(!where(is.list), as.character)) %&gt;%
+  summarise(across(where(is.character), ~ max(0, str_length(.x), na.rm = T)))
+#&gt; # A tibble: 1 x 11
+#&gt;    name height  mass hair_color skin_color eye_color birth_year   sex gender
+#&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+#&gt; 1    21      3     4         13         19        13          4    14      9
+#&gt; # … with 2 more variables: homeworld &lt;dbl&gt;, species &lt;dbl&gt;</code></pre>
+</div>
+<div id="multiple-functions" class="section level3" number="5.3.4">
+<h3 number="5.3.4"><span class="header-section-number">5.3.4</span> Multiple functions</h3>
+<p>You can transform each variable with more than one function by supplying a named list of functions or lambda functions in the second argument:</p>
+<pre class="r"><code>min_max &lt;- list(
+  min = ~min(.x, na.rm = TRUE), 
+  max = ~max(.x, na.rm = TRUE)
+)
+starwars %&gt;% summarise(across(where(is.numeric), min_max))
+#&gt; # A tibble: 1 x 6
+#&gt;   height_min height_max mass_min mass_max birth_year_min birth_year_max
+#&gt;        &lt;int&gt;      &lt;int&gt;    &lt;dbl&gt;    &lt;dbl&gt;          &lt;dbl&gt;          &lt;dbl&gt;
+#&gt; 1         66        264       15     1358              8            896</code></pre>
+<p>Control how the names are created with the <code>.names</code> argument which takes a <a href="https://glue.tidyverse.org/" target="_blank">glue</a> spec:</p>
+<pre class="r"><code>starwars %&gt;% summarise(across(where(is.numeric), min_max, .names = &quot;{.fn}.{.col}&quot;))
+#&gt; # A tibble: 1 x 6
+#&gt;   min.height max.height min.mass max.mass min.birth_year max.birth_year
+#&gt;        &lt;int&gt;      &lt;int&gt;    &lt;dbl&gt;    &lt;dbl&gt;          &lt;dbl&gt;          &lt;dbl&gt;
+#&gt; 1         66        264       15     1358              8            896</code></pre>
+<p>We can work around this by combining both calls to <code>across()</code> into a single expression that returns a tibble:</p>
+<pre class="r"><code>starwars %&gt;% summarise(
+  tibble(
+    across(where(is.numeric), ~min(.x, na.rm = TRUE), .names = &quot;min_{.col}&quot;),
+    across(where(is.numeric), ~max(.x, na.rm = TRUE), .names = &quot;max_{.col}&quot;)  
+  )
+)
+#&gt; # A tibble: 1 x 6
+#&gt;   min_height min_mass min_birth_year max_height max_mass max_birth_year
+#&gt;        &lt;int&gt;    &lt;dbl&gt;          &lt;dbl&gt;      &lt;int&gt;    &lt;dbl&gt;          &lt;dbl&gt;
+#&gt; 1         66       15              8        264     1358            896</code></pre>
+</div>
+<div id="current-column" class="section level3" number="5.3.5">
+<h3 number="5.3.5"><span class="header-section-number">5.3.5</span> Current column</h3>
+<p>If you need to, you can access the <strong>name</strong> of the “current” column inside by calling <code>cur_column()</code>:</p>
+<pre class="r"><code>df &lt;- tibble(x = 1:3, y = 3:5, z = 5:7)
+mult &lt;- list(x = 1, y = 10, z = 100)
+
+df %&gt;% mutate(across(everything(), ~ .x * mult[[cur_column()]]))
+#&gt; # A tibble: 3 x 3
+#&gt;       x     y     z
+#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1     1    30   500
+#&gt; 2     2    40   600
+#&gt; 3     3    50   700
+
+df %&gt;% mutate(across(everything(), ~ str_c(cur_column(), .x, sep = &#39;: &#39;)))
+#&gt; # A tibble: 3 x 3
+#&gt;   x     y     z    
+#&gt;   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;
+#&gt; 1 x: 1  y: 3  z: 5 
+#&gt; 2 x: 2  y: 4  z: 6 
+#&gt; 3 x: 3  y: 5  z: 7</code></pre>
+</div>
+<div id="filter" class="section level3" number="5.3.6">
+<h3 number="5.3.6"><span class="header-section-number">5.3.6</span> filter()</h3>
+<p>We cannot directly use <code>across()</code> in <code>filter()</code> because we need an extra step to combine the results. To that end, <code>filter()</code> has two special purpose companion functions (newly in dplyr v1.0.4):</p>
+<ul>
+<li><p><code>if_any()</code> keeps the rows where the predicate is true for <em>at least one</em> selected column:</p>
+<pre class="r"><code>starwars %&gt;% 
+  filter(if_any(everything(), ~ !is.na(.x)))
+#&gt; # A tibble: 87 x 14
+#&gt;   name     height  mass hair_color skin_color  eye_color birth_year sex   gender
+#&gt;   &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 Luke Sk…    172    77 blond      fair        blue            19   male  mascu…
+#&gt; 2 C-3PO       167    75 &lt;NA&gt;       gold        yellow         112   none  mascu…
+#&gt; 3 R2-D2        96    32 &lt;NA&gt;       white, blue red             33   none  mascu…
+#&gt; 4 Darth V…    202   136 none       white       yellow          41.9 male  mascu…
+#&gt; # … with 83 more rows, and 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;,
+#&gt; #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;</code></pre></li>
+<li><p><code>if_all()</code> keeps the rows where the predicate is true for <em>all</em> selected columns:</p>
+<pre class="r"><code>starwars %&gt;% 
+  filter(if_all(everything(), ~ !is.na(.x)))
+#&gt; # A tibble: 29 x 14
+#&gt;   name     height  mass hair_color  skin_color eye_color birth_year sex   gender
+#&gt;   &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 Luke Sk…    172    77 blond       fair       blue            19   male  mascu…
+#&gt; 2 Darth V…    202   136 none        white      yellow          41.9 male  mascu…
+#&gt; 3 Leia Or…    150    49 brown       light      brown           19   fema… femin…
+#&gt; 4 Owen La…    178   120 brown, grey light      blue            52   male  mascu…
+#&gt; # … with 25 more rows, and 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;,
+#&gt; #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;</code></pre></li>
+</ul>
+<p>You can use <code>across()</code> to do the same things with some extra steps:</p>
+<pre class="r"><code>iris %&gt;% 
+  as_tibble() %&gt;% 
+  filter(if_any(ends_with(&quot;Width&quot;), ~ . &gt; 4))
+#&gt; # A tibble: 3 x 5
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+#&gt;          &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt; &lt;fct&gt;  
+#&gt; 1          5.7         4.4          1.5         0.4 setosa 
+#&gt; 2          5.2         4.1          1.5         0.1 setosa 
+#&gt; 3          5.5         4.2          1.4         0.2 setosa
+
+iris %&gt;% 
+  as_tibble() %&gt;% 
+  filter(rowSums(across(ends_with(&quot;Width&quot;), ~ . &gt; 4)) &gt; 0)
+#&gt; # A tibble: 3 x 5
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+#&gt;          &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt; &lt;fct&gt;  
+#&gt; 1          5.7         4.4          1.5         0.4 setosa 
+#&gt; 2          5.2         4.1          1.5         0.1 setosa 
+#&gt; 3          5.5         4.2          1.4         0.2 setosa
+
+iris %&gt;% 
+  as_tibble() %&gt;% 
+  filter(if_all(ends_with(&quot;Width&quot;), ~ . &gt; 2))
+#&gt; # A tibble: 23 x 5
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species  
+#&gt;          &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt; &lt;fct&gt;    
+#&gt; 1          6.3         3.3          6           2.5 virginica
+#&gt; 2          7.1         3            5.9         2.1 virginica
+#&gt; 3          6.5         3            5.8         2.2 virginica
+#&gt; 4          7.6         3            6.6         2.1 virginica
+#&gt; # … with 19 more rows
+
+iris %&gt;% 
+  as_tibble() %&gt;% 
+  filter(rowSums(!across(ends_with(&quot;Width&quot;), ~ . &gt; 2)) == 0)
+#&gt; # A tibble: 23 x 5
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species  
+#&gt;          &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt; &lt;fct&gt;    
+#&gt; 1          6.3         3.3          6           2.5 virginica
+#&gt; 2          7.1         3            5.9         2.1 virginica
+#&gt; 3          6.5         3            5.8         2.2 virginica
+#&gt; 4          7.6         3            6.6         2.1 virginica
+#&gt; # … with 19 more rows</code></pre>
+</div>
+</div>
+<div id="programming-with-dplyr" class="section level2" number="5.4">
+<h2 number="5.4"><span class="header-section-number">5.4</span> Programming with dplyr</h2>
+<p>Data masking and tidy selection make interactive data exploration fast and fluid, but they add some new challenges when you attempt to use them indirectly such as in a for loop or a function. If you want to write some functions with the technique of <code>&lt;data-masking&gt;</code> and <code>&lt;tidy-select&gt;</code>, you can get help in <a href="https://dplyr.tidyverse.org/reference/dplyr_data_masking.html#indirection" target="_blank"><code>?dplyr_data_masking</code></a> <a href="https://dplyr.tidyverse.org/reference/dplyr_tidy_select.html#indirection" target="_blank"><code>?dplyr_tidy_select</code></a> and <a href="https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html" target="_blank"><code>vignette("programming", package = "dplyr")</code></a>.</p>
+</div>
+</div>
+<div id="grouped-data" class="section level1" number="6">
+<h1 number="6"><span class="header-section-number">6</span> Grouped data</h1>
+<p>Most data operations are done on groups defined by variables. <code>group_by()</code> takes an existing tbl and converts it into a grouped tbl where operations are performed “by group”. <code>ungroup()</code> removes grouping.</p>
+<pre class="r"><code>by_species &lt;- starwars %&gt;% group_by(species)
+by_sex_gender &lt;- starwars %&gt;% group_by(sex, gender)</code></pre>
+<p>You can see the grouping when you print the data:</p>
+<pre class="r"><code>by_species
+#&gt; # A tibble: 87 x 14
+#&gt; # Groups:   species [38]
+#&gt;   name     height  mass hair_color skin_color  eye_color birth_year sex   gender
+#&gt;   &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 Luke Sk…    172    77 blond      fair        blue            19   male  mascu…
+#&gt; 2 C-3PO       167    75 &lt;NA&gt;       gold        yellow         112   none  mascu…
+#&gt; 3 R2-D2        96    32 &lt;NA&gt;       white, blue red             33   none  mascu…
+#&gt; 4 Darth V…    202   136 none       white       yellow          41.9 male  mascu…
+#&gt; # … with 83 more rows, and 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;,
+#&gt; #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;
+
+by_sex_gender
+#&gt; # A tibble: 87 x 14
+#&gt; # Groups:   sex, gender [6]
+#&gt;   name     height  mass hair_color skin_color  eye_color birth_year sex   gender
+#&gt;   &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 Luke Sk…    172    77 blond      fair        blue            19   male  mascu…
+#&gt; 2 C-3PO       167    75 &lt;NA&gt;       gold        yellow         112   none  mascu…
+#&gt; 3 R2-D2        96    32 &lt;NA&gt;       white, blue red             33   none  mascu…
+#&gt; 4 Darth V…    202   136 none       white       yellow          41.9 male  mascu…
+#&gt; # … with 83 more rows, and 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;,
+#&gt; #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;</code></pre>
+<p>If you apply <code>group_by()</code> to an already grouped dataset, will overwrite the existing grouping variables. For example, the following code groups by <code>homeworld</code> instead of <code>species</code>:</p>
+<pre class="r"><code>by_species %&gt;% group_by(homeworld)
+#&gt; # A tibble: 87 x 14
+#&gt; # Groups:   homeworld [49]
+#&gt;   name     height  mass hair_color skin_color  eye_color birth_year sex   gender
+#&gt;   &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 Luke Sk…    172    77 blond      fair        blue            19   male  mascu…
+#&gt; 2 C-3PO       167    75 &lt;NA&gt;       gold        yellow         112   none  mascu…
+#&gt; 3 R2-D2        96    32 &lt;NA&gt;       white, blue red             33   none  mascu…
+#&gt; 4 Darth V…    202   136 none       white       yellow          41.9 male  mascu…
+#&gt; # … with 83 more rows, and 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;,
+#&gt; #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;</code></pre>
+<p>To <strong>augment</strong> the grouping, using <code>.add = TRUE</code>. For example, the following code groups by <code>species</code> and <code>homeworld</code>:</p>
+<pre class="r"><code>by_species %&gt;% group_by(homeworld, .add = TRUE)
+#&gt; # A tibble: 87 x 14
+#&gt; # Groups:   species, homeworld [58]
+#&gt;   name     height  mass hair_color skin_color  eye_color birth_year sex   gender
+#&gt;   &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 Luke Sk…    172    77 blond      fair        blue            19   male  mascu…
+#&gt; 2 C-3PO       167    75 &lt;NA&gt;       gold        yellow         112   none  mascu…
+#&gt; 3 R2-D2        96    32 &lt;NA&gt;       white, blue red             33   none  mascu…
+#&gt; 4 Darth V…    202   136 none       white       yellow          41.9 male  mascu…
+#&gt; # … with 83 more rows, and 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;,
+#&gt; #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;</code></pre>
+<p>To remove all grouping variables, use <code>ungroup()</code>:</p>
+<pre class="r"><code>by_species %&gt;% ungroup()
+#&gt; # A tibble: 87 x 14
+#&gt;   name     height  mass hair_color skin_color  eye_color birth_year sex   gender
+#&gt;   &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 Luke Sk…    172    77 blond      fair        blue            19   male  mascu…
+#&gt; 2 C-3PO       167    75 &lt;NA&gt;       gold        yellow         112   none  mascu…
+#&gt; 3 R2-D2        96    32 &lt;NA&gt;       white, blue red             33   none  mascu…
+#&gt; 4 Darth V…    202   136 none       white       yellow          41.9 male  mascu…
+#&gt; # … with 83 more rows, and 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;,
+#&gt; #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;</code></pre>
+<p>You can also choose to selectively ungroup by listing the variables you want to remove:</p>
+<pre class="r"><code>by_sex_gender %&gt;% ungroup(sex)
+#&gt; # A tibble: 87 x 14
+#&gt; # Groups:   gender [3]
+#&gt;   name     height  mass hair_color skin_color  eye_color birth_year sex   gender
+#&gt;   &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; 
+#&gt; 1 Luke Sk…    172    77 blond      fair        blue            19   male  mascu…
+#&gt; 2 C-3PO       167    75 &lt;NA&gt;       gold        yellow         112   none  mascu…
+#&gt; 3 R2-D2        96    32 &lt;NA&gt;       white, blue red             33   none  mascu…
+#&gt; 4 Darth V…    202   136 none       white       yellow          41.9 male  mascu…
+#&gt; # … with 83 more rows, and 5 more variables: homeworld &lt;chr&gt;, species &lt;chr&gt;,
+#&gt; #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;</code></pre>
+<div id="how-grouping-affects-the-main-dplyr-verbs" class="section level2" number="6.1">
+<h2 number="6.1"><span class="header-section-number">6.1</span> How grouping affects the main dplyr verbs</h2>
+<div id="summarise" class="section level3" number="6.1.1">
+<h3 number="6.1.1"><span class="header-section-number">6.1.1</span> <code>summarise()</code></h3>
+<p><code>summarise()</code> computes a summary for each group. It starts from grouping variables, adding summary variables to the right hand side:</p>
+<pre class="r"><code>by_species %&gt;%
+  summarise(
+    n = n(),
+    height = mean(height, na.rm = TRUE)
+  )
+#&gt; # A tibble: 38 x 3
+#&gt;   species      n height
+#&gt;   &lt;chr&gt;    &lt;int&gt;  &lt;dbl&gt;
+#&gt; 1 Aleena       1     79
+#&gt; 2 Besalisk     1    198
+#&gt; 3 Cerean       1    198
+#&gt; 4 Chagrian     1    196
+#&gt; # … with 34 more rows</code></pre>
+</div>
+<div id="tally-and-add_tally" class="section level3" number="6.1.2">
+<h3 number="6.1.2"><span class="header-section-number">6.1.2</span> <code>tally()</code> and <code>add_tally()</code></h3>
+<p><code>tally()</code> and <code>add_tally()</code> count number of rows by groups.</p>
+<pre class="r"><code>by_species %&gt;% tally()
+#&gt; # A tibble: 38 x 2
+#&gt;   species      n
+#&gt;   &lt;chr&gt;    &lt;int&gt;
+#&gt; 1 Aleena       1
+#&gt; 2 Besalisk     1
+#&gt; 3 Cerean       1
+#&gt; 4 Chagrian     1
+#&gt; # … with 34 more rows
+
+by_sex_gender %&gt;% tally()
+#&gt; # A tibble: 6 x 3
+#&gt; # Groups:   sex [5]
+#&gt;   sex            gender        n
+#&gt;   &lt;chr&gt;          &lt;chr&gt;     &lt;int&gt;
+#&gt; 1 female         feminine     16
+#&gt; 2 hermaphroditic masculine     1
+#&gt; 3 male           masculine    60
+#&gt; 4 none           feminine      1
+#&gt; # … with 2 more rows</code></pre>
+</div>
+<div id="select-rename-and-relocate" class="section level3" number="6.1.3">
+<h3 number="6.1.3"><span class="header-section-number">6.1.3</span> <code>select()</code>, <code>rename()</code>, and <code>relocate()</code></h3>
+<p><code>rename()</code> and <code>relocate()</code> behave identically with grouped and ungrouped data because they only affect the name or position of existing columns. Grouped <code>select()</code> is almost identical to ungrouped select, except that it always includes the grouping variables:</p>
+<pre class="r"><code>by_species %&gt;% select(mass)
+#&gt; Adding missing grouping variables: `species`
+#&gt; # A tibble: 87 x 2
+#&gt; # Groups:   species [38]
+#&gt;   species  mass
+#&gt;   &lt;chr&gt;   &lt;dbl&gt;
+#&gt; 1 Human      77
+#&gt; 2 Droid      75
+#&gt; 3 Droid      32
+#&gt; 4 Human     136
+#&gt; # … with 83 more rows</code></pre>
+</div>
+<div id="arrange" class="section level3" number="6.1.4">
+<h3 number="6.1.4"><span class="header-section-number">6.1.4</span> <code>arrange()</code></h3>
+<p>Grouped <code>arrange()</code> is the same as ungrouped <code>arrange()</code></p>
+</div>
+<div id="distinct" class="section level3" number="6.1.5">
+<h3 number="6.1.5"><span class="header-section-number">6.1.5</span> <code>distinct()</code></h3>
+<p>The same behavior applies for grouped data frames, except that the grouping variables are always included:</p>
+<pre class="r"><code>by_species %&gt;% distinct(mass)
+#&gt; # A tibble: 62 x 2
+#&gt; # Groups:   species [38]
+#&gt;    mass species
+#&gt;   &lt;dbl&gt; &lt;chr&gt;  
+#&gt; 1    77 Human  
+#&gt; 2    75 Droid  
+#&gt; 3    32 Droid  
+#&gt; 4   136 Human  
+#&gt; # … with 58 more rows</code></pre>
+</div>
+<div id="mutate-and-transmute" class="section level3" number="6.1.6">
+<h3 number="6.1.6"><span class="header-section-number">6.1.6</span> <code>mutate()</code> and <code>transmute()</code></h3>
+<p>In simple cases with vectorised functions, grouped and ungrouped <code>mutate()</code> give the same results. They differ when used with summary (or window) functions:</p>
+<pre class="r"><code>by_species %&gt;% 
+  select(mass) %&gt;% 
+  mutate(mean_mass = mean(mass, na.rm = TRUE))
+#&gt; Adding missing grouping variables: `species`
+#&gt; # A tibble: 87 x 3
+#&gt; # Groups:   species [38]
+#&gt;   species  mass mean_mass
+#&gt;   &lt;chr&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+#&gt; 1 Human      77      82.8
+#&gt; 2 Droid      75      69.8
+#&gt; 3 Droid      32      69.8
+#&gt; 4 Human     136      82.8
+#&gt; # … with 83 more rows
+
+by_species %&gt;% 
+  select(mass) %&gt;% 
+  mutate(lag_mass = lag(mass))
+#&gt; Adding missing grouping variables: `species`
+#&gt; # A tibble: 87 x 3
+#&gt; # Groups:   species [38]
+#&gt;   species  mass lag_mass
+#&gt;   &lt;chr&gt;   &lt;dbl&gt;    &lt;dbl&gt;
+#&gt; 1 Human      77       NA
+#&gt; 2 Droid      75       NA
+#&gt; 3 Droid      32       75
+#&gt; 4 Human     136       77
+#&gt; # … with 83 more rows</code></pre>
+</div>
+<div id="filter-1" class="section level3" number="6.1.7">
+<h3 number="6.1.7"><span class="header-section-number">6.1.7</span> <code>filter()</code></h3>
+<p>A grouped <code>filter()</code> effectively does a <code>mutate()</code> to generate a logical variable, and then only keeps the rows where the variable is <code>TRUE</code>. This means that grouped filters can be used with summary functions. For example, we can find the tallest character of each species:</p>
+<pre class="r"><code>by_species %&gt;%
+  select(name, species, height) %&gt;% 
+  filter(height == max(height))
+#&gt; # A tibble: 35 x 3
+#&gt; # Groups:   species [35]
+#&gt;   name                  species        height
+#&gt;   &lt;chr&gt;                 &lt;chr&gt;           &lt;int&gt;
+#&gt; 1 Greedo                Rodian            173
+#&gt; 2 Jabba Desilijic Tiure Hutt              175
+#&gt; 3 Yoda                  Yoda&#39;s species     66
+#&gt; 4 Bossk                 Trandoshan        190
+#&gt; # … with 31 more rows</code></pre>
+<p>You can also use <code>filter()</code> to remove entire groups. For example, the following code eliminates all groups that only have a single member:</p>
+<pre class="r"><code>by_species %&gt;%
+  filter(n() != 1) %&gt;% 
+  tally()
+#&gt; # A tibble: 9 x 2
+#&gt;   species      n
+#&gt;   &lt;chr&gt;    &lt;int&gt;
+#&gt; 1 Droid        6
+#&gt; 2 Gungan       3
+#&gt; 3 Human       35
+#&gt; 4 Kaminoan     2
+#&gt; # … with 5 more rows</code></pre>
+</div>
+<div id="slice-and-friends" class="section level3" number="6.1.8">
+<h3 number="6.1.8"><span class="header-section-number">6.1.8</span> <code>slice()</code> and friends</h3>
+<p><code>slice()</code> and friends (<code>slice_head()</code>, <code>slice_tail()</code>, <code>slice_sample()</code>, <code>slice_min()</code> and <code>slice_max()</code>) select rows within a group. For example, we can select the first observation within each species:</p>
+<pre class="r"><code>by_species %&gt;%
+  relocate(species) %&gt;% 
+  slice(1)
+#&gt; # A tibble: 38 x 14
+#&gt; # Groups:   species [38]
+#&gt;   species  name    height  mass hair_color skin_color eye_color birth_year sex  
+#&gt;   &lt;chr&gt;    &lt;chr&gt;    &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;
+#&gt; 1 Aleena   Ratts …     79    15 none       grey, blue unknown           NA male 
+#&gt; 2 Besalisk Dexter…    198   102 none       brown      yellow            NA male 
+#&gt; 3 Cerean   Ki-Adi…    198    82 white      pale       yellow            92 male 
+#&gt; 4 Chagrian Mas Am…    196    NA none       blue       blue              NA male 
+#&gt; # … with 34 more rows, and 5 more variables: gender &lt;chr&gt;, homeworld &lt;chr&gt;,
+#&gt; #   films &lt;list&gt;, vehicles &lt;list&gt;, starships &lt;list&gt;</code></pre>
+</div>
+</div>
+<div id="information-of-grouped-data" class="section level2" number="6.2">
+<h2 number="6.2"><span class="header-section-number">6.2</span> Information of grouped data</h2>
+<div id="grouping-metadata" class="section level3" number="6.2.1">
+<h3 number="6.2.1"><span class="header-section-number">6.2.1</span> Grouping metadata</h3>
+<p>You can see underlying group data with <code>group_keys()</code>. It has one row for each group and one column for each grouping variable:</p>
+<pre class="r"><code>by_species %&gt;% group_keys()
+#&gt; # A tibble: 38 x 1
+#&gt;   species 
+#&gt;   &lt;chr&gt;   
+#&gt; 1 Aleena  
+#&gt; 2 Besalisk
+#&gt; 3 Cerean  
+#&gt; 4 Chagrian
+#&gt; # … with 34 more rows
+
+by_sex_gender %&gt;% group_keys()
+#&gt; # A tibble: 6 x 2
+#&gt;   sex            gender   
+#&gt;   &lt;chr&gt;          &lt;chr&gt;    
+#&gt; 1 female         feminine 
+#&gt; 2 hermaphroditic masculine
+#&gt; 3 male           masculine
+#&gt; 4 none           feminine 
+#&gt; # … with 2 more rows</code></pre>
+<p>You can see which group each row belongs to with <code>group_indices()</code>:</p>
+<pre class="r"><code>by_sex_gender %&gt;% group_indices()
+#&gt;  [1] 3 5 5 3 1 3 1 5 3 3 3 3 3 3 3 2 3 3 3 3 3 5 3 3 3 3 1 3 3 3 3 3 3 3 3 3 6 3
+#&gt; [39] 3 6 1 3 3 1 3 3 3 3 3 3 3 1 3 3 3 3 3 1 3 3 1 1 1 3 3 3 1 3 3 1 1 3 4 3 3 1
+#&gt; [77] 3 3 3 6 3 3 1 3 5 6 1</code></pre>
+<p>And which rows each group contains with <code>group_rows()</code>:</p>
+<pre class="r"><code>by_sex_gender %&gt;% group_rows()
+#&gt; &lt;list_of&lt;integer&gt;[6]&gt;
+#&gt; [[1]]
+#&gt;  [1]  5  7 27 41 44 52 58 61 62 63 67 70 71 76 83 87
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] 16
+#&gt; 
+#&gt; [[3]]
+#&gt;  [1]  1  4  6  9 10 11 12 13 14 15 17 18 19 20 21 23 24 25 26 28 29 30 31 32 33
+#&gt; [26] 34 35 36 38 39 42 43 45 46 47 48 49 50 51 53 54 55 56 57 59 60 64 65 66 68
+#&gt; [51] 69 72 74 75 77 78 79 81 82 84
+#&gt; 
+#&gt; [[4]]
+#&gt; [1] 73
+#&gt; 
+#&gt; [[5]]
+#&gt; [1]  2  3  8 22 85
+#&gt; 
+#&gt; [[6]]
+#&gt; [1] 37 40 80 86</code></pre>
+<p><code>group_size()</code> gives the size of each group:</p>
+<pre class="r"><code>by_sex_gender %&gt;% group_size()
+#&gt; [1] 16  1 60  1  5  4</code></pre>
+<p><code>n_groups()</code> gives the total number of groups:</p>
+<pre class="r"><code>by_sex_gender %&gt;% n_groups()
+#&gt; [1] 6</code></pre>
+<p>Use <code>group_vars()</code> if you just want the names of the grouping variables:</p>
+<pre class="r"><code>by_species %&gt;% group_vars()
+#&gt; [1] &quot;species&quot;
+by_sex_gender %&gt;% group_vars()
+#&gt; [1] &quot;sex&quot;    &quot;gender&quot;</code></pre>
+</div>
+<div id="current-group-information" class="section level3" number="6.2.2">
+<h3 number="6.2.2"><span class="header-section-number">6.2.2</span> “current” group information</h3>
+<p>Inside dplyr verbs, you can access various properties of the “current” group using a family of functions with the <code>cur_</code> prefix. These functions are typically needed for everyday usage of dplyr, but can be useful because they allow you to free from some of the typical constraints of dplyr verbs.</p>
+<pre class="r"><code>df &lt;- tibble(
+  g1 = c(&#39;a&#39;, &#39;a&#39;, &#39;a&#39;, &#39;b&#39;, &#39;b&#39;, &#39;b&#39;),
+  g2 = c(&#39;c&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;, &#39;e&#39;, &#39;e&#39;),
+  x = 1:6,
+  y = 2:7
+)
+gf &lt;- df %&gt;% group_by(g1, g2)
+
+gf
+#&gt; # A tibble: 6 x 4
+#&gt; # Groups:   g1, g2 [3]
+#&gt;   g1    g2        x     y
+#&gt;   &lt;chr&gt; &lt;chr&gt; &lt;int&gt; &lt;int&gt;
+#&gt; 1 a     c         1     2
+#&gt; 2 a     c         2     3
+#&gt; 3 a     d         3     4
+#&gt; 4 b     e         4     5
+#&gt; # … with 2 more rows</code></pre>
+<ul>
+<li><p><code>n()</code> gives the current group size.</p>
+<pre class="r"><code>gf %&gt;% summarise(n = n())
+#&gt; `summarise()` has grouped output by &#39;g1&#39;. You can override using the `.groups` argument.
+#&gt; # A tibble: 3 x 3
+#&gt; # Groups:   g1 [2]
+#&gt;   g1    g2        n
+#&gt;   &lt;chr&gt; &lt;chr&gt; &lt;int&gt;
+#&gt; 1 a     c         2
+#&gt; 2 a     d         1
+#&gt; 3 b     e         3</code></pre></li>
+<li><p><code>cur_data()</code> gives the current data for the current group (excluding grouping variables).</p>
+<pre class="r"><code>gf %&gt;% summarise(data = list(cur_data()))
+#&gt; `summarise()` has grouped output by &#39;g1&#39;. You can override using the `.groups` argument.
+#&gt; # A tibble: 3 x 3
+#&gt; # Groups:   g1 [2]
+#&gt;   g1    g2    data                
+#&gt;   &lt;chr&gt; &lt;chr&gt; &lt;list&gt;              
+#&gt; 1 a     c     &lt;tibble[,2] [2 × 2]&gt;
+#&gt; 2 a     d     &lt;tibble[,2] [1 × 2]&gt;
+#&gt; 3 b     e     &lt;tibble[,2] [3 × 2]&gt;</code></pre></li>
+<li><p><code>cur_data_all()</code> gives the current data for the current group (including grouping variables).</p>
+<pre class="r"><code>gf %&gt;% summarise(data = list(cur_data_all()))
+#&gt; `summarise()` has grouped output by &#39;g1&#39;. You can override using the `.groups` argument.
+#&gt; # A tibble: 3 x 3
+#&gt; # Groups:   g1 [2]
+#&gt;   g1    g2    data                
+#&gt;   &lt;chr&gt; &lt;chr&gt; &lt;list&gt;              
+#&gt; 1 a     c     &lt;tibble[,4] [2 × 4]&gt;
+#&gt; 2 a     d     &lt;tibble[,4] [1 × 4]&gt;
+#&gt; 3 b     e     &lt;tibble[,4] [3 × 4]&gt;</code></pre></li>
+<li><p><code>cur_group()</code> gives the group keys, a tibble with one row and one column for each grouping variable.</p>
+<pre class="r"><code>gf %&gt;% summarise(data = list(cur_group()))
+#&gt; `summarise()` has grouped output by &#39;g1&#39;. You can override using the `.groups` argument.
+#&gt; # A tibble: 3 x 3
+#&gt; # Groups:   g1 [2]
+#&gt;   g1    g2    data                
+#&gt;   &lt;chr&gt; &lt;chr&gt; &lt;list&gt;              
+#&gt; 1 a     c     &lt;tibble[,2] [1 × 2]&gt;
+#&gt; 2 a     d     &lt;tibble[,2] [1 × 2]&gt;
+#&gt; 3 b     e     &lt;tibble[,2] [1 × 2]&gt;</code></pre></li>
+<li><p><code>cur_group_id()</code> gives a unique numeric identifier for the current group.</p>
+<pre class="r"><code>gf %&gt;% mutate(id = cur_group_id())
+#&gt; # A tibble: 6 x 5
+#&gt; # Groups:   g1, g2 [3]
+#&gt;   g1    g2        x     y    id
+#&gt;   &lt;chr&gt; &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+#&gt; 1 a     c         1     2     1
+#&gt; 2 a     c         2     3     1
+#&gt; 3 a     d         3     4     2
+#&gt; 4 b     e         4     5     3
+#&gt; # … with 2 more rows</code></pre></li>
+<li><p><code>cur_group_rows()</code> gives the row indices for the current group.</p>
+<pre class="r"><code>gf %&gt;% summarise(data = list(cur_group_rows()))
+#&gt; `summarise()` has grouped output by &#39;g1&#39;. You can override using the `.groups` argument.
+#&gt; # A tibble: 3 x 3
+#&gt; # Groups:   g1 [2]
+#&gt;   g1    g2    data     
+#&gt;   &lt;chr&gt; &lt;chr&gt; &lt;list&gt;   
+#&gt; 1 a     c     &lt;int [2]&gt;
+#&gt; 2 a     d     &lt;int [1]&gt;
+#&gt; 3 b     e     &lt;int [3]&gt;</code></pre></li>
+</ul>
+<p>You can easily distinguish these functions in the following picture:</p>
+<p><img src="figures/dplyr/cur_group.png" /></p>
+</div>
+</div>
+<div id="how-group_by-works" class="section level2" number="6.3">
+<h2 number="6.3"><span class="header-section-number">6.3</span> How <code>group_by()</code> works</h2>
+<p><code>group_by()</code> create a new class of objects, <code>grouped_df</code>, who is treated differently with <code>tbl_df</code>, in most dplyr verbs.</p>
+<pre class="r"><code>df &lt;- tibble(
+  g1 = c(&#39;b&#39;, &#39;b&#39;, &#39;b&#39;, &#39;a&#39;, &#39;a&#39;, &#39;a&#39;),
+  g2 = c(&#39;c&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;, &#39;e&#39;, &#39;e&#39;),
+  x = 1:6
+)
+gf &lt;- df %&gt;% group_by(g1, g2)
+
+df %&gt;% class()
+#&gt; [1] &quot;tbl_df&quot;     &quot;tbl&quot;        &quot;data.frame&quot;
+gf %&gt;% class()
+#&gt; [1] &quot;grouped_df&quot; &quot;tbl_df&quot;     &quot;tbl&quot;        &quot;data.frame&quot;</code></pre>
+<p>But <code>group_by()</code> never change the value of datasets (even the order of rows):</p>
+<pre class="r"><code>df
+#&gt; # A tibble: 6 x 3
+#&gt;   g1    g2        x
+#&gt;   &lt;chr&gt; &lt;chr&gt; &lt;int&gt;
+#&gt; 1 b     c         1
+#&gt; 2 b     c         2
+#&gt; 3 b     d         3
+#&gt; 4 a     e         4
+#&gt; # … with 2 more rows
+
+gf
+#&gt; # A tibble: 6 x 3
+#&gt; # Groups:   g1, g2 [3]
+#&gt;   g1    g2        x
+#&gt;   &lt;chr&gt; &lt;chr&gt; &lt;int&gt;
+#&gt; 1 b     c         1
+#&gt; 2 b     c         2
+#&gt; 3 b     d         3
+#&gt; 4 a     e         4
+#&gt; # … with 2 more rows
+
+df == gf
+#&gt;        g1   g2    x
+#&gt; [1,] TRUE TRUE TRUE
+#&gt; [2,] TRUE TRUE TRUE
+#&gt; [3,] TRUE TRUE TRUE
+#&gt; [4,] TRUE TRUE TRUE
+#&gt; [5,] TRUE TRUE TRUE
+#&gt; [6,] TRUE TRUE TRUE</code></pre>
+<p>Here we can easily notice that dplyr verbs have different behavior for <code>df</code> and <code>gf</code>:</p>
+<pre class="r"><code>df %&gt;% mutate(sum = sum(x))
+#&gt; # A tibble: 6 x 4
+#&gt;   g1    g2        x   sum
+#&gt;   &lt;chr&gt; &lt;chr&gt; &lt;int&gt; &lt;int&gt;
+#&gt; 1 b     c         1    21
+#&gt; 2 b     c         2    21
+#&gt; 3 b     d         3    21
+#&gt; 4 a     e         4    21
+#&gt; # … with 2 more rows
+
+gf %&gt;% mutate(sum = sum(x))
+#&gt; # A tibble: 6 x 4
+#&gt; # Groups:   g1, g2 [3]
+#&gt;   g1    g2        x   sum
+#&gt;   &lt;chr&gt; &lt;chr&gt; &lt;int&gt; &lt;int&gt;
+#&gt; 1 b     c         1     3
+#&gt; 2 b     c         2     3
+#&gt; 3 b     d         3     3
+#&gt; 4 a     e         4    15
+#&gt; # … with 2 more rows</code></pre>
+<p>But in other places we should be cautious when we use a dataset output from a wrapped function, or write a function who receive an user-supplied data. For not knowing whether a <code>grouped_df</code> you get (or receive).</p>
+</div>
+</div>
+<div id="row-wise-operations" class="section level1" number="7">
+<h1 number="7"><span class="header-section-number">7</span> Row-wise operations</h1>
+<p>dplyr, and R in general, are particularly well suited to performing operations over columns, and performing operations over rows is much harder.</p>
+<p>Let’s start from a little problem. We create a tibble <code>df</code> and want to calculate the sum of <code>w</code> <code>x</code> <code>y</code> <code>z</code> in each row:</p>
+<pre class="r"><code>df &lt;- tibble(id = 1:6, w = 10:15, x = 20:25, y = 30:35, z = 40:45)
+
+df %&gt;% mutate(total = sum(c(w, x, y, z)))
+#&gt; # A tibble: 6 x 6
+#&gt;      id     w     x     y     z total
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+#&gt; 1     1    10    20    30    40   660
+#&gt; 2     2    11    21    31    41   660
+#&gt; 3     3    12    22    32    42   660
+#&gt; 4     4    13    23    33    43   660
+#&gt; # … with 2 more rows</code></pre>
+<p>It doesn’t work out as expected, <code>total</code> calculate the sum of all value from <code>w</code> <code>x</code> <code>y</code> <code>z</code> (not in each row). This is because that <code>sum()</code> just return a single value calculated from the input:</p>
+<pre class="r"><code>sum(c(df$w, df$x, df$y, df$z))
+#&gt; [1] 660</code></pre>
+<p>then tibble treat the input as <code>total = 660</code> and automatically recycle it.</p>
+<p>The same problem will occur if you want to do row-wise aggregates with <code>mean()</code>, <code>min()</code>, <code>max()</code> and other functions who are not <strong>vectorised function</strong>. In order to solve this problem, you can use dplyr’s approach centred around the row-wise data frame created by <code>rowwise()</code>.</p>
+<div id="rowwise" class="section level2" number="7.1">
+<h2 number="7.1"><span class="header-section-number">7.1</span> rowwise()</h2>
+<p>Row-wise operations require a special type of grouping where each group consists of a single row. You create this with <code>rowwise()</code>:</p>
+<pre class="r"><code>df %&gt;% rowwise()
+#&gt; # A tibble: 6 x 5
+#&gt; # Rowwise: 
+#&gt;      id     w     x     y     z
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+#&gt; 1     1    10    20    30    40
+#&gt; 2     2    11    21    31    41
+#&gt; 3     3    12    22    32    42
+#&gt; 4     4    13    23    33    43
+#&gt; # … with 2 more rows</code></pre>
+<p>Like <code>group_by()</code>, <code>rowwise()</code> doesn’t really do anything itself; it just changes how the other verbs work. For example, compare the results of <code>mutate()</code> in the following code:</p>
+<pre class="r"><code>df %&gt;% mutate(total = sum(c(w, x, y, z)))
+#&gt; # A tibble: 6 x 6
+#&gt;      id     w     x     y     z total
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+#&gt; 1     1    10    20    30    40   660
+#&gt; 2     2    11    21    31    41   660
+#&gt; 3     3    12    22    32    42   660
+#&gt; 4     4    13    23    33    43   660
+#&gt; # … with 2 more rows
+
+df %&gt;% rowwise() %&gt;% mutate(total = sum(c(w, x, y, z)))
+#&gt; # A tibble: 6 x 6
+#&gt; # Rowwise: 
+#&gt;      id     w     x     y     z total
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+#&gt; 1     1    10    20    30    40   100
+#&gt; 2     2    11    21    31    41   104
+#&gt; 3     3    12    22    32    42   108
+#&gt; 4     4    13    23    33    43   112
+#&gt; # … with 2 more rows</code></pre>
+<p>If you use <code>mutate()</code> with a regular data frame, it computes the sum of <code>w</code>, <code>x</code>, <code>y</code>, and <code>z</code> across all rows. If you apply it to a row-wise data frame, it computes the sum for each row.</p>
+<p>You can optionally supply “identifier” variables in your call to <code>rowwise()</code>. These variables are preserved when you call <code>summarise()</code>, so they behave somewhat similarly to the grouping variables passed to <code>group_by()</code>:</p>
+<pre class="r"><code>df %&gt;% 
+  rowwise() %&gt;% 
+  summarise(total = sum(c(w, x, y, z)))
+#&gt; `summarise()` has ungrouped output. You can override using the `.groups` argument.
+#&gt; # A tibble: 6 x 1
+#&gt;   total
+#&gt;   &lt;int&gt;
+#&gt; 1   100
+#&gt; 2   104
+#&gt; 3   108
+#&gt; 4   112
+#&gt; # … with 2 more rows
+
+df %&gt;% 
+  rowwise(id) %&gt;% 
+  summarise(total = sum(c(w, x, y, z)))
+#&gt; `summarise()` has grouped output by &#39;id&#39;. You can override using the `.groups` argument.
+#&gt; # A tibble: 6 x 2
+#&gt; # Groups:   id [6]
+#&gt;      id total
+#&gt;   &lt;int&gt; &lt;int&gt;
+#&gt; 1     1   100
+#&gt; 2     2   104
+#&gt; 3     3   108
+#&gt; 4     4   112
+#&gt; # … with 2 more rows</code></pre>
+<p><code>rowwise()</code> is just a special form of grouping, so if you want to remove it from a data frame, just call <code>ungroup()</code>.</p>
+<p>You can use <code>c_across()</code> which uses tidy selection syntax so you can to succinctly select many variables:</p>
+<pre class="r"><code>df %&gt;% 
+  rowwise() %&gt;% 
+  mutate(total = sum(c_across(w:z)))
+#&gt; # A tibble: 6 x 6
+#&gt; # Rowwise: 
+#&gt;      id     w     x     y     z total
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+#&gt; 1     1    10    20    30    40   100
+#&gt; 2     2    11    21    31    41   104
+#&gt; 3     3    12    22    32    42   108
+#&gt; 4     4    13    23    33    43   112
+#&gt; # … with 2 more rows</code></pre>
+</div>
+<div id="other-solution" class="section level2" number="7.2">
+<h2 number="7.2"><span class="header-section-number">7.2</span> Other solution</h2>
+<p>The <code>rowwise()</code> approach will work for any summary function. But if you need greater speed, it’s worth looking for a built-in row-wise variant of your summary function. These are more efficient because they operate on the data frame as whole; they don’t split it into rows, compute the summary, and then join the results back together again.</p>
+<pre class="r"><code>df %&gt;% mutate(total = rowSums(across(w:z)))
+#&gt; # A tibble: 6 x 6
+#&gt;      id     w     x     y     z total
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
+#&gt; 1     1    10    20    30    40   100
+#&gt; 2     2    11    21    31    41   104
+#&gt; 3     3    12    22    32    42   108
+#&gt; 4     4    13    23    33    43   112
+#&gt; # … with 2 more rows
+
+df %&gt;% mutate(mean = rowMeans(across(w:z)))
+#&gt; # A tibble: 6 x 6
+#&gt;      id     w     x     y     z  mean
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
+#&gt; 1     1    10    20    30    40    25
+#&gt; 2     2    11    21    31    41    26
+#&gt; 3     3    12    22    32    42    27
+#&gt; 4     4    13    23    33    43    28
+#&gt; # … with 2 more rows</code></pre>
+<p><strong>Note</strong>: we don’t use <code>rowwise()</code> and use <code>across()</code> in <code>rowMeans()</code> and <code>rowSums()</code> here because <code>across()</code> returns a tibble and <code>rowMeans()</code> and <code>rowSums()</code> take a multi-row data frame as input.</p>
+<p>Or you can use vectorised function, such as <code>pmin()</code>, <code>pmax()</code>. Similarly, they’ll be much faster than <code>rowwise()</code>.</p>
+<pre class="r"><code>df %&gt;% mutate(
+  min = pmin(w, x, y, z),
+  max = pmax(w, x, y, z)
+)
+#&gt; # A tibble: 6 x 7
+#&gt;      id     w     x     y     z   min   max
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+#&gt; 1     1    10    20    30    40    10    40
+#&gt; 2     2    11    21    31    41    11    41
+#&gt; 3     3    12    22    32    42    12    42
+#&gt; 4     4    13    23    33    43    13    43
+#&gt; # … with 2 more rows</code></pre>
+</div>
+<div id="difference-between-c_across-across-if_any-and-if_all" class="section level2" number="7.3">
+<h2 number="7.3"><span class="header-section-number">7.3</span> Difference between <code>c_across()</code>, <code>across()</code>, <code>if_any()</code> and <code>if_all()</code></h2>
+<p>You can view the output structure of <code>c_across()</code>, <code>across()</code>, <code>if_any()</code> and <code>if_all()</code> by wrapping with <code>list()</code>:</p>
+<pre class="r"><code>df %&gt;% rowwise() %&gt;% mutate(new = list(c_across(w:z)))
+#&gt; # A tibble: 6 x 6
+#&gt; # Rowwise: 
+#&gt;      id     w     x     y     z new      
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;list&gt;   
+#&gt; 1     1    10    20    30    40 &lt;int [4]&gt;
+#&gt; 2     2    11    21    31    41 &lt;int [4]&gt;
+#&gt; 3     3    12    22    32    42 &lt;int [4]&gt;
+#&gt; 4     4    13    23    33    43 &lt;int [4]&gt;
+#&gt; # … with 2 more rows
+
+df %&gt;% rowwise() %&gt;% mutate(new = list(across(w:z)))
+#&gt; # A tibble: 6 x 6
+#&gt; # Rowwise: 
+#&gt;      id     w     x     y     z new                 
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;list&gt;              
+#&gt; 1     1    10    20    30    40 &lt;tibble[,4] [1 × 4]&gt;
+#&gt; 2     2    11    21    31    41 &lt;tibble[,4] [1 × 4]&gt;
+#&gt; 3     3    12    22    32    42 &lt;tibble[,4] [1 × 4]&gt;
+#&gt; 4     4    13    23    33    43 &lt;tibble[,4] [1 × 4]&gt;
+#&gt; # … with 2 more rows
+
+df %&gt;% rowwise() %&gt;% mutate(new = list(if_any(w:z, ~ .x &gt; 25)))
+#&gt; # A tibble: 6 x 6
+#&gt; # Rowwise: 
+#&gt;      id     w     x     y     z new      
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;list&gt;   
+#&gt; 1     1    10    20    30    40 &lt;lgl [1]&gt;
+#&gt; 2     2    11    21    31    41 &lt;lgl [1]&gt;
+#&gt; 3     3    12    22    32    42 &lt;lgl [1]&gt;
+#&gt; 4     4    13    23    33    43 &lt;lgl [1]&gt;
+#&gt; # … with 2 more rows
+
+
+df %&gt;% mutate(new = list(c_across(w:z)))
+#&gt; # A tibble: 6 x 6
+#&gt;      id     w     x     y     z new       
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;list&gt;    
+#&gt; 1     1    10    20    30    40 &lt;int [24]&gt;
+#&gt; 2     2    11    21    31    41 &lt;int [24]&gt;
+#&gt; 3     3    12    22    32    42 &lt;int [24]&gt;
+#&gt; 4     4    13    23    33    43 &lt;int [24]&gt;
+#&gt; # … with 2 more rows
+
+df %&gt;% mutate(new = list(across(w:z)))
+#&gt; # A tibble: 6 x 6
+#&gt;      id     w     x     y     z new                 
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;list&gt;              
+#&gt; 1     1    10    20    30    40 &lt;tibble[,4] [6 × 4]&gt;
+#&gt; 2     2    11    21    31    41 &lt;tibble[,4] [6 × 4]&gt;
+#&gt; 3     3    12    22    32    42 &lt;tibble[,4] [6 × 4]&gt;
+#&gt; 4     4    13    23    33    43 &lt;tibble[,4] [6 × 4]&gt;
+#&gt; # … with 2 more rows
+
+df %&gt;% mutate(new = list(if_any(w:z, ~ .x &gt; 25)))
+#&gt; # A tibble: 6 x 6
+#&gt;      id     w     x     y     z new      
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;list&gt;   
+#&gt; 1     1    10    20    30    40 &lt;lgl [6]&gt;
+#&gt; 2     2    11    21    31    41 &lt;lgl [6]&gt;
+#&gt; 3     3    12    22    32    42 &lt;lgl [6]&gt;
+#&gt; 4     4    13    23    33    43 &lt;lgl [6]&gt;
+#&gt; # … with 2 more rows</code></pre>
+<p><code>c_across()</code> returns a vector, <code>across()</code> returns a tibble, <code>if_any()</code> and <code>if_all()</code> return a logical vector. We can also find that <code>c_across()</code> doesn’t work well without <code>rowwise()</code>. Use them cautiously depending on other function’s needed input.</p>
+</div>
+</div>
+<div id="vector-functions" class="section level1" number="8">
+<h1 number="8"><span class="header-section-number">8</span> Vector functions</h1>
+<div id="vectorised-if-if_else-case_when" class="section level2" number="8.1">
+<h2 number="8.1"><span class="header-section-number">8.1</span> Vectorised if: <code>if_else()</code> <code>case_when()</code></h2>
+<p><code>if_else(condition, true, false, missing = NULL)</code></p>
+<p><code>case_when(...)</code></p>
+<pre class="r"><code>x &lt;- c(-5:5, NA)
+if_else(x &lt; 0, true = &quot;negative&quot;, false = &quot;positive&quot;, missing = &quot;missing&quot;)
+#&gt;  [1] &quot;negative&quot; &quot;negative&quot; &quot;negative&quot; &quot;negative&quot; &quot;negative&quot; &quot;positive&quot;
+#&gt;  [7] &quot;positive&quot; &quot;positive&quot; &quot;positive&quot; &quot;positive&quot; &quot;positive&quot; &quot;missing&quot;
+
+x &lt;- 1:50
+case_when(
+  x %% 35 == 0 ~ &quot;fizz buzz&quot;,
+  x %% 5 == 0  ~ &quot;fizz&quot;,
+  x %% 7 == 0  ~ &quot;buzz&quot;,
+  TRUE         ~ as.character(x)
+)
+#&gt;  [1] &quot;1&quot;         &quot;2&quot;         &quot;3&quot;         &quot;4&quot;         &quot;fizz&quot;      &quot;6&quot;        
+#&gt;  [7] &quot;buzz&quot;      &quot;8&quot;         &quot;9&quot;         &quot;fizz&quot;      &quot;11&quot;        &quot;12&quot;       
+#&gt; [13] &quot;13&quot;        &quot;buzz&quot;      &quot;fizz&quot;      &quot;16&quot;        &quot;17&quot;        &quot;18&quot;       
+#&gt; [19] &quot;19&quot;        &quot;fizz&quot;      &quot;buzz&quot;      &quot;22&quot;        &quot;23&quot;        &quot;24&quot;       
+#&gt; [25] &quot;fizz&quot;      &quot;26&quot;        &quot;27&quot;        &quot;buzz&quot;      &quot;29&quot;        &quot;fizz&quot;     
+#&gt; [31] &quot;31&quot;        &quot;32&quot;        &quot;33&quot;        &quot;34&quot;        &quot;fizz buzz&quot; &quot;36&quot;       
+#&gt; [37] &quot;37&quot;        &quot;38&quot;        &quot;39&quot;        &quot;fizz&quot;      &quot;41&quot;        &quot;buzz&quot;     
+#&gt; [43] &quot;43&quot;        &quot;44&quot;        &quot;fizz&quot;      &quot;46&quot;        &quot;47&quot;        &quot;48&quot;       
+#&gt; [49] &quot;buzz&quot;      &quot;fizz&quot;</code></pre>
+<p>If none of the cases match in <code>case_when()</code> (or do not clarify <code>missing</code> in <code>if_else()</code>), <code>NA</code> is used as return value:</p>
+<pre class="r"><code>x &lt;- c(-1, 1, NA)
+
+if_else(x &lt; 0, &#39;negative&#39;, &#39;positive&#39;)
+#&gt; [1] &quot;negative&quot; &quot;positive&quot; NA
+
+case_when(
+  x &lt; 0  ~ &#39;negative&#39;,
+  x &gt;= 0 ~ &#39;positive&#39;
+)
+#&gt; [1] &quot;negative&quot; &quot;positive&quot; NA</code></pre>
+<p>Use <code>%&gt;%</code> with <code>if_else()</code> and <code>case_when()</code> (wrapped them with <code>{}</code>):</p>
+<pre class="r"><code>x &lt;- c(-1, 1, NA)
+
+x %&gt;% {
+  if_else(. &lt; 0, &quot;negative&quot;, &quot;positive&quot;, &quot;missing&quot;)
+}
+#&gt; [1] &quot;negative&quot; &quot;positive&quot; &quot;missing&quot;
+
+x %&gt;% {
+  case_when(
+    . &lt; 0  ~ &quot;negative&quot;,
+    . &gt;= 0 ~ &quot;positive&quot;,
+    TRUE   ~ &quot;missing&quot;
+  )
+}
+#&gt; [1] &quot;negative&quot; &quot;positive&quot; &quot;missing&quot;</code></pre>
+<p>Note that <code>if_else()</code> and <code>case_when()</code> are both strict, <code>if_else()</code> checks that <code>true</code> and <code>false</code> are the same type, in <code>case_when()</code>, all RHSs must evaluate to the same type of vector. Inconsistent types will throw an error. This applies also to NA values used in RHS (or <code>true</code> <code>false</code>): <code>NA</code> is logical, use typed values like <code>NA_real_</code>, <code>NA_complex_</code>, <code>NA_character_</code>, <code>NA_integer_</code> as appropriate.</p>
+<pre class="r"><code>x &lt;- c(-1, 1)
+
+case_when(
+  x &gt;= 0 ~ &quot;positive&quot;,
+  TRUE   ~ NA
+)
+#&gt; Error: must be a character vector, not a logical vector.
+
+case_when(
+  x &gt;= 0 ~ &quot;positive&quot;,
+  TRUE   ~ NA_character_
+)
+#&gt; [1] NA         &quot;positive&quot;</code></pre>
+<p><code>if_else()</code> and <code>case_when()</code> evaluates all expressions <strong>first</strong>, and then constructs its result by extracting the selected parts.</p>
+<pre class="r"><code>x &lt;- -2:2 %&gt;% as.double()
+
+if_else(x &gt;= 0, sqrt(x), x)
+#&gt; Warning in sqrt(x): NaNs produced
+#&gt; [1] -2.000000 -1.000000  0.000000  1.000000  1.414214
+
+case_when(
+  x &gt;= 0 ~ sqrt(x),
+  TRUE   ~ x
+)
+#&gt; Warning in sqrt(x): NaNs produced
+#&gt; [1] -2.000000 -1.000000  0.000000  1.000000  1.414214</code></pre>
+<p>Sometimes it’s hard to generate multiple variables in complex condition statement via <code>if_else()</code> and <code>case_when()</code>, you can turn to use <code>libr::datastep()</code>:</p>
+<pre class="r"><code>df &lt;- tibble(x = 1:3, y = 4:6)
+
+df %&gt;% libr::datastep({
+  if (x &lt;= 2 &amp; y == 4) {
+    var1 &lt;- &#39;a&#39;
+    var_temp &lt;- 1
+  } else {
+    var1 &lt;- &#39;b&#39;
+    var_temp &lt;- 0
+  }
+  
+  if (var_temp == 1 | x == 3) {
+    var2 &lt;- &#39;c&#39;
+  }
+  
+  rm(var_temp)
+})
+#&gt; # A tibble: 3 x 4
+#&gt;       x     y var2  var1 
+#&gt;   &lt;int&gt; &lt;int&gt; &lt;chr&gt; &lt;chr&gt;
+#&gt; 1     1     4 c     a    
+#&gt; 2     2     5 &lt;NA&gt;  b    
+#&gt; 3     3     6 c     b</code></pre>
+</div>
+<div id="cumulativate-functions-cumall-cumany-cummean" class="section level2" number="8.2">
+<h2 number="8.2"><span class="header-section-number">8.2</span> Cumulativate functions: <code>cumall()</code> <code>cumany()</code> <code>cummean()</code></h2>
+<p>Cumulative aggregates: <code>cumsum()</code>, <code>cumprod()</code>, <code>cummin()</code>, <code>cummax()</code> (from base R), and <code>cumall()</code>, <code>cumany()</code>, and <code>cummean()</code> (from dplyr).</p>
+<pre class="r"><code>cumsum(1:10)
+#&gt;  [1]  1  3  6 10 15 21 28 36 45 55
+
+cumprod(1:5)
+#&gt; [1]   1   2   6  24 120
+
+cummean(10:1)
+#&gt;  [1] 10.0  9.5  9.0  8.5  8.0  7.5  7.0  6.5  6.0  5.5
+
+cummin(c(3, 2, 1, 2, 1, 0, 4, 3, 2))
+#&gt; [1] 3 2 1 1 1 0 0 0 0
+
+cummax(c(3, 2, 1, 2, 1, 0, 4, 3, 2))
+#&gt; [1] 3 3 3 3 3 3 4 4 4
+
+cumall(c(T, T, F, T, F))
+#&gt; [1] TRUE TRUE TRUE TRUE TRUE
+
+cumany(c(F, F, T, F, T))
+#&gt; [1] TRUE TRUE TRUE TRUE TRUE</code></pre>
+<p>Cumulative logical functions <code>cumall()</code> and <code>cumany()</code> are particularly useful in conjunction with <code>filter()</code>:</p>
+<ul>
+<li><p><code>cumall(x)</code>: all cases until the first <code>FALSE.</code></p></li>
+<li><p><code>cumall(!x)</code>: all cases until the first <code>TRUE.</code></p></li>
+<li><p><code>cumany(x)</code>: all cases after the first <code>TRUE.</code></p></li>
+<li><p><code>cumany(!x)</code>: all cases after the first <code>FALSE.</code></p></li>
+</ul>
+<pre class="r"><code>df &lt;- data.frame(
+  date = as.Date(&quot;2020-01-01&quot;) + 0:6,
+  balance = c(100, 50, 25, -25, -50, 30, 120)
+)
+df
+#&gt;         date balance
+#&gt; 1 2020-01-01     100
+#&gt; 2 2020-01-02      50
+#&gt; 3 2020-01-03      25
+#&gt; 4 2020-01-04     -25
+#&gt; 5 2020-01-05     -50
+#&gt; 6 2020-01-06      30
+#&gt; 7 2020-01-07     120
+
+# all rows after first overdraft
+df %&gt;% filter(cumany(balance &lt; 0))
+#&gt;         date balance
+#&gt; 1 2020-01-04     -25
+#&gt; 2 2020-01-05     -50
+#&gt; 3 2020-01-06      30
+#&gt; 4 2020-01-07     120
+
+# all rows until first overdraft
+df %&gt;% filter(cumall(!(balance &lt; 0)))
+#&gt;         date balance
+#&gt; 1 2020-01-01     100
+#&gt; 2 2020-01-02      50
+#&gt; 3 2020-01-03      25</code></pre>
+</div>
+<div id="windowed-rank-functions-row_number-ntile-min_rank-dense_rank-percent_rank-cume_dist" class="section level2" number="8.3">
+<h2 number="8.3"><span class="header-section-number">8.3</span> Windowed rank functions: <code>row_number()</code> <code>ntile()</code> <code>min_rank()</code> <code>dense_rank()</code> <code>percent_rank()</code> <code>cume_dist()</code></h2>
+<ul>
+<li><p><code>row_number()</code>: equivalent to <code>rank(ties.method = "first")</code></p></li>
+<li><p><code>min_rank()</code>: equivalent to <code>rank(ties.method = "min")</code></p></li>
+<li><p><code>dense_rank()</code>: like <code>min_rank()</code>, but with no gaps between ranks</p></li>
+<li><p><code>percent_rank()</code>: a number between 0 and 1 computed by rescaling <code>min_rank()</code> to <code>[0, 1]</code></p></li>
+<li><p><code>cume_dist()</code>: a cumulative distribution function. Proportion of all values less than or equal to the current rank.</p></li>
+<li><p><code>ntile()</code>: a rough rank, which breaks the input vector into <code>n</code> buckets. The size of the buckets may differ by up to one, larger buckets have lower rank.</p></li>
+</ul>
+<pre class="r"><code>x &lt;- c(5, 1, 3, 2, 2)
+
+row_number(x)
+#&gt; [1] 5 1 4 2 3
+
+min_rank(x)
+#&gt; [1] 5 1 4 2 2
+
+dense_rank(x)
+#&gt; [1] 4 1 3 2 2
+
+percent_rank(x)
+#&gt; [1] 1.00 0.00 0.75 0.25 0.25
+
+cume_dist(x)
+#&gt; [1] 1.0 0.2 0.8 0.6 0.6
+
+ntile(x, 2)
+#&gt; [1] 2 1 2 1 1
+ntile(1:8, 3)
+#&gt; [1] 1 1 1 2 2 2 3 3</code></pre>
+<p>All ranking functions rank from lowest to highest so that small input values get small ranks. Use <code>desc()</code> to rank from highest to lowest.</p>
+<pre class="r"><code>x &lt;- c(5, 1, 3, 2, 2)
+
+row_number(desc(x))
+#&gt; [1] 1 5 2 3 4
+
+min_rank(desc(x))
+#&gt; [1] 1 5 2 3 3
+
+dense_rank(desc(x))
+#&gt; [1] 1 4 2 3 3
+
+percent_rank(desc(x))
+#&gt; [1] 0.00 1.00 0.25 0.50 0.50
+
+cume_dist(desc(x))
+#&gt; [1] 0.2 1.0 0.4 0.8 0.8
+
+ntile(desc(x), 2)
+#&gt; [1] 1 2 1 1 2</code></pre>
+<p><code>row_number()</code> can be used with single table verbs without specifying <code>x</code> to denote the row number, and it would be affected by <code>group_by()</code>:</p>
+<pre class="r"><code>starwars %&gt;% 
+  select(name, species) %&gt;% 
+  mutate(n = row_number())
+#&gt; # A tibble: 87 x 3
+#&gt;   name           species     n
+#&gt;   &lt;chr&gt;          &lt;chr&gt;   &lt;int&gt;
+#&gt; 1 Luke Skywalker Human       1
+#&gt; 2 C-3PO          Droid       2
+#&gt; 3 R2-D2          Droid       3
+#&gt; 4 Darth Vader    Human       4
+#&gt; # … with 83 more rows
+
+starwars %&gt;% 
+  select(name, species) %&gt;% 
+  group_by(species) %&gt;% 
+  mutate(n = row_number())
+#&gt; # A tibble: 87 x 3
+#&gt; # Groups:   species [38]
+#&gt;   name           species     n
+#&gt;   &lt;chr&gt;          &lt;chr&gt;   &lt;int&gt;
+#&gt; 1 Luke Skywalker Human       1
+#&gt; 2 C-3PO          Droid       1
+#&gt; 3 R2-D2          Droid       2
+#&gt; 4 Darth Vader    Human       2
+#&gt; # … with 83 more rows</code></pre>
+</div>
+<div id="extract-the-first-last-or-nth-value-from-a-vector-nth-first-last" class="section level2" number="8.4">
+<h2 number="8.4"><span class="header-section-number">8.4</span> Extract the first, last or nth value from a vector: <code>nth()</code> <code>first()</code> <code>last()</code></h2>
+<p><code>first(x)</code> <code>last(x)</code> <code>nth(x, n)</code></p>
+<pre class="r"><code>x &lt;- 1:10
+
+first(x)
+#&gt; [1] 1
+last(x)
+#&gt; [1] 10
+
+nth(x, 1)
+#&gt; [1] 1
+nth(x, 5)
+#&gt; [1] 5
+
+nth(x, -2)
+#&gt; [1] 9
+
+nth(x, 11)
+#&gt; [1] NA</code></pre>
+</div>
+<div id="compute-lagged-or-leading-values-lag-lead" class="section level2" number="8.5">
+<h2 number="8.5"><span class="header-section-number">8.5</span> Compute lagged or leading values: <code>lag()</code> <code>lead()</code></h2>
+<p><code>lag(x, n = 1L, default = NA)</code></p>
+<p><code>lead(x, n = 1L, default = NA)</code></p>
+<pre class="r"><code>lag(1:5)
+#&gt; [1] NA  1  2  3  4
+lead(1:5)
+#&gt; [1]  2  3  4  5 NA
+
+lag(1:5, n = 1)
+#&gt; [1] NA  1  2  3  4
+lag(1:5, n = 2)
+#&gt; [1] NA NA  1  2  3
+
+lead(1:5, n = 1)
+#&gt; [1]  2  3  4  5 NA
+lead(1:5, n = 2)
+#&gt; [1]  3  4  5 NA NA
+
+lag(1:5, default = 0)
+#&gt; [1] 0 1 2 3 4
+lead(1:5, default = 6)
+#&gt; [1] 2 3 4 5 6</code></pre>
+</div>
+<div id="find-first-non-missing-element-coalesce" class="section level2" number="8.6">
+<h2 number="8.6"><span class="header-section-number">8.6</span> Find first non-missing element: <code>coalesce()</code></h2>
+<pre class="r"><code>y &lt;- c(1, 2, NA, NA, 5, NA)
+z &lt;- c(NA, NA, 3, 4, 5, NA)
+coalesce(y, z)
+#&gt; [1]  1  2  3  4  5 NA</code></pre>
+<p>You can use a single value to replace all missing values:</p>
+<pre class="r"><code>x &lt;- sample(c(1:5, NA, NA, NA))
+x
+#&gt; [1] NA NA  2 NA  5  1  3  4
+coalesce(x, 0L)
+#&gt; [1] 0 0 2 0 5 1 3 4</code></pre>
+</div>
+<div id="convert-values-to-na-na_if" class="section level2" number="8.7">
+<h2 number="8.7"><span class="header-section-number">8.7</span> Convert values to <code>NA</code>: <code>na_if()</code></h2>
+<p><code>na_if(x, y)</code></p>
+<ul>
+<li><code>x</code>: Vector to modify</li>
+<li><code>y</code>: Value to replace with <code>NA</code></li>
+</ul>
+<pre class="r"><code>na_if(1:5, 2)
+#&gt; [1]  1 NA  3  4  5
+
+na_if(1:5, 5:1)
+#&gt; [1]  1  2 NA  4  5</code></pre>
+</div>
+<div id="compare-two-numeric-vectors-near" class="section level2" number="8.8">
+<h2 number="8.8"><span class="header-section-number">8.8</span> Compare two numeric vectors: <code>near()</code></h2>
+<p><code>near(x, y, tol = .Machine$double.eps^0.5)</code></p>
+<pre class="r"><code>sqrt(2) ^ 2 == 2
+#&gt; [1] FALSE
+
+near(sqrt(2) ^ 2, 2)
+#&gt; [1] TRUE</code></pre>
+</div>
+<div id="shortcut-of-left-x-x-right-between" class="section level2" number="8.9">
+<h2 number="8.9"><span class="header-section-number">8.9</span> Shortcut of <code>left &lt;= x &amp; x &lt;= right</code>: <code>between()</code></h2>
+<p><code>between(x, left, right)</code></p>
+<pre class="r"><code>between(1:12, 7, 9)
+#&gt;  [1] FALSE FALSE FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE FALSE FALSE FALSE</code></pre>
+</div>
+<div id="efficiently-count-the-number-of-unique-values-in-a-set-of-vector-n_distinct" class="section level2" number="8.10">
+<h2 number="8.10"><span class="header-section-number">8.10</span> Efficiently count the number of unique values in a set of vector: <code>n_distinct()</code></h2>
+<p><code>n_distinct(..., na.rm = FALSE)</code></p>
+<pre class="r"><code>x &lt;- sample(1:10, 1e7, rep = TRUE)
+n_distinct(x)
+#&gt; [1] 10
+
+length(unique(x)) %&gt;% system.time()
+#&gt;    user  system elapsed 
+#&gt;   0.212   0.036   0.248
+
+n_distinct(x) %&gt;% system.time()
+#&gt;    user  system elapsed 
+#&gt;   0.077   0.023   0.101</code></pre>
+</div>
+</div>
+<div id="reference" class="section level1" number="9">
+<h1 number="9"><span class="header-section-number">9</span> Reference</h1>
+<p><a href="https://r4ds.had.co.nz/" target="_blank">R for data science</a></p>
+<p><a href="https://dplyr.tidyverse.org/" target="_blank">A Grammar of Data Manipulation • dplyr</a></p>
+<p>dplyr vignettes:</p>
+<ul>
+<li><p><a href="https://cran.r-project.org/web/packages/dplyr/vignettes/base.html" target="_blank">From base R to dplyr</a></p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html" target="_blank">Introduction to dplyr</a></p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/dplyr/vignettes/two-table.html" target="_blank">Two-table verbs</a></p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/dplyr/vignettes/programming.html" target="_blank">Programming with dplyr</a></p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/dplyr/vignettes/colwise.html" target="_blank">colwise</a></p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/dplyr/vignettes/grouping.html" target="_blank">Grouped data</a></p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/dplyr/vignettes/rowwise.html" target="_blank">rowwise</a></p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/dplyr/vignettes/window-functions.html" target="_blank">Window functions</a></p></li>
+</ul>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>sqldf</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="config/style.css" type="text/css" />
+<link rel="stylesheet" href="config/multi-columns.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R training</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="RStudioIDE.html">RStudio IDE</a>
+</li>
+<li>
+  <a href="base_R.html">Base R</a>
+</li>
+<li>
+  <a href="tidyverse-base.html">tidyverse base</a>
+</li>
+<li>
+  <a href="stringr_hs.html">stringr</a>
+</li>
+<li>
+  <a href="datetime_qw.html">date and time</a>
+</li>
+<li>
+  <a href="read-write.html">data import/export</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    ggplot2
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ggplot2_basic.html">basic</a>
+    </li>
+    <li>
+      <a href="ggplot2_layers.html">layers</a>
+    </li>
+    <li>
+      <a href="arranging-plots.html">arranging plots</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    More
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="pipe.html">Using pipe</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">focusing on package</li>
+    <li>
+      <a href="data-process-dplyr.html">data process - dplyr</a>
+    </li>
+    <li>
+      <a href="data-process-tidyr.html">data process - tidyr</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Use SQL in R</li>
+    <li>
+      <a href="sqldf.html">sqldf</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">sqldf</h1>
+
+</div>
+
+
+<div id="description" class="section level1">
+<h1>Description</h1>
+<pre class="r"><code>library(sqldf)
+#&gt; Loading required package: gsubfn
+#&gt; Loading required package: proto
+#&gt; Warning in fun(libname, pkgname): couldn&#39;t connect to display &quot;:0&quot;
+#&gt; Loading required package: RSQLite</code></pre>
+<p>The <code>sqldf()</code> function is typically passed a single argument which is an SQL select statement where the table names are ordinary R data frame names. <code>sqldf()</code> transparently sets up a database, imports the data frames into that database, performs the SQL select or other statement and returns the result using a heuristic to determine which class to assign to each column of the returned data frame. The <code>sqldf()</code> or <code>read.csv.sql()</code> functions can also be used to read filtered files into R even if the original files are larger than R itself can handle.</p>
+<p>‘RSQLite’, ‘RH2’, ‘RMySQL’ and ‘RPostgreSQL’ backends are supported.</p>
+</div>
+<div id="sqldf-usage" class="section level1">
+<h1>sqldf Usage</h1>
+<div id="read-a-file-by-read.csv.sql" class="section level2">
+<h2>Read a file by <code>read.csv.sql()</code></h2>
+<p>Read a file into R filtering it with an sql statement. Only the filtered portion is processed by R so that files larger than R can otherwise handle can be accommodated. <a href="./data/read_sql.csv">read_sql.csv</a></p>
+<pre class="r"><code>df &lt;- read.csv.sql(
+  &#39;./data/read_sql.csv&#39;,
+  sql = &quot;select * from file&quot;,
+  header = TRUE,
+  sep = &quot;,&quot;
+)
+head(df)
+#&gt;   SubjectName status Ordinal Display.f subjid   color
+#&gt; 1  066001-001      1       1       SCR      5 green\r
+#&gt; 2  066001-001      1       2      C1D1      5 green\r
+#&gt; 3  066001-001      1       3      C1D8      5 green\r
+#&gt; 4  066001-001      1       4     C1D15      5 green\r
+#&gt; 5  066001-001      1       5      C2D1      5 green\r
+#&gt; 6  066001-001      1      53       EOT      5 green\r</code></pre>
+</div>
+<div id="create-a-data-frame" class="section level2">
+<h2>create a data frame</h2>
+<pre class="r"><code>df &lt;- data.frame(a = 1:5, b = letters[1:5])
+
+sqldf(&quot;select * from df&quot;)
+#&gt;   a b
+#&gt; 1 1 a
+#&gt; 2 2 b
+#&gt; 3 3 c
+#&gt; 4 4 d
+#&gt; 5 5 e
+
+sqldf(&quot;select avg(a) mean, variance(a) var from df&quot;)
+#&gt;   mean var
+#&gt; 1    3 2.5</code></pre>
+<pre class="r"><code>DF &lt;- data.frame(
+  index=1:12,
+  date=rep(c(Sys.Date() - 1, Sys.Date()), 6),
+  group=c(&quot;A&quot;, &quot;B&quot;, &quot;C&quot;),
+  value=round(rnorm(12), 2)
+)
+
+sqldf(&quot;select * from DF&quot;)
+#&gt;    index       date group value
+#&gt; 1      1 2021-10-24     A  0.78
+#&gt; 2      2 2021-10-25     B  0.33
+#&gt; 3      3 2021-10-24     C  0.13
+#&gt; 4      4 2021-10-25     A  0.08
+#&gt; 5      5 2021-10-24     B -0.41
+#&gt; 6      6 2021-10-25     C -1.78
+#&gt; 7      7 2021-10-24     A  0.27
+#&gt; 8      8 2021-10-25     B -1.60
+#&gt; 9      9 2021-10-24     C  1.37
+#&gt; 10    10 2021-10-25     A  1.57
+#&gt; 11    11 2021-10-24     B -0.10
+#&gt; 12    12 2021-10-25     C -0.27</code></pre>
+</div>
+<div id="select-var-from-dataset" class="section level2">
+<h2>select var from dataset</h2>
+<pre class="r"><code># select all vars from iris dataset
+df &lt;- sqldf(&#39;select * from iris&#39;)
+head(df)
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+#&gt; 1          5.1         3.5          1.4         0.2  setosa
+#&gt; 2          4.9         3.0          1.4         0.2  setosa
+#&gt; 3          4.7         3.2          1.3         0.2  setosa
+#&gt; 4          4.6         3.1          1.5         0.2  setosa
+#&gt; 5          5.0         3.6          1.4         0.2  setosa
+#&gt; 6          5.4         3.9          1.7         0.4  setosa
+
+# select &quot;Sepal.Length&quot;, Species from iris dataset
+df &lt;- sqldf(&#39;select Species, &quot;Sepal.Length&quot; from iris &#39;)
+head(df)
+#&gt;   Species Sepal.Length
+#&gt; 1  setosa          5.1
+#&gt; 2  setosa          4.9
+#&gt; 3  setosa          4.7
+#&gt; 4  setosa          4.6
+#&gt; 5  setosa          5.0
+#&gt; 6  setosa          5.4</code></pre>
+<p>What will happen when running the below code?</p>
+<pre class="r"><code>sqldf(&#39;select Species, Sepal.Length from iris&#39;)</code></pre>
+</div>
+<div id="head-in-basic-r-vs-limit-in-sql" class="section level2">
+<h2>head in basic R vs limit in sql</h2>
+<pre class="r"><code>a1r &lt;- head(warpbreaks, 6)
+a1r
+#&gt;   breaks wool tension
+#&gt; 1     26    A       L
+#&gt; 2     30    A       L
+#&gt; 3     54    A       L
+#&gt; 4     25    A       L
+#&gt; 5     70    A       L
+#&gt; 6     52    A       L
+
+a1s &lt;- sqldf(&quot;select * from warpbreaks limit 6&quot;)
+a1s
+#&gt;   breaks wool tension
+#&gt; 1     26    A       L
+#&gt; 2     30    A       L
+#&gt; 3     54    A       L
+#&gt; 4     25    A       L
+#&gt; 5     70    A       L
+#&gt; 6     52    A       L
+
+identical(a1r, a1s)
+#&gt; [1] TRUE</code></pre>
+</div>
+<div id="filter-record-by-where-or-having-stament" class="section level2">
+<h2>filter record by where or having stament</h2>
+<pre class="r"><code>df1 &lt;- sqldf(&#39;select * from iris where &quot;Sepal.Width&quot; &gt; 3&#39;)
+head(df1)
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+#&gt; 1          5.1         3.5          1.4         0.2  setosa
+#&gt; 2          4.7         3.2          1.3         0.2  setosa
+#&gt; 3          4.6         3.1          1.5         0.2  setosa
+#&gt; 4          5.0         3.6          1.4         0.2  setosa
+#&gt; 5          5.4         3.9          1.7         0.4  setosa
+#&gt; 6          4.6         3.4          1.4         0.3  setosa
+
+df2 &lt;- sqldf(&#39;select * from iris group by Species having &quot;Sepal.Width&quot; &gt; 3&#39;)
+df2
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width    Species
+#&gt; 1          5.1         3.5          1.4         0.2     setosa
+#&gt; 2          7.0         3.2          4.7         1.4 versicolor
+#&gt; 3          6.3         3.3          6.0         2.5  virginica</code></pre>
+</div>
+<div id="create-new-var" class="section level2">
+<h2>create new var</h2>
+<pre class="r"><code>df2 &lt;- sqldf(&#39;
+  select Species, &quot;Sepal.Length&quot;, avg(&quot;Sepal.Length&quot;) `col1`
+  from iris
+  group by Species
+  order by Species
+&#39;)
+df2
+#&gt;      Species Sepal.Length  col1
+#&gt; 1     setosa          5.1 5.006
+#&gt; 2 versicolor          7.0 5.936
+#&gt; 3  virginica          6.3 6.588
+
+df21 &lt;- sqldf(&quot;
+  select Species, &#39;Sepal.Length&#39;, &#39;new&#39; as col1
+  from iris
+  group by Species
+  order by Species
+&quot;)
+df21
+#&gt;      Species &#39;Sepal.Length&#39; col1
+#&gt; 1     setosa   Sepal.Length  new
+#&gt; 2 versicolor   Sepal.Length  new
+#&gt; 3  virginica   Sepal.Length  new</code></pre>
+</div>
+<div id="create-new-var-by-case-when" class="section level2">
+<h2>create new var by case when</h2>
+<pre class="r"><code>df3 &lt;- sqldf(&#39;
+  select Species, &quot;Sepal.Length&quot;
+  from iris
+  group by Species
+  order by Species
+&#39;)
+df3
+#&gt;      Species Sepal.Length
+#&gt; 1     setosa          5.1
+#&gt; 2 versicolor          7.0
+#&gt; 3  virginica          6.3
+
+df4 &lt;- sqldf(&quot;
+  select Species, &#39;Sepal.Length&#39;,
+  CASE
+    WHEN Species = &#39;setosa&#39; THEN &#39;specy1&#39;
+    ELSE &#39;other&#39;
+  END as setosa,
+  case
+    when Species = &#39;setosa&#39; then 1
+    else 0
+  end as setosan
+  from iris
+&quot;)
+head(df4)
+#&gt;   Species &#39;Sepal.Length&#39; setosa setosan
+#&gt; 1  setosa   Sepal.Length specy1       1
+#&gt; 2  setosa   Sepal.Length specy1       1
+#&gt; 3  setosa   Sepal.Length specy1       1
+#&gt; 4  setosa   Sepal.Length specy1       1
+#&gt; 5  setosa   Sepal.Length specy1       1
+#&gt; 6  setosa   Sepal.Length specy1       1</code></pre>
+</div>
+<div id="group-by-order-by" class="section level2">
+<h2>group by, order by</h2>
+<pre class="r"><code>df &lt;- sqldf(&#39;select * from iris&#39;)
+
+df0 &lt;- sqldf(&#39;select * from df group by Species&#39;)
+df0
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width    Species
+#&gt; 1          5.1         3.5          1.4         0.2     setosa
+#&gt; 2          7.0         3.2          4.7         1.4 versicolor
+#&gt; 3          6.3         3.3          6.0         2.5  virginica
+
+df01 &lt;- sqldf(&#39;select * from df group by &quot;Sepal.Length&quot;&#39;)
+head(df01)
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+#&gt; 1          4.3         3.0          1.1         0.1  setosa
+#&gt; 2          4.4         2.9          1.4         0.2  setosa
+#&gt; 3          4.5         2.3          1.3         0.3  setosa
+#&gt; 4          4.6         3.1          1.5         0.2  setosa
+#&gt; 5          4.7         3.2          1.3         0.2  setosa
+#&gt; 6          4.8         3.4          1.6         0.2  setosa
+
+df1 &lt;- sqldf(&#39;select * from df group by Species order by &quot;Sepal.Length&quot; desc, Species&#39;)
+df1
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width    Species
+#&gt; 1          7.0         3.2          4.7         1.4 versicolor
+#&gt; 2          6.3         3.3          6.0         2.5  virginica
+#&gt; 3          5.1         3.5          1.4         0.2     setosa</code></pre>
+</div>
+<div id="distinct-eliminate-duplicate-records" class="section level2">
+<h2>distinct : eliminate duplicate records</h2>
+<pre class="r"><code>sqldf(&quot;select DISTINCT Species from iris&quot;)
+#&gt;      Species
+#&gt; 1     setosa
+#&gt; 2 versicolor
+#&gt; 3  virginica</code></pre>
+</div>
+<div id="except" class="section level2">
+<h2>except</h2>
+<pre class="r"><code>one &lt;- head(iris)
+two &lt;- iris
+nrow(one)
+#&gt; [1] 6
+nrow(two)
+#&gt; [1] 150
+
+# if a and not b
+EXCEPT &lt;- sqldf(&quot;select * from one EXCEPT select * from two&quot;)
+EXCEPT
+#&gt; [1] Sepal.Length Sepal.Width  Petal.Length Petal.Width  Species     
+#&gt; &lt;0 rows&gt; (or 0-length row.names)
+
+EXCEPT2 &lt;- sqldf(&quot;select * from two EXCEPT select * from one&quot;)
+nrow(EXCEPT2)
+#&gt; [1] 143
+head(EXCEPT2)
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+#&gt; 1          4.3         3.0          1.1         0.1  setosa
+#&gt; 2          4.4         2.9          1.4         0.2  setosa
+#&gt; 3          4.4         3.0          1.3         0.2  setosa
+#&gt; 4          4.4         3.2          1.3         0.2  setosa
+#&gt; 5          4.5         2.3          1.3         0.3  setosa
+#&gt; 6          4.6         3.2          1.4         0.2  setosa</code></pre>
+</div>
+<div id="intersect" class="section level2">
+<h2>intersect</h2>
+<pre class="r"><code>INTERSECT &lt;- sqldf(&quot;select * from one INTERSECT select * from two&quot;)
+INTERSECT
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+#&gt; 1          4.6         3.1          1.5         0.2  setosa
+#&gt; 2          4.7         3.2          1.3         0.2  setosa
+#&gt; 3          4.9         3.0          1.4         0.2  setosa
+#&gt; 4          5.0         3.6          1.4         0.2  setosa
+#&gt; 5          5.1         3.5          1.4         0.2  setosa
+#&gt; 6          5.4         3.9          1.7         0.4  setosa</code></pre>
+</div>
+<div id="sql-joins" class="section level2">
+<h2>SQL Joins</h2>
+<p><img src="figures/sqldf/join.jpg" /></p>
+<div id="inner-join" class="section level3">
+<h3>inner join</h3>
+<pre class="r"><code>df1 &lt;- head(iris)
+df2 &lt;- iris
+
+# 筛选相同id，all = F为只连接匹配到的，all = T为没有匹配到的赋值NA
+inner1 &lt;- merge(df1, df2, by = &quot;Species&quot;, all = F)
+head(inner1)
+#&gt;   Species Sepal.Length.x Sepal.Width.x Petal.Length.x Petal.Width.x
+#&gt; 1  setosa            5.1           3.5            1.4           0.2
+#&gt; 2  setosa            5.1           3.5            1.4           0.2
+#&gt; 3  setosa            5.1           3.5            1.4           0.2
+#&gt; 4  setosa            5.1           3.5            1.4           0.2
+#&gt; 5  setosa            5.1           3.5            1.4           0.2
+#&gt; 6  setosa            5.1           3.5            1.4           0.2
+#&gt;   Sepal.Length.y Sepal.Width.y Petal.Length.y Petal.Width.y
+#&gt; 1            5.4           3.9            1.7           0.4
+#&gt; 2            5.0           3.6            1.4           0.2
+#&gt; 3            4.9           3.1            1.5           0.1
+#&gt; 4            4.6           3.4            1.4           0.3
+#&gt; 5            5.0           3.4            1.5           0.2
+#&gt; 6            4.4           2.9            1.4           0.2
+
+# 内连接
+inner3 &lt;- sqldf(&quot;select * from df1 as a inner join df2 as b on a.Species=b.Species&quot;)
+head(inner3)
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species Sepal.Length
+#&gt; 1          5.1         3.5          1.4         0.2  setosa          4.3
+#&gt; 2          5.1         3.5          1.4         0.2  setosa          4.4
+#&gt; 3          5.1         3.5          1.4         0.2  setosa          4.4
+#&gt; 4          5.1         3.5          1.4         0.2  setosa          4.4
+#&gt; 5          5.1         3.5          1.4         0.2  setosa          4.5
+#&gt; 6          5.1         3.5          1.4         0.2  setosa          4.6
+#&gt;   Sepal.Width Petal.Length Petal.Width Species
+#&gt; 1         3.0          1.1         0.1  setosa
+#&gt; 2         2.9          1.4         0.2  setosa
+#&gt; 3         3.0          1.3         0.2  setosa
+#&gt; 4         3.2          1.3         0.2  setosa
+#&gt; 5         2.3          1.3         0.3  setosa
+#&gt; 6         3.1          1.5         0.2  setosa
+
+# 笛卡尔积
+inner4 &lt;- sqldf(&quot;select * from df1 as a,df2 as b where a.Species=b.Species&quot;)
+head(inner4)
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species Sepal.Length
+#&gt; 1          5.1         3.5          1.4         0.2  setosa          4.3
+#&gt; 2          5.1         3.5          1.4         0.2  setosa          4.4
+#&gt; 3          5.1         3.5          1.4         0.2  setosa          4.4
+#&gt; 4          5.1         3.5          1.4         0.2  setosa          4.4
+#&gt; 5          5.1         3.5          1.4         0.2  setosa          4.5
+#&gt; 6          5.1         3.5          1.4         0.2  setosa          4.6
+#&gt;   Sepal.Width Petal.Length Petal.Width Species
+#&gt; 1         3.0          1.1         0.1  setosa
+#&gt; 2         2.9          1.4         0.2  setosa
+#&gt; 3         3.0          1.3         0.2  setosa
+#&gt; 4         3.2          1.3         0.2  setosa
+#&gt; 5         2.3          1.3         0.3  setosa
+#&gt; 6         3.1          1.5         0.2  setosa
+
+identical(inner3, inner4)
+#&gt; [1] TRUE</code></pre>
+</div>
+<div id="left-join" class="section level3">
+<h3>left join</h3>
+<pre class="r"><code>left1 &lt;- merge(df1, df2, by = &quot;Species&quot;, all.x = TRUE)
+head(left1)
+#&gt;   Species Sepal.Length.x Sepal.Width.x Petal.Length.x Petal.Width.x
+#&gt; 1  setosa            5.1           3.5            1.4           0.2
+#&gt; 2  setosa            5.1           3.5            1.4           0.2
+#&gt; 3  setosa            5.1           3.5            1.4           0.2
+#&gt; 4  setosa            5.1           3.5            1.4           0.2
+#&gt; 5  setosa            5.1           3.5            1.4           0.2
+#&gt; 6  setosa            5.1           3.5            1.4           0.2
+#&gt;   Sepal.Length.y Sepal.Width.y Petal.Length.y Petal.Width.y
+#&gt; 1            5.4           3.9            1.7           0.4
+#&gt; 2            5.0           3.6            1.4           0.2
+#&gt; 3            4.9           3.1            1.5           0.1
+#&gt; 4            4.6           3.4            1.4           0.3
+#&gt; 5            5.0           3.4            1.5           0.2
+#&gt; 6            4.4           2.9            1.4           0.2
+
+left3 &lt;- sqldf(&quot;select * from df1 as a left join df2 as b on a.Species=b.Species&quot;)
+head(left3)
+#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species Sepal.Length
+#&gt; 1          5.1         3.5          1.4         0.2  setosa          4.3
+#&gt; 2          5.1         3.5          1.4         0.2  setosa          4.4
+#&gt; 3          5.1         3.5          1.4         0.2  setosa          4.4
+#&gt; 4          5.1         3.5          1.4         0.2  setosa          4.4
+#&gt; 5          5.1         3.5          1.4         0.2  setosa          4.5
+#&gt; 6          5.1         3.5          1.4         0.2  setosa          4.6
+#&gt;   Sepal.Width Petal.Length Petal.Width Species
+#&gt; 1         3.0          1.1         0.1  setosa
+#&gt; 2         2.9          1.4         0.2  setosa
+#&gt; 3         3.0          1.3         0.2  setosa
+#&gt; 4         3.2          1.3         0.2  setosa
+#&gt; 5         2.3          1.3         0.3  setosa
+#&gt; 6         3.1          1.5         0.2  setosa</code></pre>
+<p><strong>Note</strong>: 基础包中的<code>merge</code>，当<code>all = F</code>就是内连接，<code>all = T</code>就是全连接，<code>all.x = T</code>就是左联结，<code>all.y = T</code>就是右连接；</p>
+<p>Below examples show how to run a variety of data frame manipulations in R without SQL and then again with SQL</p>
+</div>
+</div>
+<div id="subset-statment-vs-where-statment" class="section level2">
+<h2>subset statment vs where statment</h2>
+<pre class="r"><code>a2r &lt;- subset(CO2, grepl(&quot;^Qn&quot;, Plant))
+head(a2r, 10)
+#&gt; Grouped Data: uptake ~ conc | Plant
+#&gt;    Plant   Type  Treatment conc uptake
+#&gt; 1    Qn1 Quebec nonchilled   95   16.0
+#&gt; 2    Qn1 Quebec nonchilled  175   30.4
+#&gt; 3    Qn1 Quebec nonchilled  250   34.8
+#&gt; 4    Qn1 Quebec nonchilled  350   37.2
+#&gt; 5    Qn1 Quebec nonchilled  500   35.3
+#&gt; 6    Qn1 Quebec nonchilled  675   39.2
+#&gt; 7    Qn1 Quebec nonchilled 1000   39.7
+#&gt; 8    Qn2 Quebec nonchilled   95   13.6
+#&gt; 9    Qn2 Quebec nonchilled  175   27.3
+#&gt; 10   Qn2 Quebec nonchilled  250   37.1
+
+a2s &lt;- sqldf(&quot;select * from CO2 where Plant like &#39;Qn%&#39;&quot;)
+head(a2s, 10)
+#&gt;    Plant   Type  Treatment conc uptake
+#&gt; 1    Qn1 Quebec nonchilled   95   16.0
+#&gt; 2    Qn1 Quebec nonchilled  175   30.4
+#&gt; 3    Qn1 Quebec nonchilled  250   34.8
+#&gt; 4    Qn1 Quebec nonchilled  350   37.2
+#&gt; 5    Qn1 Quebec nonchilled  500   35.3
+#&gt; 6    Qn1 Quebec nonchilled  675   39.2
+#&gt; 7    Qn1 Quebec nonchilled 1000   39.7
+#&gt; 8    Qn2 Quebec nonchilled   95   13.6
+#&gt; 9    Qn2 Quebec nonchilled  175   27.3
+#&gt; 10   Qn2 Quebec nonchilled  250   37.1
+
+all.equal(as.data.frame(a2r), a2s)
+#&gt; [1] &quot;Component \&quot;Plant\&quot;: Attributes: &lt; Component \&quot;levels\&quot;: Lengths (3, 12) differ (string compare on first 3) &gt;&quot;   
+#&gt; [2] &quot;Component \&quot;Type\&quot;: Attributes: &lt; Component \&quot;levels\&quot;: Lengths (1, 2) differ (string compare on first 1) &gt;&quot;     
+#&gt; [3] &quot;Component \&quot;Treatment\&quot;: Attributes: &lt; Component \&quot;levels\&quot;: Lengths (1, 2) differ (string compare on first 1) &gt;&quot;
+
+
+data(farms, package = &quot;MASS&quot;)
+
+a3r &lt;- subset(farms, Manag %in% c(&quot;BF&quot;, &quot;HF&quot;))
+row.names(a3r) &lt;- NULL
+a3r
+#&gt;   Mois Manag Use Manure
+#&gt; 1   M1    BF  U2     C2
+#&gt; 2   M1    HF  U1     C2
+#&gt; 3   M1    HF  U2     C2
+#&gt; 4   M1    HF  U3     C3
+#&gt; 5   M5    HF  U3     C3
+#&gt; 6   M4    HF  U1     C1
+#&gt; 7   M2    BF  U1     C1
+#&gt; 8   M1    BF  U3     C1
+
+a3s &lt;- sqldf(&quot;select * from farms where Manag in (&#39;BF&#39;, &#39;HF&#39;)&quot;)
+a3s
+#&gt;   Mois Manag Use Manure
+#&gt; 1   M1    BF  U2     C2
+#&gt; 2   M1    HF  U1     C2
+#&gt; 3   M1    HF  U2     C2
+#&gt; 4   M1    HF  U3     C3
+#&gt; 5   M5    HF  U3     C3
+#&gt; 6   M4    HF  U1     C1
+#&gt; 7   M2    BF  U1     C1
+#&gt; 8   M1    BF  U3     C1
+
+identical(a3r, a3s)
+#&gt; [1] TRUE
+
+
+a4r &lt;- subset(warpbreaks, breaks &gt;= 20 &amp; breaks &lt;= 30)
+head(a4r, 10)
+#&gt;    breaks wool tension
+#&gt; 1      26    A       L
+#&gt; 2      30    A       L
+#&gt; 4      25    A       L
+#&gt; 8      26    A       L
+#&gt; 11     21    A       M
+#&gt; 12     29    A       M
+#&gt; 17     30    A       M
+#&gt; 20     21    A       H
+#&gt; 21     24    A       H
+#&gt; 25     28    A       H
+
+a4s &lt;- sqldf(&quot;select * from warpbreaks where breaks between 20 and 30&quot;, row.names = TRUE)
+head(a4s, 10)
+#&gt;    breaks wool tension
+#&gt; 1      26    A       L
+#&gt; 2      30    A       L
+#&gt; 4      25    A       L
+#&gt; 8      26    A       L
+#&gt; 11     21    A       M
+#&gt; 12     29    A       M
+#&gt; 17     30    A       M
+#&gt; 20     21    A       H
+#&gt; 21     24    A       H
+#&gt; 25     28    A       H
+
+identical(a4r, a4s)
+#&gt; [1] TRUE
+
+
+a5r &lt;- subset(farms, Mois == &#39;M1&#39;)
+a5r
+#&gt;    Mois Manag Use Manure
+#&gt; 1    M1    SF  U2     C4
+#&gt; 2    M1    BF  U2     C2
+#&gt; 5    M1    HF  U1     C2
+#&gt; 6    M1    HF  U2     C2
+#&gt; 7    M1    HF  U3     C3
+#&gt; 11   M1    BF  U3     C1
+#&gt; 18   M1    NM  U1     C0
+
+a5s &lt;- sqldf(&quot;select * from farms where Mois = &#39;M1&#39;&quot;, row.names = TRUE)
+a5s
+#&gt;    Mois Manag Use Manure
+#&gt; 1    M1    SF  U2     C4
+#&gt; 2    M1    BF  U2     C2
+#&gt; 5    M1    HF  U1     C2
+#&gt; 6    M1    HF  U2     C2
+#&gt; 7    M1    HF  U3     C3
+#&gt; 11   M1    BF  U3     C1
+#&gt; 18   M1    NM  U1     C0
+
+identical(a5r, a5s)
+#&gt; [1] TRUE
+
+
+a6r &lt;- subset(farms, Mois == &#39;M2&#39;)
+a6r
+#&gt;    Mois Manag Use Manure
+#&gt; 3    M2    SF  U2     C4
+#&gt; 4    M2    SF  U2     C4
+#&gt; 10   M2    BF  U1     C1
+#&gt; 17   M2    NM  U1     C0
+
+a6s &lt;- sqldf(&quot;select * from farms where Mois = &#39;M2&#39;&quot;, row.names = TRUE)
+a6s
+#&gt;    Mois Manag Use Manure
+#&gt; 3    M2    SF  U2     C4
+#&gt; 4    M2    SF  U2     C4
+#&gt; 10   M2    BF  U1     C1
+#&gt; 17   M2    NM  U1     C0
+
+identical(a6r, a6s)
+#&gt; [1] TRUE</code></pre>
+</div>
+<div id="rbind" class="section level2">
+<h2>rbind</h2>
+<pre class="r"><code>a7r &lt;- rbind(a5r, a6r)
+a7r
+#&gt;    Mois Manag Use Manure
+#&gt; 1    M1    SF  U2     C4
+#&gt; 2    M1    BF  U2     C2
+#&gt; 5    M1    HF  U1     C2
+#&gt; 6    M1    HF  U2     C2
+#&gt; 7    M1    HF  U3     C3
+#&gt; 11   M1    BF  U3     C1
+#&gt; 18   M1    NM  U1     C0
+#&gt; 3    M2    SF  U2     C4
+#&gt; 4    M2    SF  U2     C4
+#&gt; 10   M2    BF  U1     C1
+#&gt; 17   M2    NM  U1     C0
+
+a7s &lt;- sqldf(&quot;select * from a5s union all select * from a6s&quot;, row.names = TRUE)
+a7s
+#&gt;    Mois Manag Use Manure
+#&gt; 1    M1    SF  U2     C4
+#&gt; 2    M1    BF  U2     C2
+#&gt; 5    M1    HF  U1     C2
+#&gt; 6    M1    HF  U2     C2
+#&gt; 7    M1    HF  U3     C3
+#&gt; 11   M1    BF  U3     C1
+#&gt; 18   M1    NM  U1     C0
+#&gt; 3    M2    SF  U2     C4
+#&gt; 4    M2    SF  U2     C4
+#&gt; 10   M2    BF  U1     C1
+#&gt; 17   M2    NM  U1     C0
+
+identical(a7r, a7s)
+#&gt; [1] TRUE</code></pre>
+</div>
+<div id="aggregate---avg-conc-and-uptake-by-plant-and-type" class="section level2">
+<h2>aggregate - avg conc and uptake by Plant and Type</h2>
+<pre class="r"><code>a8r &lt;- aggregate(iris[1:2], iris[5], mean)
+a8r
+#&gt;      Species Sepal.Length Sepal.Width
+#&gt; 1     setosa        5.006       3.428
+#&gt; 2 versicolor        5.936       2.770
+#&gt; 3  virginica        6.588       2.974
+
+a8s &lt;- sqldf(&#39;
+  select Species, avg(&quot;Sepal.Length&quot;) `Sepal.Length`, avg(&quot;Sepal.Width&quot;) `Sepal.Width`
+  from iris
+  group by Species
+&#39;)
+a8s
+#&gt;      Species Sepal.Length Sepal.Width
+#&gt; 1     setosa        5.006       3.428
+#&gt; 2 versicolor        5.936       2.770
+#&gt; 3  virginica        6.588       2.974
+
+all.equal(a8r, a8s)
+#&gt; [1] TRUE</code></pre>
+</div>
+<div id="by---avg-conc-and-total-uptake-by-plant-and-type" class="section level2">
+<h2>by - avg conc and total uptake by Plant and Type</h2>
+<pre class="r"><code>a9r &lt;- do.call(
+  rbind,
+  by(iris, iris[5], function(x) {
+    with(
+      x,
+      data.frame(
+        Species = Species[1],
+        mean.Sepal.Length = mean(Sepal.Length),
+        mean.Sepal.Width = mean(Sepal.Width),
+        mean.Sepal.ratio = mean(Sepal.Length / Sepal.Width)
+      )
+    )
+  })
+)
+row.names(a9r) &lt;- NULL
+a9r
+#&gt;      Species mean.Sepal.Length mean.Sepal.Width mean.Sepal.ratio
+#&gt; 1     setosa             5.006            3.428         1.470188
+#&gt; 2 versicolor             5.936            2.770         2.160402
+#&gt; 3  virginica             6.588            2.974         2.230453
+
+a9s &lt;- sqldf(&#39;
+  select Species,
+  avg(&quot;Sepal.Length&quot;) `mean.Sepal.Length`,
+  avg(&quot;Sepal.Width&quot;) `mean.Sepal.Width`,
+  avg(&quot;Sepal.Length&quot;/&quot;Sepal.Width&quot;) `mean.Sepal.ratio`
+  from iris
+  group by Species
+&#39;)
+a9s
+#&gt;      Species mean.Sepal.Length mean.Sepal.Width mean.Sepal.ratio
+#&gt; 1     setosa             5.006            3.428         1.470188
+#&gt; 2 versicolor             5.936            2.770         2.160402
+#&gt; 3  virginica             6.588            2.974         2.230453
+
+all.equal(a9r, a9s)
+#&gt; [1] TRUE</code></pre>
+</div>
+<div id="head---top-3-breaks" class="section level2">
+<h2>head - top 3 breaks</h2>
+<pre class="r"><code>a10r &lt;- head(warpbreaks[order(warpbreaks$breaks, decreasing = TRUE), ], 3)
+row.names(a10r) &lt;- NULL
+a10r
+#&gt;   breaks wool tension
+#&gt; 1     70    A       L
+#&gt; 2     67    A       L
+#&gt; 3     54    A       L
+
+a10s &lt;- sqldf(&quot;select * from warpbreaks order by breaks desc limit 3&quot;)
+a10s
+#&gt;   breaks wool tension
+#&gt; 1     70    A       L
+#&gt; 2     67    A       L
+#&gt; 3     54    A       L
+
+identical(a10r, a10s)
+#&gt; [1] TRUE</code></pre>
+</div>
+<div id="head---bottom-3-breaks" class="section level2">
+<h2>head - bottom 3 breaks</h2>
+<pre class="r"><code>a11r &lt;- head(warpbreaks[order(warpbreaks$breaks), ], 3)
+row.names(a11r) &lt;- NULL
+a11r
+#&gt;   breaks wool tension
+#&gt; 1     10    A       H
+#&gt; 2     12    A       M
+#&gt; 3     13    B       H
+
+a11s &lt;- sqldf(&quot;select * from warpbreaks order by breaks limit 3&quot;)
+a11s
+#&gt;   breaks wool tension
+#&gt; 1     10    A       H
+#&gt; 2     12    A       M
+#&gt; 3     13    B       H
+
+identical(a11r, a11s)
+#&gt; [1] TRUE</code></pre>
+</div>
+<div id="ave---rows-for-which-v-exceeds-its-group-average-where-g-is-group" class="section level2">
+<h2>ave - rows for which v exceeds its group average where g is group</h2>
+<pre class="r"><code>DF &lt;- data.frame(g = rep(1:2, each = 5), t = rep(1:5, 2), v = 1:10)
+DF
+#&gt;    g t  v
+#&gt; 1  1 1  1
+#&gt; 2  1 2  2
+#&gt; 3  1 3  3
+#&gt; 4  1 4  4
+#&gt; 5  1 5  5
+#&gt; 6  2 1  6
+#&gt; 7  2 2  7
+#&gt; 8  2 3  8
+#&gt; 9  2 4  9
+#&gt; 10 2 5 10
+
+a12r &lt;- subset(DF, v &gt; ave(v, g, FUN = mean))
+row.names(a12r) &lt;- NULL
+a12r
+#&gt;   g t  v
+#&gt; 1 1 4  4
+#&gt; 2 1 5  5
+#&gt; 3 2 4  9
+#&gt; 4 2 5 10
+
+Gavg &lt;- sqldf(&quot;select g, avg(v) as avg_v from DF group by g&quot;)
+a12s &lt;- sqldf(&quot;select DF.g, t, v from DF, Gavg where DF.g = Gavg.g and v &gt; avg_v&quot;)
+a12s
+#&gt;   g t  v
+#&gt; 1 1 4  4
+#&gt; 2 1 5  5
+#&gt; 3 2 4  9
+#&gt; 4 2 5 10
+
+identical(a12r, a12s)
+#&gt; [1] TRUE</code></pre>
+</div>
+<div id="same-but-reduce-the-two-select-statements-to-one-using-a-subquery" class="section level2">
+<h2>same but reduce the two select statements to one using a subquery</h2>
+<pre class="r"><code>a13s &lt;- sqldf(&quot;
+  select g, t, v
+  from DF d1, (select g as g2, avg(v) as avg_v from DF group by g)
+  where d1.g = g2 and v &gt; avg_v
+&quot;)
+a13s
+#&gt;   g t  v
+#&gt; 1 1 4  4
+#&gt; 2 1 5  5
+#&gt; 3 2 4  9
+#&gt; 4 2 5 10
+
+identical(a12r, a13s)
+#&gt; [1] TRUE</code></pre>
+</div>
+<div id="same-but-shorten-using-natural-join" class="section level2">
+<h2>same but shorten using natural join</h2>
+<pre class="r"><code>a14s &lt;- sqldf(&quot;
+  select g, t, v
+  from DF
+  natural join (select g, avg(v) as avg_v from DF group by g)
+  where v &gt; avg_v
+&quot;)
+a14s
+#&gt;   g t  v
+#&gt; 1 1 4  4
+#&gt; 2 1 5  5
+#&gt; 3 2 4  9
+#&gt; 4 2 5 10
+
+identical(a12r, a14s)
+#&gt; [1] TRUE</code></pre>
+</div>
+<div id="table" class="section level2">
+<h2>table</h2>
+<pre class="r"><code>a15r &lt;- table(warpbreaks$tension, warpbreaks$wool)
+a15r
+#&gt;    
+#&gt;     A B
+#&gt;   L 9 9
+#&gt;   M 9 9
+#&gt;   H 9 9
+
+a15s &lt;- sqldf(&quot;
+  select sum(wool = &#39;A&#39;), sum(wool = &#39;B&#39;)
+  from warpbreaks
+  group by tension
+&quot;)
+a15s
+#&gt;   sum(wool = &#39;A&#39;) sum(wool = &#39;B&#39;)
+#&gt; 1               9               9
+#&gt; 2               9               9
+#&gt; 3               9               9
+
+all.equal(as.data.frame.matrix(a15r), a15s, check.attributes = FALSE)
+#&gt; [1] TRUE</code></pre>
+</div>
+<div id="reshape" class="section level2">
+<h2>reshape</h2>
+<pre class="r"><code>DF
+#&gt;    g t  v
+#&gt; 1  1 1  1
+#&gt; 2  1 2  2
+#&gt; 3  1 3  3
+#&gt; 4  1 4  4
+#&gt; 5  1 5  5
+#&gt; 6  2 1  6
+#&gt; 7  2 2  7
+#&gt; 8  2 3  8
+#&gt; 9  2 4  9
+#&gt; 10 2 5 10
+
+t.names &lt;- paste(&quot;t&quot;, unique(as.character(DF$t)), sep = &quot;_&quot;)
+
+a16r &lt;- reshape(DF, direction = &quot;wide&quot;, timevar = &quot;t&quot;, idvar = &quot;g&quot;, varying = list(t.names))
+a16r
+#&gt;   g t_1 t_2 t_3 t_4 t_5
+#&gt; 1 1   1   2   3   4   5
+#&gt; 6 2   6   7   8   9  10
+
+a16s &lt;- sqldf(&quot;
+  select g,
+  sum((t == 1) * v) t_1,
+  sum((t == 2) * v) t_2,
+  sum((t == 3) * v) t_3,
+  sum((t == 4) * v) t_4,
+  sum((t == 5) * v) t_5
+  from DF
+  group by g
+&quot;)
+a16s
+#&gt;   g t_1 t_2 t_3 t_4 t_5
+#&gt; 1 1   1   2   3   4   5
+#&gt; 2 2   6   7   8   9  10
+
+all.equal(a16r, a16s, check.attributes = FALSE)
+#&gt; [1] TRUE</code></pre>
+</div>
+<div id="order" class="section level2">
+<h2>order</h2>
+<pre class="r"><code>a17r &lt;- Formaldehyde[order(Formaldehyde$optden, decreasing = TRUE), ]
+row.names(a17r) &lt;- NULL
+a17r
+#&gt;   carb optden
+#&gt; 1  0.9  0.782
+#&gt; 2  0.7  0.626
+#&gt; 3  0.6  0.538
+#&gt; 4  0.5  0.446
+#&gt; 5  0.3  0.269
+#&gt; 6  0.1  0.086
+
+a17s &lt;- sqldf(&quot;select * from Formaldehyde order by optden desc&quot;)
+a17s
+#&gt;   carb optden
+#&gt; 1  0.9  0.782
+#&gt; 2  0.7  0.626
+#&gt; 3  0.6  0.538
+#&gt; 4  0.5  0.446
+#&gt; 5  0.3  0.269
+#&gt; 6  0.1  0.086
+
+identical(a17r, a17s)
+#&gt; [1] TRUE</code></pre>
+</div>
+<div id="centered-moving-average-of-length-7" class="section level2">
+<h2>centered moving average of length 7</h2>
+<pre class="r"><code>set.seed(1)
+
+DF &lt;- data.frame(x = rnorm(15, 1:15))
+DF
+#&gt;             x
+#&gt; 1   0.3735462
+#&gt; 2   2.1836433
+#&gt; 3   2.1643714
+#&gt; 4   5.5952808
+#&gt; 5   5.3295078
+#&gt; 6   5.1795316
+#&gt; 7   7.4874291
+#&gt; 8   8.7383247
+#&gt; 9   9.5757814
+#&gt; 10  9.6946116
+#&gt; 11 12.5117812
+#&gt; 12 12.3898432
+#&gt; 13 12.3787594
+#&gt; 14 11.7853001
+#&gt; 15 16.1249309
+
+s18 &lt;- sqldf(&quot;
+  select a.x x, avg(b.x) movavgx
+  from DF a, DF b
+  where a.row_names - b.row_names between -3 and 3
+  group by a.row_names having count(*) = 7
+  order by a.row_names+0
+&quot;, row.names = TRUE
+)
+s18
+#&gt;           x   movavgx
+#&gt; 1  5.595281  4.044759
+#&gt; 2  5.329508  5.239727
+#&gt; 3  5.179532  6.295747
+#&gt; 4  7.487429  7.371495
+#&gt; 5  8.738325  8.359567
+#&gt; 6  9.575781  9.368186
+#&gt; 7  9.694612 10.396647
+#&gt; 8 12.511781 11.010629
+#&gt; 9 12.389843 12.065858
+
+r18 &lt;- data.frame(x = DF[4:12,], movavgx = rowMeans(embed(DF$x, 7)))
+row.names(r18) &lt;- NULL
+r18
+#&gt;           x   movavgx
+#&gt; 1  5.595281  4.044759
+#&gt; 2  5.329508  5.239727
+#&gt; 3  5.179532  6.295747
+#&gt; 4  7.487429  7.371495
+#&gt; 5  8.738325  8.359567
+#&gt; 6  9.575781  9.368186
+#&gt; 7  9.694612 10.396647
+#&gt; 8 12.511781 11.010629
+#&gt; 9 12.389843 12.065858
+
+all.equal(r18, s18)
+#&gt; [1] TRUE</code></pre>
+</div>
+<div id="merge.-a19r-and-a19s-are-same-except-row-order-and-row-names" class="section level2">
+<h2>merge. <code>a19r</code> and <code>a19s</code> are same except row order and row names</h2>
+<pre class="r"><code>A &lt;- data.frame(a1 = c(1, 2, 1), a2 = c(2, 3, 3), a3 = c(3, 1, 2))
+B &lt;- data.frame(b1 = 1:2, b2 = 2:1)
+
+a19s &lt;- sqldf(&quot;select * from A, B&quot;)
+a19s
+#&gt;   a1 a2 a3 b1 b2
+#&gt; 1  1  2  3  1  2
+#&gt; 2  1  2  3  2  1
+#&gt; 3  2  3  1  1  2
+#&gt; 4  2  3  1  2  1
+#&gt; 5  1  3  2  1  2
+#&gt; 6  1  3  2  2  1
+
+a19r &lt;- merge(A, B)
+a19r
+#&gt;   a1 a2 a3 b1 b2
+#&gt; 1  1  2  3  1  2
+#&gt; 2  2  3  1  1  2
+#&gt; 3  1  3  2  1  2
+#&gt; 4  1  2  3  2  1
+#&gt; 5  2  3  1  2  1
+#&gt; 6  1  3  2  2  1
+
+Sort &lt;- function(DF) {DF[do.call(order, DF),]}
+all.equal(Sort(a19s), Sort(a19r), check.attributes = FALSE)
+#&gt; [1] TRUE</code></pre>
+</div>
+</div>
+<div id="r-interact-with-linux-command" class="section level1">
+<h1>R interact with Linux command</h1>
+<pre class="r"><code>system(&#39;mkdir ./data/folder1&#39;)
+
+system(&#39;cd ./data/;cp read_sql.csv ./folder1&#39;)
+
+system(&quot;cd ./data/;echo &#39;echo test&#39;&gt; echo.sh&quot;)
+
+system(&#39;cd ./data/;mv echo.sh echo2.sh&#39;)
+
+system(&#39;rm -rf ./data/folder1&#39;)</code></pre>
+</div>
+<div id="reference" class="section level1">
+<h1>Reference</h1>
+<p><a href="https://github.com/ggrothendieck/sqldf" target="_blank">GitHub - sqldf</a></p>
+<p><a href="https://cran.r-project.org/web/packages/sqldf/sqldf.pdf" target="_blank">cran-r sqldf</a></p>
+<p><a href="https://www.rdocumentation.org/packages/sqldf/versions/0.4-11" target="_blank">sqldf package - R documentation</a></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

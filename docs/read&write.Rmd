@@ -1,0 +1,507 @@
+---
+title: "Data Import and Write"
+# author: 'Yuhang Liu'
+# date: '`r Sys.Date()`'
+output:
+  html_document:
+    toc: TRUE
+    toc_depth: 2        # the lowest level of table of contents
+    toc_float: TRUE
+    css: [config/style.css, config/multi-columns.css]
+---
+
+```{r setup, include=FALSE}
+# global settings for this document
+
+# options for r code chunk
+knitr::opts_chunk$set(
+  eval = TRUE,          # run (or not) the code in the chunk
+  echo = TRUE,          # display (or not) the code of the chunk
+  message = TRUE,       # display (or not) the messages of the chunk
+  warning = TRUE,       # display (or not) the warning message of the chunk
+  error = FALSE,        # display (or not) the error message of the chunk
+  collapse = TRUE,      # collapse (or not) all the source and output blocks in to a single block
+  comment = '#>'        # the start of each line of results in the final document
+)
+# for each r chunk, you can add setting respectively, overriding the global settings
+# like: {r eval=FALSE}
+# or:   {r eval=TRUE, collapse=FALSE}
+
+# options for tibble print
+# 10 rows will be print now
+options(tibble.print_min = 11L, tibble.print_max = 11L)
+
+# random seed
+set.seed(233)
+```
+
+# Read files into R
+
+```{r}
+library(tidyverse)
+```
+
+You can download all the supported files: [text.csv](./data/text.csv) [text.zip](./data/text.zip) [import_test.xlsx](./data/import_test.xlsx) [training.sas7bdat](./data/training.sas7bdat){download="training.sas7bdat"} and put them in your folder: `./data/`
+
+## Import a delimited file (including csv & tsv) into a tibble
+
+### readr package
+
+| Functions    | Usage                             |
+|:-------------|:----------------------------------|
+| **read_csv** | **Read a comma-delimited file**   |
+| read_csv2    | Read a semicolon-delimited file   |
+| read_tsv     | Read a tab-delimited file         |
+| read_delim   | Read a general-delimited file     |
+| read_fwf     | Read a fixed width file           |
+| read_table   | Read whitespace-separated columns |
+| read_log     | Read common/combined log file     |
+
+### Read a comma-delimited file: [read_csv](https://readr.tidyverse.org/reference/read_delim.html){target="_blank"}
+
+| Arguments       | Default            | Option                                         |
+|:----------------|:-------------------|:-----------------------------------------------|
+| file            | location           | a file, a connection, or literal data          |
+| col_names       | `TRUE`             | `TRUE`/`FALSE`(x1-xn)                          |
+|                 |                    | character vector of column names               |
+| col_types       |                    | `cols(var1 = col_character())`                 |
+|                 |                    | `cols_only(X1 = col_character())`              |
+|                 |                    | `cols(var1 = col_skip())`                      |
+|                 |                    | `c("ic_")`                                     |
+|                 |                    | `col_types = list(.default = col_character())` |
+| locale          | `default_locale()` | default or customize                           |
+| na              | `c("", "NA")`      | a vector, `c(" ", "NA", ".")`                  |
+| quote           | `"\""`             | `"\""`                                         |
+| n_max           | `Inf`              | integer                                        |
+| skip            | `0`                | integer                                        |
+| guess_max       | `Inf or 1000`      | integer                                        |
+| trim_ws         | `TRUE`             | `TRUE`/`FALSE`                                 |
+| skip_empty_rows | `TRUE`             | `TRUE`/`FALSE`                                 |
+
+### Arguments
+
+1.  **file**: A path, a connection, or literal data
+
+    ```{r collapse=TRUE}
+    read_csv("x,y\n1,2\n3,4")
+
+    read_csv("./data/text.csv")
+
+    read_csv("./data/text.zip")
+
+    read_csv("https://github.com/tidyverse/readr/raw/master/inst/extdata/mtcars.csv")
+    ```
+
+2.  **col_names**: Define var names--either `TRUE`, `FALSE` or a character vector of column names, `TRUE` by default.
+
+    ```{r}
+    read_csv("./data/text.csv", col_names = TRUE)
+
+    read_csv("./data/text.csv", col_names = FALSE)
+
+    read_csv("./data/text.csv", col_names = c("var1", "var2", "var3"))
+    ```
+
+3.  **col_types**: Define var types--`NULL`, a `cols()` specification, or a string, "GUESS" by default.
+
+    |               |                |            |
+    |---------------|----------------|------------|
+    | c = character | i = integer    | n = number |
+    | d = double    | l = logical    | f = factor |
+    | D = date      | T = date time  | t = time   |
+    | ? = guess     | \_ or - = skip |            |
+
+    ```{r}
+    read_csv("./data/text.csv", col_types = cols(age = col_character()))
+
+    read_csv("./data/text.csv", col_types = cols_only(StudyName = col_character(), SiteNumber = col_character()))
+
+    read_csv("./data/text.csv", col_types = cols(SiteNumber = col_skip(), StudyName = col_skip()))
+
+    read_csv("./data/text.csv", col_types = c("cn_cc"))
+
+    read_csv("./data/text.csv", col_types = list(.default = col_character()))
+
+    read_csv("./data/text.csv", col_types = cols())
+    ```
+
+4.  **na**: Character vector of strings to interpret as missing values -- `c('', 'NA')`
+
+    ```{r}
+    read_csv("./data/text.csv", na = c("", "NA", "."))
+    ```
+
+5.  **comment**: A string used to identify comments. Any text after the comment characters will be silently ignored.
+
+    ```{r, warning=TRUE}
+    read_csv("./data/text.csv", comment = "#")
+    ```
+
+6.  **trim_ws**: Should leading and trailing whitespace be trimmed from each field before parsing it?
+
+    ```{r}
+    read_csv("./data/text.csv", trim_ws = FALSE)
+    ```
+
+7.  **skip**: Number of lines to skip before reading data.
+
+    ```{r}
+    read_csv("./data/text.csv", skip = 2)
+    ```
+
+8.  **n_max**: Maximum number of records to read.
+
+    ```{r}
+    read_csv("./data/text.csv", n_max = 5)
+    ```
+
+9.  **locale**: The locale controls defaults that vary from place to place
+
+    ```{r}
+    locale()
+
+    locale(
+      date_names = "en",
+      date_format = "%AD",
+      time_format = "%AT",
+      decimal_mark = ".",
+      grouping_mark = ",",
+      tz = "UTC",
+      encoding = "UTF-8",
+      asciify = FALSE
+    )
+    ```
+
+10. **guess_max**: Maximum number of records to use for guessing column types.
+
+11. **quoted_na**: Should missing values inside quotes be treated as missing values (the default) or strings
+
+## Import xls and xlsx files： [readxl::read_xlsx](https://readxl.tidyverse.org/){target="_blank"}
+
+### readxl package
+
+```{r}
+library(readxl)
+```
+
+| Functions     | Usage                                   |
+|:--------------|:----------------------------------------|
+| read_excel    | Read xls and xlsx files                 |
+| **read_xlsx** | **Read xlsx files**                     |
+| read_xls      | Read xls files                          |
+| excel_sheet   | List all sheets in an excel spreadsheet |
+| excel_format  | Determine if files are xls or xlsx      |
+
+### `excel_sheet()`, `excel_format()`
+
+```{r collapse=TRUE}
+loc <-  c("./data/import_test.xlsx")
+a <- excel_sheets(loc)
+a
+
+b <- excel_format(loc)
+b
+```
+
+### read_xlsx
+
+| Arguments    | Default       | Option                                      |
+|:-------------|:--------------|:--------------------------------------------|
+| sheet        | `1`           | `"sheetname"`, `2`                          |
+| range        | full          | `"A1:D15"`, "`Sheet!A1:B14"`                |
+|              |               | `cell_limits(c(4, 3), c(NA, NA))`           |
+|              |               | `cell_rows()`                               |
+|              |               | `cell_cols()`                               |
+| col_names    | `TRUE`        | `TRUE`/`FALSE`(x1-xn)                       |
+|              |               | character vector of column names            |
+| col_types    |               | `cols(var1 = col_character())`              |
+|              |               | `cols_only(X1 = col_character())`           |
+|              |               | `cols(var1 = col_skip())`                   |
+|              |               | `c("ic\_")` `c('text', 'guess', 'numeric')` |
+|              |               | `col_types = "text"`                        |
+| na           | `c("", "NA")` | a vector, `c(" ", "NA", ".")`               |
+| n_max        | `Inf`         | integer                                     |
+| skip         | `0`           | integer                                     |
+| guess_max    | `Inf or 1000` | integer                                     |
+| trim_ws      | `TRUE`        | `TRUE`/`FALSE`                              |
+| .name_repair | `"unique"`    | default or customize                        |
+
+1.  **sheet**: Sheet to read -- `"sheetname"` or an integer (the position of the sheet).
+
+    ```{r}
+    read_xlsx("./data/import_test.xlsx", sheet = 1)
+    ```
+
+2.  **range**: A cell range to read from
+
+    ```{r}
+    read_xlsx("./data/import_test.xlsx", range = "A1:D5")
+
+    read_xlsx("./data/import_test.xlsx", range = cell_limits(c(4, 3), c(NA, NA)))
+
+    read_xlsx("./data/import_test.xlsx", range = cell_rows(1:3))
+
+    read_xlsx("./data/import_test.xlsx", range = cell_cols(1:5))
+    ```
+
+3.  **col_types**: Either `NULL` to guess all from the spreadsheet or a character vector containing one entry per column from these options: "skip", "guess", "logical", "numeric", "date", "text" or "list". If exactly one `col_type` is specified, it will be recycled.
+
+    ```{r}
+    read_xlsx("./data/import_test.xlsx", col_types = "text")
+    ```
+
+4.  **.name_repair**: Handling of column names. By default, readxl ensures column names are not empty and are unique.
+
+    ```{r}
+    my_custom_name_repair <- function(nms) {tolower(gsub("[.-]", "_", nms))}
+    read_xlsx("./data/import_test.xlsx", .name_repair= my_custom_name_repair)
+    ```
+
+## Import SAS files into R: [haven::read_sas](https://haven.tidyverse.org/reference/read_sas.html){target="_blank"}
+
+```{r}
+library(haven)
+```
+
++------------------+----------------+-----------------------------------+
+| Arguments        | Default        | Option                            |
++:=================+:===============+:==================================+
+| catalog_file     | `NULL`         |                                   |
++------------------+----------------+-----------------------------------+
+| encoding         | `NULL`         |                                   |
++------------------+----------------+-----------------------------------+
+| catalog_encoding | `NULL`         |                                   |
++------------------+----------------+-----------------------------------+
+| n_max            | `Inf`          | integer                           |
++------------------+----------------+-----------------------------------+
+| skip             | `0`            | integer                           |
++------------------+----------------+-----------------------------------+
+| col_select       | `NULL`         | a vector, `c('subject', 'age')`   |
++------------------+----------------+-----------------------------------+
+| .name_repair     | `"unique"`     | default or customize              |
++------------------+----------------+-----------------------------------+
+
+1.  **col_select**: One or more selection expressions
+
+    ```{r}
+    sas <- read_sas("./data/training.sas7bdat", col_select = c("Age", "Score", "quote_escape"))
+    sas
+    ```
+
+# Data Output
+
+```{r re-setup, include=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+## Write a data frame to a comma-delimited file: `readr::write_csv`
+
+| Arguments    | Default    | Option                              |
+|:-------------|:-----------|:------------------------------------|
+| file         |            | File or connection                  |
+| delim        |            | `','`, `';'`, `'/'`                 |
+| na           | `"NA"`     | string                              |
+| append       | `FALSE`    | `FALSE`/`TRUE`                      |
+| col_names    | `TRUE`     | `FALSE`/`TRUE`                      |
+| quote_escape | `"double"` | `"double"`, `"backslash"`, `"none"` |
+| eol          |            | `"\n"`                              |
+
+1.  **append**: If `FALSE`, will overwrite existing file. If `TRUE`, will append to existing file. In both cases, if the file does not exist a new file is created.
+
+    ```{r}
+    getwd()
+    if (!dir.exists('./output')) {dir.create('./output')}
+
+    write_csv(sas, "./output/output.csv", append = FALSE)
+    write_csv(sas, "./output/output.csv", append = TRUE) 
+    ```
+
+2.  **col_names**: If `FALSE`, column names will not be included at the top of the file. If `TRUE`, column names will be included. If not specified, col_names will take the opposite value given to append.
+
+    ```{r}
+    write_csv(sas, "./output/output.csv", col_names = FALSE)
+    write_csv(sas, "./output/output.csv", col_names = TRUE)
+    ```
+
+3.  **eol**: The end of line character to use. Most commonly either `"\n"` for Unix style newlines, or `"\r\n"` for Windows style newlines.
+
+    ```{r}
+    write_csv(sas, "./output/output.csv", eol = " a\n")
+    ```
+
+4.  **quote_escape**: The type of escaping to use for quoted values, one of `"double"`, `"backslash"` or `"none"`.
+
+    ```{r}
+    write_csv(sas, "./output/output.csv", quote_escape = "none")
+    ```
+
+## Write a data frame to a excel file: `openxlsx::write.xlsx`
+
+| Arguments          | Default   | Option                                             |
+|:-------------------|:----------|:---------------------------------------------------|
+| asTable            | `FALSE`   |                                                    |
+| creator            | `NULL`    | string                                             |
+| sheetName          | `NULL`    | string                                             |
+| gridLines          | `TRUE`    | `TRUE`/`FALSE`                                     |
+| tabColour          | `NULL`    | yellow                                             |
+| zoom               | `100`     | `10`---`400`                                       |
+| startCol           | `1`       | vector or numberic                                 |
+| startRow           | `1`       | vector or numberic                                 |
+| xy                 | `c(1, 1)` | vector                                             |
+| colNames/col.names | `TRUE`    | `TRUE`/`FALSE`                                     |
+| rowNames/row.names | `FALSE`   | `TRUE`/`FALSE`                                     |
+| headerStyle        | `NULL`    | custom by `createstyle()`                          |
+| borders            | `NULL`    | `"surrounding"`, `"columns"` or `"rows"` or `NULL` |
+| borderColour       | `NULL`    | color                                              |
+| borderStyle        | `NULL`    | custom by `createstyle()`                          |
+| keepNA             | `FALSE`   | `TRUE`/`FALSE`                                     |
+| na.string          | `NULL`    | string                                             |
+| firstActiveRow     | `1`       | numeric                                            |
+| firstActiveCol     | `1`       | numeric                                            |
+| firstRow           | `FALSE`   | `TRUE`/`FALSE`                                     |
+| firstCol           | `FALSE`   | `TRUE`/`FALSE`                                     |
+| colWidths          | `NA`      | `"auto"`                                           |
+| overwrite          | `TRUE`    | `TRUE`/`FALSE`                                     |
+
+1.  **asTable**: whether with border and filter button, `FALSE` by default
+
+2.  **creator**: A string specifying the workbook author
+
+3.  **sheetName**: Name of the worksheet
+
+4.  **gridLines**: A logical. If `FALSE`, the worksheet grid lines will be hidden.
+
+5.  **tabColour**: Colour of the worksheet tab
+
+6.  **zoom**: A numeric between `10` and `400`. Worksheet zoom level as a percentage.
+
+    ```{r}
+    write.xlsx(
+      sas,
+      "./output/output.xlsx",
+      asTable = TRUE,
+      creator = "yuhang",
+      sheetName = 'name',
+      gridLines = TRUE,
+      tabColour = 'yellow',
+      zoom = 200
+    )
+    ```
+
+7.  **startCol**: A vector specifying the starting column(s) to write `df`
+
+8.  **startRow**: A vector specifying the starting row(s) to write `df`
+
+9.  **xy**: An alternative to specifying `startCol` and `startRow` individually. A vector of the form `c(startCol, startRow)`
+
+10. **colNames/col.names**: If `TRUE`, column names of `x` are written.
+
+11. **rowNames/row.names**: If `TRUE`, row names of `x` are written.
+
+12. **headerStyle**: Custom style to apply to column names.
+
+13. **borders**: Either `"surrounding"`, `"columns"` or `"rows"` or `NULL`.
+
+14. **borderColour**: Colour of cell border, only borders is not `NULL`
+
+15. **borderStyle**: Border line style, customize by `createstyle()`
+
+    ```{r}
+    write.xlsx(
+      sas,
+      "./output/output.xlsx",
+      startCol = 4, startRow = 3,
+      # xy = c(2, 3),
+      col.names = FALSE,
+      rowNames = TRUE,
+      borders = "surrounding", borderColour = "blue"
+    )
+    ```
+
+16. **keepNA**: If `TRUE`, NA values are converted to \#N/A (or `na.string`, if not `NULL`) in Excel, else NA cells will be empty. Defaults to `FALSE.`
+
+17. **na.string**: If not `NULL`, and if `keepNA` is `TRUE`, NA values are converted to this string in Excel. Defaults to `NULL.`
+
+18. **firstActiveRow**: Top row of active region to freeze pane, begin at `1`.
+
+19. **firstActiveCol**: Furthest left column of active region to freeze pane, begin at `1`.
+
+20. **firstRow**: If `TRUE`, freezes the first row (equivalent to `firstActiveRow = 2`).
+
+21. **firstCol**: If `TRUE`, freezes the first column (equivalent to `firstActiveCol = 2`).
+
+22. **colWidths**: Must be value `"auto"`. Sets all columns containing data to auto width.
+
+23. **overwrite**: Overwrite existing file (Defaults to `TRUE` as with `write.table`)
+
+    ```{r}
+    write.xlsx(
+      sas,
+      "./output/output.xlsx",
+      firstActiveRow = 3, firstActiveCol = 3,
+      # firstRow = TRUE, firstCol = TRUE,
+      colWidths= "auto"
+    )
+    ```
+
+### Open more than one dataframe into different sheets
+
+```{r}
+l <- list(sas, sas, sas)
+write.xlsx(
+  l,
+  "./output/writeList1.xlsx",
+  sheetName = c('a', 'b', 'c'),
+  colWidths = c(NA, "auto", "auto"),
+  startCol = c(1, 2, 3),
+  startRow = 2,
+  asTable = c(TRUE, TRUE, FALSE),
+  withFilter = c(TRUE, FALSE, FALSE)
+)
+```
+
+# File/folder operations
+
+## Folder operations
+
+-   `dir.exists()`: judge whether location exist, return `TRUE` or `FALSE`
+
+-   `dir.create()`: create a path
+
+-   `unlink()`: deletes the file(s) or directories
+
+```{r}
+base::dir.exists("./output/test")
+dir.create("./output/test/r", recursive = TRUE)
+unlink("./output/test/r", recursive = TRUE)
+dir.create("./output/test")
+base::dir.exists("./output/test")
+unlink("./output/test")
+```
+
+## File operations
+
++------------------+---------------------------------------------------------------+
+| Functions        | Usage                                                         |
++:=================+:==============================================================+
+| file.create      | creates files with the given names                            |
++------------------+---------------------------------------------------------------+
+| file.exists      | indicating whether the files exist                            |
++------------------+---------------------------------------------------------------+
+| file.remove      | remove the files                                              |
++------------------+---------------------------------------------------------------+
+| file.rename      | rename files                                                  |
++------------------+---------------------------------------------------------------+
+| file.copy        | copy files                                                    |
++------------------+---------------------------------------------------------------+
+| dir/list.files   | list the names of files or directories in the named directory |
++------------------+---------------------------------------------------------------+
+
+```{r}
+file.create("./output/test/r/read.txt")
+file.exists("./output/test/r/read.txt")
+file.rename('./output/test/r/read.txt', './output/test/r/read2.txt')
+file.copy('./output/test/r/read2.txt', './output/test/r/read.txt')
+dir('./output/test/r')
+file.remove('./output/test/r/read2.txt')
+```

@@ -1,0 +1,236 @@
+---
+title: "ggplot2 basic"
+# author: "jinzhi.zhou"
+# date: "5/19/2021"
+output:
+  html_document:
+    toc: TRUE
+    toc_depth: 3
+    toc_float: TRUE
+    css: [config/style.css]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+```
+
+__ggplot2__ is a R package dedicated to data visualization. It can greatly improve the quality and aesthetics of your graphics, and will make you much more efficient in creating them.
+
+In most cases a ggplot2 graphic start with `ggplot()`, supply a dataset and aesthetic mapping (with `aes()`). Then you can add on layers (like `geom_point()` or `geom_histogram()`), scales (like `scale_colour_brewer()`), faceting specifications (like `facet_wrap()`) and coordinate systems (like `coord_flip()`).
+
+# Basic plot
+
+required data:
+
+```{r mpg}
+mpg
+```
+
+ggplot2 builds charts through layers using `geom_` functions (like `geom_point()`,`geom_bar()`) 
+
+```{r}
+p <- ggplot(mpg, aes(x = displ, y = hwy)) + geom_point()
+p
+```
+
+This produces a scatterplot defined by:
+
+1. Data: `mpg`
+
+1. Aesthetic mapping: engine size mapped to x position, fuel economy to y position.
+
+1. Layer: points.
+
+Pay attention to the structure of this function call: data and aesthetic mappings are supplied in `ggplot()`, <span style="color:red">then layers are added on with `+`</span>. This is an important pattern, and as you learn more about ggplot2 you'll construct increasingly sophisticated plots by adding on more types of components.
+
+To add additional variables to a plot, we can use other aesthetics like colour, shape, alpha, and size 
+
+```{r}
+
+p <- ggplot(mpg, aes(displ, hwy, colour = class)) + geom_point()
+p
+
+p <- ggplot(mpg, aes(displ, hwy, colour = class)) + scale_colour_brewer(palette="Oranges") + geom_point()
+p
+
+p <- ggplot(mpg, aes(displ, hwy, shape = drv)) + geom_point()
+p
+
+p <- ggplot(mpg, aes(displ, hwy, size = cyl)) + geom_point()
+p
+
+p <- ggplot(mpg, aes(displ, hwy, size = cyl, alpha=0.5)) + geom_point()
+p
+
+```
+
+# Annotations
+
+When constructing a data visualisation, it is often necessary to make annotations to the data displayed. Conceptually, an annotation supplies _metadata_ for the plot: that is, it provides additional information about the data being displayed. From a practical standpoint, however, metadata is just another form of data. Because of this, the annotation tools in ggplot2 reuse the same geoms that are used to create other plots. However, to meet the specific needs that users often have when annotating plots, there are some helper functions in ggplot2 itself, and a number of other packages have extended ggplot2 in ways you may find helpful.
+
+## Adding a title and xlabel/ylabel for the plot.
+
+When customising a plot, it is often useful to modify the titles associated with the plot, axes, and legends. To assist with this task ggplot2 provides the `labs()` helper function, which lets you set the various titles using name-value pairs like `title = "My plot title"`, `x = "X axis"` or `fill = "fill legend"`:
+
+```{r pressure}
+p <- ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = factor(cyl))) +
+  labs(
+    x = "Engine displacement (litres)", 
+    y = "Highway miles per gallon", 
+    colour = "Number of cylinders",
+    title = "Mileage by engine size and cylinders",
+    subtitle = "Source: http://fueleconomy.gov"
+  )
+p
+```
+
+Adjust the position of title for the plot:
+
+```{r}
+p <- ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = factor(cyl))) +
+  labs(
+    x = "Engine displacement (litres)", 
+    y = "Highway miles per gallon", 
+    colour = "Number of cylinders",
+    title = "Mileage by engine size and cylinders",
+    subtitle = "Source: http://fueleconomy.gov"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 18),
+    plot.subtitle = element_text(hjust = 0.5, size = 12)
+  )
+p
+```
+
+The values supplied to `labs()` are typically text strings, with `\n` used to specify line breaks, but you can also supply mathematical expressions wrapped in `quote()`. The rules by which these expressions are interpreted can be found by typing `?plotmath`.
+
+```{r}
+values <- seq(from = -2, to = 2, by = .01)
+df <- data.frame(x = values, y = values ^ 3)
+
+ggplot(df, aes(x, y)) +
+  geom_path() +
+  labs(y = quote(f(x) == x^3))
+```
+
+ggplot2 includes the `annotate()` function for annotation
+
+```{r}
+yrng <- range(economics$unemploy)
+xrng <- range(economics$date)
+caption <- paste(
+  strwrap("Unemployment rates in the US have varied a lot over the years", 40),
+  collapse = "\n"
+)
+
+p <- ggplot(economics, aes(date, unemploy)) +
+  geom_line() +
+  annotate(
+    geom = "text", x = xrng[1], y = yrng[2], 
+    label = caption, hjust = 0, vjust = 1, size = 4
+  )
+p
+```
+
+The convenience of the `annotate()` function comes in handy in other situations.
+
+For example, a common form of annotation is to highlight a subset of points by drawing larger points in a different colour underneath the main data set.
+
+To highlight vehicles manufactured by Subaru you could use this to create the basic plot:
+
+```{r}
+p <- ggplot(mpg, aes(displ, hwy)) +
+  geom_point(
+    data = dplyr::filter(mpg, manufacturer == "subaru"), 
+    colour = "orange",
+    size = 3
+  ) +
+  geom_point()
+p
+```
+
+The problem with this is that the highlighted category would not be labelled. This is easily rectified using `annotate()`
+
+```{r}
+p +
+  annotate(geom = "point", x = 5.5, y = 40, colour = "orange", size = 3) +
+  annotate(geom = "point", x = 5.5, y = 40) +
+  annotate(geom = "text", x = 5.6, y = 40, label = "subaru", hjust = "left")
+```
+
+# Theme
+
+Use `theme()` or `theme_*()` if you just need to tweak the display of an existing theme.
+
+```{r}
+p <- ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = factor(cyl))) +
+  labs(
+    x = "Engine displacement (litres)", 
+    y = "Highway miles per gallon", 
+    colour = "Number of cylinders",
+    title = "Mileage by engine size and cylinders",
+    subtitle = "Source: http://fueleconomy.gov"
+  ) +
+  # theme_bw() +
+  theme_classic()
+p
+```
+
+# Output
+
+Use `ggsave()` function to save the figure.
+
+```{r, eval=FALSE}
+p <- ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = factor(cyl))) +
+  labs(
+    x = "Engine displacement (litres)", 
+    y = "Highway miles per gallon", 
+    colour = "Number of cylinders",
+    title = "Mileage by engine size and cylinders",
+    subtitle = "Source: http://fueleconomy.gov"
+  ) +
+  theme_classic()
+
+if (!dir.exists('./output/figures')) {dir.create('./output/figures', recursive = T)}
+ggsave('./output/figures/plot.pdf', plot = p, width = 5, height = 5)
+ggsave('./output/figures/plot.png', plot = p, width = 5, height = 5)
+```
+
+Use `pdf()` `png()` `jpeg()` function to save the figure.
+
+```{r, eval=FALSE}
+p <- ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = factor(cyl))) +
+  labs(
+    x = "Engine displacement (litres)", 
+    y = "Highway miles per gallon", 
+    colour = "Number of cylinders",
+    title = "Mileage by engine size and cylinders",
+    subtitle = "Source: http://fueleconomy.gov"
+  ) +
+  theme_bw()
+
+pdf('./output/figures/plot1.pdf')
+p
+dev.off()
+
+png('./output/figures/plot1.png')
+p
+dev.off()
+```
+
+# Reference
+
+[cheatsheet - ggplot2](https://github.com/rstudio/cheatsheets/blob/master/data-visualization.pdf){target="_blank"}
+
+[ggplot2-book](https://ggplot2-book.org/){target="_blank"}
+
+[r-graph](https://www.r-graph-gallery.com/ggplot2-package.html){target="_blank"}

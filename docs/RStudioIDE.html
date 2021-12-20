@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>RStudio IDE</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="config/style.css" type="text/css" />
+<link rel="stylesheet" href="config/click-zoom.css" type="text/css" />
+<link rel="stylesheet" href="config/multi-columns.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R training</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="RStudioIDE.html">RStudio IDE</a>
+</li>
+<li>
+  <a href="base_R.html">Base R</a>
+</li>
+<li>
+  <a href="tidyverse-base.html">tidyverse base</a>
+</li>
+<li>
+  <a href="stringr_hs.html">stringr</a>
+</li>
+<li>
+  <a href="datetime_qw.html">date and time</a>
+</li>
+<li>
+  <a href="read-write.html">data import/export</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    ggplot2
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ggplot2_basic.html">basic</a>
+    </li>
+    <li>
+      <a href="ggplot2_layers.html">layers</a>
+    </li>
+    <li>
+      <a href="arranging-plots.html">arranging plots</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    More
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="pipe.html">Using pipe</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">focusing on package</li>
+    <li>
+      <a href="data-process-dplyr.html">data process - dplyr</a>
+    </li>
+    <li>
+      <a href="data-process-tidyr.html">data process - tidyr</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Use SQL in R</li>
+    <li>
+      <a href="sqldf.html">sqldf</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">RStudio IDE</h1>
+
+</div>
+
+
+<div id="use-r-in-beigene" class="section level1" number="1">
+<h1 number="1"><span class="header-section-number">1</span> Use R in BeiGene</h1>
+<p>You can find the RStudio icon at <a href="https://myapplications.microsoft.com/" target="_blank">https://myapplications.microsoft.com/</a> (you should apply for RStudio permission to <a href="mailto:AskIT@beigene.com" class="email">AskIT@beigene.com</a> if you can’t find this icon):</p>
+<p><img src="figures/RStudioIDE/RStudio-icon.png" /></p>
+<p>Click it then you will jump to Rstudio Server Pro login page, you can get a preview (maybe different layout) after login:</p>
+<div class="click-zoom-1-5-left-100">
+<p><label> <input type="checkbox"> <img src="figures/RStudioIDE/RStudio-main-comments.png"> </label></p>
+</div>
+<div class="click-zoom-1-5-left-100">
+<p><label> <input type="checkbox"> <img src="figures/RStudioIDE/RStudio-overview-comments.png"> </label></p>
+</div>
+<blockquote>
+<p>Note: If you failed reach the Rstudio Server Pro login page, try to open the url in your AWS.</p>
+</blockquote>
+<p>You can choose pane layout via <code>View &gt; Panes &gt; Pane Layout</code> (or <code>Tools &gt; Global Options &gt; Pane Layout</code>):</p>
+<p><img src="figures/RStudioIDE/RStudio-pane-setting.png" /></p>
+</div>
+<div id="rstudio-views" class="section level1" number="2">
+<h1 number="2"><span class="header-section-number">2</span> RStudio views</h1>
+<div id="source-pane" class="section level2" number="2.1">
+<h2 number="2.1"><span class="header-section-number">2.1</span> Source pane</h2>
+<p>You can open <code>.R</code> (R script), <code>.Rmd</code>(R Markdown), <code>.R</code> (shiny app) and more in Source pane, and write your code.</p>
+<div id="r-r-script-file" class="section level3 unnumbered">
+<h3 class="unnumbered"><code>.R</code> R script file</h3>
+<div class="click-zoom-1-5-left-100">
+<p><label> <input type="checkbox"> <img src="figures/RStudioIDE/RStudio-source-comments.png"> </label></p>
+</div>
+<ul>
+<li><p>You can double click to select a word (or texts between <code>(</code> <code>[</code> <code>{</code>), triple click to select a line.</p></li>
+<li><p><code>Ctrl</code> + <code>Enter</code> to run the current line or selection.</p></li>
+<li><p>After select a piece of code, you can type <code>'</code> <code>"</code> <code>`</code> <code>(</code> <code>[</code> <code>{</code> to add symbols at both side of the selected code. In <code>.Rmd</code> file, this feature also apply to <code>*</code> and <code>_</code>.</p></li>
+<li><p>You can click the “Source” button to source file with or without echo, or use keyboard shortcuts: <code>Ctrl</code> + <code>Shift</code> + <code>Enter</code> (with echo), <code>Ctrl</code> + <code>Shift</code> + <code>S</code> (without echo).</p></li>
+<li><p><code>Ctrl</code> + <code>F</code> to find and replace.</p></li>
+<li><p>Comments start with <code>#</code>, <code>Ctrl</code> + <code>Shift</code> + <code>C</code> can comment/uncomment current line(s).</p></li>
+<li><p>A code section is a line which start with <code>#</code> and end with at least four <code>-</code> (or <code>=</code>). You can use <code>Ctrl</code> + <code>Shift</code> + <code>R</code> to insert a code section. Code section is more than comments, it’s helpful in dividing code and you can find the label of code section in document outline.</p></li>
+</ul>
+</div>
+<div id="rmd-r-markdown-file" class="section level3 unnumbered">
+<h3 class="unnumbered"><code>.Rmd</code> R Markdown file</h3>
+<div class="click-zoom-1-5-left-100">
+<p><label> <input type="checkbox"> <img src="figures/RStudioIDE/RStudio-rmarkdown-comments.png"> </label></p>
+</div>
+<ul>
+<li>Learn more about rmarkdown: <a href="https://rmarkdown.rstudio.com/" target="_blank">https://rmarkdown.rstudio.com/</a></li>
+</ul>
+</div>
+<div id="shiny-app" class="section level3 unnumbered">
+<h3 class="unnumbered">Shiny app</h3>
+<div class="click-zoom-1-5-left-100">
+<p><label> <input type="checkbox"> <img src="figures/RStudioIDE/RStudio-shiny-comments.png"> </label></p>
+</div>
+<ul>
+<li><p>RStudio recognizes that files named <strong>app.R</strong>, <strong>sever.R</strong>, <strong>ui.R</strong> and <strong>global.R</strong> belong to a shiny app.</p></li>
+<li><p>Learn more about shiny: <a href="https://shiny.rstudio.com/" target="_blank">https://shiny.rstudio.com/</a></p></li>
+</ul>
+</div>
+</div>
+<div id="colsole-pane" class="section level2" number="2.2">
+<h2 number="2.2"><span class="header-section-number">2.2</span> Colsole pane</h2>
+<p><img src="figures/RStudioIDE/RStudio-console-comments.png" /></p>
+<ul>
+<li><p>Once you run a piece of code, you can see the code and the output in console pane. You can also type the code in console directly, and press <code>Enter</code> to run.</p></li>
+<li><p>The working directory locate at the top of the console, you can click the small button to jump to the working directory (in <strong>Files tab</strong>).</p></li>
+<li><p>Press <code>↑</code> and <code>↓</code> to switch between history command.</p></li>
+<li><p><code>Ctrl</code> + <code>↑</code> helps you search in command history (usually with prefix).</p></li>
+<li><p><code>Ctrl</code> + <code>L</code> to clear all the message in console.</p></li>
+<li><p><img src="figures/RStudioIDE/RStudio-completion-popup.png" /></p>
+<p>A completion popup (pop up automatically or called by <code>Tab</code>) can help you complete your code, <code>↑</code> and <code>↓</code> to switch, <code>Enter</code> to select, and <code>Esc</code> to dismiss completion popup. Completion popup works in both source pane and console pane.</p></li>
+<li><p><img src="figures/RStudioIDE/RStudio-console-not-closed1.png" /> <img src="figures/RStudioIDE/RStudio-console-not-closed2.png" /></p>
+<p>The current typed commands always start with <code>&gt;</code>, but when you try to run a piece of code with not closed quotes and brackets, such as <code>(1 + 2</code> or <code>'foo</code>, the start of the command will change to <code>+</code> and keep accepting your input, until you close the quotes or brackets. You can also press <code>Esc</code> to force to exit.</p></li>
+</ul>
+</div>
+<div id="terminal-tab" class="section level2" number="2.3">
+<h2 number="2.3"><span class="header-section-number">2.3</span> Terminal tab</h2>
+<p>You can also work with command line for your operating system. Our RStudio Sever Pro build on linux system so you can run the linux command in terminal tab.</p>
+<p><img src="figures/RStudioIDE/RStudio-terminal.png" /></p>
+</div>
+<div id="environment-tab" class="section level2" number="2.4">
+<h2 number="2.4"><span class="header-section-number">2.4</span> Environment tab</h2>
+<p>Environment tab displays saved objects by type with short description.</p>
+<p><img src="figures/RStudioIDE/RStudio-environment-comments.png" /></p>
+<ul>
+<li><p>Click the object to view the details of a dataframe (or list) or view the source code of a function. Same as <code>View(iris)</code> and <code>View(foo)</code>.</p></li>
+<li><p>You can clear all objects (include hidden objects or not) by the small broom button. Same as <code>rm(list = ls())</code> and <code>rm(list = ls(all.names = T))</code></p></li>
+</ul>
+</div>
+<div id="history-tab" class="section level2" number="2.5">
+<h2 number="2.5"><span class="header-section-number">2.5</span> History tab</h2>
+<p>History tab contains the history commands, you can select lines of codes and send it to source pane or console pane.</p>
+<p><img src="figures/RStudioIDE/RStudio-history-comments.png" /></p>
+</div>
+<div id="files-tab" class="section level2" number="2.6">
+<h2 number="2.6"><span class="header-section-number">2.6</span> Files tab</h2>
+<div class="click-zoom-1-5-left-100">
+<p><label> <input type="checkbox"> <img src="figures/RStudioIDE/RStudio-files-comments.png"> </label></p>
+</div>
+<ul>
+<li><p>There are a lot of files (folder) operations in Files tab. Moving files, upload, export and so on.</p></li>
+<li><p>You can go to folder with the folder path, <code>~</code> for home directory, <code>/</code> for the linux root directory, and <code>/mnt/usrfiles</code> for our bgcrh directory.</p></li>
+<li><p>Note that the working directory is important in R. <code>getwd()</code> and <code>setwd()</code> can help you get and set the working directory. Be aware of your working directory (not your script file directory) and use relative path in your work.</p></li>
+</ul>
+</div>
+<div id="packages-tab" class="section level2" number="2.7">
+<h2 number="2.7"><span class="header-section-number">2.7</span> Packages tab</h2>
+<p>Packages tab shows all the package you have installed. Our work in R is also highly dependent on R packages.</p>
+<p><img src="figures/RStudioIDE/RStudio-packages-install.png" /></p>
+<ul>
+<li><p>You can install packages via Install button, or do it by <code>install.packages()</code>. To install a specific versions of the requested package, use <code>remotes::install_version()</code>.</p></li>
+<li><p>If you want to use a function (dataset) in a package, you can specify it like: <code>dplyr::mutate()</code> or <code>dplyr::starwars</code>. Or you can use <code>library()</code> to load the whole package into your environment, like <code>library(dplyr)</code>, then call the function (dataset) directly: <code>mutate()</code> or <code>starwars</code>.</p></li>
+<li><p>Unclick to detach a package with <code>detach()</code>, for example: <code>detach('package:dplyr')</code></p></li>
+<li><p><code>.libPaths()</code> gets/sets the library trees within which packages are looked for.</p></li>
+</ul>
+</div>
+<div id="help-tab" class="section level2" number="2.8">
+<h2 number="2.8"><span class="header-section-number">2.8</span> Help tab</h2>
+<p>Help tab is the most helpful tool when you are confused about any function. All the documentations (from installed packages) can be searched here via function <code>help()</code> (or its shortcuts <code>?</code>).</p>
+<p>For example, <code>?mean</code> (same as <code>?mean()</code> and <code>help(mean)</code>) show you the documentation of function <code>mean()</code> from package <code>base</code>. <code>?starwars</code> show you the documentation of dataset <code>starwars</code> from package <code>dplyr</code>, note that you must attach the package first (via <code>library(dplyr)</code>) or call it directly: <code>?dplyr::starwars</code>.</p>
+<p>Documentation of functions, symbols and concepts with non-syntactic names can be also searched: <code>?`+`</code>, <code>?'+'</code>, <code>?`'`</code>, <code>?`?`</code>, <code>?`/`</code>, <code>?`%/%`</code>, <code>?`(`</code>, <code>?`for`</code>, <code>?`if`</code> and so on. You should use backticks or quotes around them.</p>
+<p>You can view the whole documentation of a package: <code>help(package = 'dplyr')</code>, the package can be not loaded.</p>
+<p><code>help.search()</code> (or its shortcuts <code>??</code>) is used for a wider range of search from all the package you have ever installed, using either fuzzy matching or regular expression matching. For example: <code>help.search('linear models')</code> and <code>??parallel</code></p>
+</div>
+<div id="plots-and-viewer-tab" class="section level2" number="2.9">
+<h2 number="2.9"><span class="header-section-number">2.9</span> Plots and Viewer tab</h2>
+<p>You can use the Plots tab to view the plots that you create during your R analysis, and export plots to files.</p>
+<p>Viewer tab displays HTML contents, such as shiny apps, rmarkdown reports, and interactive visualizations.</p>
+<p><img src="figures/RStudioIDE/RStudio-viewer-shiny-comments.png" /></p>
+</div>
+<div id="r-session" class="section level2" number="2.10">
+<h2 number="2.10"><span class="header-section-number">2.10</span> R Session</h2>
+<p>You can work with same files in different R sessions. Things would be different in different R sessions (different objects, options, attached packages and so on). Opening a new R session can help you do something new without changing your current working environment.</p>
+<p><img src="figures/RStudioIDE/RStudio-session1-comments.png" style="width:70.0%" /></p>
+<p>You can manage R sessions by “Sessions” button on the top toolbar, or in your main interface of RStudio workbench.</p>
+<p><img src="figures/RStudioIDE/RStudio-session2-3-comments.png" /></p>
+<ul>
+<li>It’s a good habit to start your work from a fresh R session. You can restart your current R session via <code>Session &gt; Restart R</code></li>
+</ul>
+<p>You can refer to <a href="https://support.rstudio.com/hc/en-us/articles/211789298-Multiple-R-Sessions-in-RStudio-Workbench-RStudio-Server-Pro" target="_blank">Multiple R Sessions in RStudio Workbench / RStudio Server Pro – RStudio Support</a> for more information.</p>
+</div>
+<div id="r-project" class="section level2" number="2.11">
+<h2 number="2.11"><span class="header-section-number">2.11</span> R Project</h2>
+<p>RStudio projects make it straightforward to divide your work into multiple contexts, each with their own working directory, workspace, history, and source documents.</p>
+<p><img src="figures/RStudioIDE/RStudio-project-comments.png" /></p>
+<p>When a project is opened within RStudio the following actions are taken:</p>
+<ul>
+<li><p>A new R session (process) is started</p></li>
+<li><p>The current working directory is set to the project directory.</p></li>
+<li><p>The .Rprofile file in the project’s main directory (if any) is sourced by R</p></li>
+</ul>
+<p>You can share R project to others, when you share a project, RStudio Workbench securely grants other users access to the project, and when multiple users are active in the project at once, you can see each others’ activity and work together in a shared editor.</p>
+<ul>
+<li>A recommended path of a shared R project is <code>/usrfiles/shared-projects</code></li>
+</ul>
+<div id="manage-packages-in-r-projects" class="section level3 unnumbered">
+<h3 class="unnumbered">Manage packages in R projects</h3>
+<p>In production environment, it’s better to attach the specific packages (<code>library(dplyr)</code> <code>library(tidyr)</code> and so on) rather than attach a collection of packages (<code>library(tidyverse)</code>). It increased the working when a project start, but may decrease the potential working for bug fixing during the project by declaring the specific packages.</p>
+<p>It’s recommended to use <a href="https://rstudio.github.io/renv/" target="_blank">renv</a> to manage packages in R projects. Once you start to use renv in a R project, you can add below code to the .Rprofile file then you can use package cache (quickly installing packages and save memory space).</p>
+<pre><code># add this to the .RProf, then restart session.
+
+## renv setup
+options(repos = c(CRAN = &quot;https://cran.rstudio.com&quot;))
+Sys.setenv(RENV_PATHS_ROOT = &quot;/usrfiles/renv_cache/&quot;)
+Sys.setenv(RENV_PATHS_CACHE = &quot;/usrfiles/renv_cache/cache&quot;)
+Sys.setenv(RENV_PATHS_LOCAL = &quot;/usrfiles/renv_cache/local/repository&quot;)
+Sys.setenv(RENV_PATHS_SOURCE = &quot;/usrfiles/renv_cache/source&quot;)
+Sys.setenv(RENV_CONFIG_SANDBOX_ENABLED = &quot;FALSE&quot;)
+Sys.setenv(R_BUILD_TAR = &quot;/usr/bin/tar&quot;)
+print(&quot;renv setup intitialized from .Rprofile&quot;)
+##
+source(&quot;renv/activate.R&quot;)</code></pre>
+<p>You can refer to <a href="https://support.rstudio.com/hc/en-us/articles/200526207-Using-RStudio-Projects" target="_blank">Using RStudio Projects – RStudio Support</a> and <a href="https://support.rstudio.com/hc/en-us/articles/211659737-Sharing-Projects-in-RStudio-Workbench-RStudio-Server-Pro" target="_blank">Sharing Projects in RStudio Workbench / RStudio Server Pro – RStudio Support</a> for more information.</p>
+</div>
+</div>
+</div>
+<div id="other-topics" class="section level1" number="3">
+<h1 number="3"><span class="header-section-number">3</span> Other topics</h1>
+<div id="keyboard-shortcuts" class="section level2" number="3.1">
+<h2 number="3.1"><span class="header-section-number">3.1</span> Keyboard shortcuts</h2>
+<p>You can get the keyboard shortcut quick reference via <code>Alt</code> + <code>Shift</code> + <code>K</code>, or use <code>Ctrl</code> + <code>Shift</code> + <code>P</code> to show Command Palette, below are some useful keyboard shortcuts (in windows and linux):</p>
+<p><strong>Views</strong>:</p>
+<ul>
+<li><p><code>Ctrl</code> + <code>1</code>: Move focus to Source Editor, <code>Ctrl</code> + <code>2</code>: Move focus to Console</p></li>
+<li><p><code>Ctrl</code> + <code>Shift</code> + <code>1</code>: Zoom Source Editor, <code>Ctrl</code> + <code>Shift</code> + <code>2</code>: Zoom Console, <code>Ctrl</code> + <code>Shift</code> + <code>3</code>: Zoom Help</p></li>
+</ul>
+<p><strong>Console</strong></p>
+<ul>
+<li><p><code>↑</code>/<code>↓</code>: Navigate command history</p></li>
+<li><p><code>Ctrl</code> + <code>↑</code>: Popup command history</p></li>
+<li><p><code>Esc</code>: Interrupt currently executing command</p></li>
+<li><p><code>Ctrl</code> + <code>L</code>: Clear console</p></li>
+</ul>
+<p><strong>Source</strong></p>
+<ul>
+<li><p><code>Ctrl</code> + <code>Alt</code> + <code>←</code>/<code>→</code>: Previous (Next) tab</p></li>
+<li><p><code>Ctrl</code> + <code>Shift</code> + <code>.</code>: Switch to tab</p></li>
+<li><p><code>Ctrl</code> + <code>.</code>: Go to File/Function</p></li>
+<li><p><code>Ctrl</code> + <code>F</code>: Find and Replace</p></li>
+<li><p><code>Ctrl</code> + <code>Shift</code> + <code>F</code>: Find in Files</p></li>
+<li><p><code>Ctrl</code> + <code>S</code>: Save active document, <code>Ctrl</code> + <code>Alt</code> + <code>S</code>: Save all documents</p></li>
+<li><p><code>Ctrl</code> + <code>Enter</code>: Run current line/selection (also works in help tab)</p></li>
+<li><p><code>Alt</code> + <code>Enter</code>: Run current line/selection (retain cursor position)</p></li>
+<li><p><code>Ctrl</code> + <code>Shift</code> + <code>S</code>: Source the current document</p></li>
+<li><p><code>Ctrl</code> + <code>Shift</code> + <code>Enter</code>: Source the current document (with echo)</p></li>
+<li><p><code>Alt</code> + mouse drag: Multiple cursor/column selection</p></li>
+<li><p><code>Ctrl</code> + <code>Shift</code> + <code>↑</code>: Expand selection (divided by pairs of <code>'</code> <code>"</code> <code>`</code> <code>(</code> <code>[</code> <code>{</code>), <code>Ctrl</code> + <code>Shift</code> + <code>↓</code>: Shrink selection</p></li>
+<li><p><code>Ctrl</code> + <code>Shift</code> + <code>C</code>: Comment/uncomment current line/selection</p></li>
+<li><p><code>Ctrl</code> + <code>Shift</code> + <code>R</code>: Insert code section</p></li>
+<li><p><code>Alt</code> + <code>L</code>: Fold Selected (function/code section), <code>Alt</code> + <code>Shift</code> + <code>L</code>: Unfold Selected</p></li>
+<li><p><code>Alt</code> + <code>O</code>: Fold All (function/code section), <code>Alt</code> + <code>Shift</code> + <code>O</code>: Unfold All</p></li>
+</ul>
+<p><strong>Editing (Console and Source)</strong></p>
+<ul>
+<li><p><code>Ctrl</code> + <code>Z</code>: Undo, <code>Ctrl</code> + <code>Shift</code> + <code>Z</code>: Redo</p></li>
+<li><p><code>Ctrl</code> + <code>X</code>: Cut, <code>Ctrl</code> + <code>C</code>: Copy, <code>Ctrl</code> + <code>V</code>: Paste</p></li>
+<li><p><code>Ctrl</code> + <code>A</code>: Select All</p></li>
+<li><p><code>Ctrl</code> + <code>D</code>: Delete Line</p></li>
+<li><p><code>Tab</code> (at beginning of line): Indent, <code>Shift</code> + <code>Tab</code>: Outdent</p></li>
+<li><p><code>Alt</code> + <code>-</code>: Insert assignment operator <code>&lt;-</code></p></li>
+<li><p><code>Ctrl</code> + <code>Shift</code> + <code>M</code>: Insert pipe operator <code>%&gt;%</code></p></li>
+<li><p><code>F1</code>: Show help for function at cursor</p></li>
+<li><p><code>F2</code>: Show source code for function at cursor</p></li>
+</ul>
+<p><strong>Completions (Console and Source)</strong></p>
+<ul>
+<li><p><code>Tab</code>: Attempt completion</p></li>
+<li><p><code>↑</code>/<code>↓</code>: Navigate candidates</p></li>
+<li><p><code>Tab</code>/<code>Enter</code>: Accept selected candidate</p></li>
+<li><p><code>Esc</code>/<code>→</code>: Dismiss completion popup</p></li>
+</ul>
+</div>
+<div id="get-help" class="section level2" number="3.2">
+<h2 number="3.2"><span class="header-section-number">3.2</span> Get help</h2>
+<div id="help-tab-1" class="section level3 unnumbered">
+<h3 class="unnumbered">Help tab</h3>
+<p>Help documentations in each package are helpful. You can get the “description”, “usage”, “arguments”, “returned value”, “related functions”, “examples” and so on in function’s help, and “description”, “format” and so on in dataset’s help.</p>
+<p>Almost all the problem about single function’s usage can be solved by reading help documentation.</p>
+</div>
+<div id="cran" class="section level3 unnumbered">
+<h3 class="unnumbered">CRAN</h3>
+<p>Once you want to learn the whole package’s content, you can search the package in CRAN first: <a href="https://cran.r-project.org/web/packages/available_packages_by_name.html" target="_blank">Table of available packages, sorted by name</a></p>
+<p>For example, you can find some information about package <strong>dplyr</strong> from <a href="https://cran.r-project.org/web/packages/dplyr/index.html" target="_blank">CRAN - Package dplyr</a>:</p>
+<p><img src="figures/RStudioIDE/cran-dplyr.png" /></p>
+<p><strong>URL</strong> link to the package’s page (create by package’s authors) and the github page, these page always contain the concept and usage of the whole package.</p>
+<p><strong>Vignettes</strong> (if have) contain blocks of concepts and combined usage across functions.</p>
+<p>You can also get the package’s dependence information in this page.</p>
+</div>
+<div id="github" class="section level3 unnumbered">
+<h3 class="unnumbered">github</h3>
+<p>You can view the source code, update history and report bugs in github page, for example, <a href="https://github.com/tidyverse/dplyr" target="_blank">GitHub - tidyverse/dplyr: dplyr: A grammar of data manipulation</a>:</p>
+<div class="click-zoom-1-5-left-100">
+<p><label> <input type="checkbox"> <img src="figures/RStudioIDE/github-dplyr-comments.png"> </label></p>
+</div>
+</div>
+<div id="stackoverflow" class="section level3 unnumbered">
+<h3 class="unnumbered">stackoverflow</h3>
+<p>Sometimes you might want to raise questions or search for help, stackoverflow is a good community for R users. You can search questions or ask questions here: <a href="https://stackoverflow.com/questions" target="_blank">Newest Questions - Stack Overflow</a> or <a href="https://stackoverflow.com/questions/tagged/r" target="_blank">Newest ‘r’ Questions - Stack Overflow</a> (with R tags).</p>
+</div>
+<div id="cheat-sheet" class="section level3 unnumbered">
+<h3 class="unnumbered">Cheat Sheet</h3>
+<p>Cheat sheets give quick view about packages or topics: <a href="https://rstudio.com/resources/cheatsheets/" target="_blank">RStudio Cheatsheets - RStudio</a> or <a href="https://github.com/rstudio/cheatsheets" target="_blank">GitHub - rstudio/cheatsheets: RStudio Cheat Sheets</a></p>
+</div>
+<div id="reading" class="section level3 unnumbered">
+<h3 class="unnumbered">Reading</h3>
+<p><strong>base R and tidyverse</strong></p>
+<ul>
+<li><p><a href="https://cran.r-project.org/manuals.html" target="_blank">CRAN: Manuals</a></p></li>
+<li><p><a href="https://r4ds.had.co.nz/index.html" target="_blank">Welcome | R for Data Science</a></p></li>
+<li><p><a href="https://www.math.pku.edu.cn/teachers/lidf/docs/Rbook/html/_Rbook/index.html" target="_blank">R语言教程</a></p></li>
+<li><p><a href="https://adv-r.hadley.nz/index.html" target="_blank">Welcome | Advanced R</a></p></li>
+</ul>
+<p><strong>graphics and interaction</strong></p>
+<ul>
+<li><p><a href="https://ggplot2-book.org/" target="_blank">Welcome | ggplot2</a></p></li>
+<li><p><a href="https://bookdown.org/xiangyun/msg/" target="_blank">现代统计图形</a></p></li>
+<li><p><a href="https://plotly-r.com/" target="_blank">Interactive web-based data visualization with R, plotly, and shiny</a></p></li>
+</ul>
+<p><strong>rmarkdown</strong></p>
+<ul>
+<li><p><a href="https://bookdown.org/yihui/rmarkdown/" target="_blank">R Markdown: The Definitive Guide</a></p></li>
+<li><p><a href="https://bookdown.org/yihui/rmarkdown-cookbook/" target="_blank">R Markdown Cookbook</a></p></li>
+</ul>
+<p><strong>shiny</strong></p>
+<ul>
+<li><a href="https://mastering-shiny.org/index.html" target="_blank">Welcome | Mastering Shiny</a></li>
+</ul>
+</div>
+</div>
+<div id="coding-style" class="section level2" number="3.3">
+<h2 number="3.3"><span class="header-section-number">3.3</span> Coding style</h2>
+<p>A good coding style can help you and others (you after three months) understanding the code more easily. It can save time in team works. Below is a small comparison between two coding style:</p>
+<div class="cols2">
+<div>
+<p>Good:</p>
+<pre class="r"><code>paste0(
+  &quot;Requirement: &quot;, requires, &quot;\n&quot;,
+  &quot;Result: &quot;, result, &quot;\n&quot;
+)</code></pre>
+</div>
+<div>
+<p>Bad:</p>
+<pre class="r"><code>paste0(
+  &quot;Requirement: &quot;, requires,
+  &quot;\n&quot;, &quot;Result: &quot;,
+  result, &quot;\n&quot;)</code></pre>
+</div>
+</div>
+<p>You can refer to <a href="https://style.tidyverse.org/index.html" target="_blank">Welcome | The tidyverse style guide</a></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

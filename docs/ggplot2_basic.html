@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>ggplot2 basic</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="config/style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R training</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="RStudioIDE.html">RStudio IDE</a>
+</li>
+<li>
+  <a href="base_R.html">Base R</a>
+</li>
+<li>
+  <a href="tidyverse-base.html">tidyverse base</a>
+</li>
+<li>
+  <a href="stringr_hs.html">stringr</a>
+</li>
+<li>
+  <a href="datetime_qw.html">date and time</a>
+</li>
+<li>
+  <a href="read-write.html">data import/export</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    ggplot2
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ggplot2_basic.html">basic</a>
+    </li>
+    <li>
+      <a href="ggplot2_layers.html">layers</a>
+    </li>
+    <li>
+      <a href="arranging-plots.html">arranging plots</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    More
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="pipe.html">Using pipe</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">focusing on package</li>
+    <li>
+      <a href="data-process-dplyr.html">data process - dplyr</a>
+    </li>
+    <li>
+      <a href="data-process-tidyr.html">data process - tidyr</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Use SQL in R</li>
+    <li>
+      <a href="sqldf.html">sqldf</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">ggplot2 basic</h1>
+
+</div>
+
+
+<pre class="r"><code>library(ggplot2)</code></pre>
+<p><strong>ggplot2</strong> is a R package dedicated to data visualization. It can greatly improve the quality and aesthetics of your graphics, and will make you much more efficient in creating them.</p>
+<p>In most cases a ggplot2 graphic start with <code>ggplot()</code>, supply a dataset and aesthetic mapping (with <code>aes()</code>). Then you can add on layers (like <code>geom_point()</code> or <code>geom_histogram()</code>), scales (like <code>scale_colour_brewer()</code>), faceting specifications (like <code>facet_wrap()</code>) and coordinate systems (like <code>coord_flip()</code>).</p>
+<div id="basic-plot" class="section level1">
+<h1>Basic plot</h1>
+<p>required data:</p>
+<pre class="r"><code>mpg</code></pre>
+<pre><code>## # A tibble: 234 x 11
+##   manufacturer model displ  year   cyl trans      drv     cty   hwy fl    class 
+##   &lt;chr&gt;        &lt;chr&gt; &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;      &lt;chr&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt; &lt;chr&gt; 
+## 1 audi         a4      1.8  1999     4 auto(l5)   f        18    29 p     compa…
+## 2 audi         a4      1.8  1999     4 manual(m5) f        21    29 p     compa…
+## 3 audi         a4      2    2008     4 manual(m6) f        20    31 p     compa…
+## 4 audi         a4      2    2008     4 auto(av)   f        21    30 p     compa…
+## 5 audi         a4      2.8  1999     6 auto(l5)   f        16    26 p     compa…
+## # … with 229 more rows</code></pre>
+<p>ggplot2 builds charts through layers using <code>geom_</code> functions (like <code>geom_point()</code>,<code>geom_bar()</code>)</p>
+<pre class="r"><code>p &lt;- ggplot(mpg, aes(x = displ, y = hwy)) + geom_point()
+p</code></pre>
+<p><img src="ggplot2_basic_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>This produces a scatterplot defined by:</p>
+<ol style="list-style-type: decimal">
+<li><p>Data: <code>mpg</code></p></li>
+<li><p>Aesthetic mapping: engine size mapped to x position, fuel economy to y position.</p></li>
+<li><p>Layer: points.</p></li>
+</ol>
+<p>Pay attention to the structure of this function call: data and aesthetic mappings are supplied in <code>ggplot()</code>, <span style="color:red">then layers are added on with <code>+</code></span>. This is an important pattern, and as you learn more about ggplot2 you’ll construct increasingly sophisticated plots by adding on more types of components.</p>
+<p>To add additional variables to a plot, we can use other aesthetics like colour, shape, alpha, and size</p>
+<pre class="r"><code>p &lt;- ggplot(mpg, aes(displ, hwy, colour = class)) + geom_point()
+p</code></pre>
+<p><img src="ggplot2_basic_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>p &lt;- ggplot(mpg, aes(displ, hwy, colour = class)) + scale_colour_brewer(palette=&quot;Oranges&quot;) + geom_point()
+p</code></pre>
+<p><img src="ggplot2_basic_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
+<pre class="r"><code>p &lt;- ggplot(mpg, aes(displ, hwy, shape = drv)) + geom_point()
+p</code></pre>
+<p><img src="ggplot2_basic_files/figure-html/unnamed-chunk-3-3.png" width="672" /></p>
+<pre class="r"><code>p &lt;- ggplot(mpg, aes(displ, hwy, size = cyl)) + geom_point()
+p</code></pre>
+<p><img src="ggplot2_basic_files/figure-html/unnamed-chunk-3-4.png" width="672" /></p>
+<pre class="r"><code>p &lt;- ggplot(mpg, aes(displ, hwy, size = cyl, alpha=0.5)) + geom_point()
+p</code></pre>
+<p><img src="ggplot2_basic_files/figure-html/unnamed-chunk-3-5.png" width="672" /></p>
+</div>
+<div id="annotations" class="section level1">
+<h1>Annotations</h1>
+<p>When constructing a data visualisation, it is often necessary to make annotations to the data displayed. Conceptually, an annotation supplies <em>metadata</em> for the plot: that is, it provides additional information about the data being displayed. From a practical standpoint, however, metadata is just another form of data. Because of this, the annotation tools in ggplot2 reuse the same geoms that are used to create other plots. However, to meet the specific needs that users often have when annotating plots, there are some helper functions in ggplot2 itself, and a number of other packages have extended ggplot2 in ways you may find helpful.</p>
+<div id="adding-a-title-and-xlabelylabel-for-the-plot." class="section level2">
+<h2>Adding a title and xlabel/ylabel for the plot.</h2>
+<p>When customising a plot, it is often useful to modify the titles associated with the plot, axes, and legends. To assist with this task ggplot2 provides the <code>labs()</code> helper function, which lets you set the various titles using name-value pairs like <code>title = "My plot title"</code>, <code>x = "X axis"</code> or <code>fill = "fill legend"</code>:</p>
+<pre class="r"><code>p &lt;- ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = factor(cyl))) +
+  labs(
+    x = &quot;Engine displacement (litres)&quot;, 
+    y = &quot;Highway miles per gallon&quot;, 
+    colour = &quot;Number of cylinders&quot;,
+    title = &quot;Mileage by engine size and cylinders&quot;,
+    subtitle = &quot;Source: http://fueleconomy.gov&quot;
+  )
+p</code></pre>
+<p><img src="ggplot2_basic_files/figure-html/pressure-1.png" width="672" /></p>
+<p>Adjust the position of title for the plot:</p>
+<pre class="r"><code>p &lt;- ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = factor(cyl))) +
+  labs(
+    x = &quot;Engine displacement (litres)&quot;, 
+    y = &quot;Highway miles per gallon&quot;, 
+    colour = &quot;Number of cylinders&quot;,
+    title = &quot;Mileage by engine size and cylinders&quot;,
+    subtitle = &quot;Source: http://fueleconomy.gov&quot;
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 18),
+    plot.subtitle = element_text(hjust = 0.5, size = 12)
+  )
+p</code></pre>
+<p><img src="ggplot2_basic_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>The values supplied to <code>labs()</code> are typically text strings, with <code>\n</code> used to specify line breaks, but you can also supply mathematical expressions wrapped in <code>quote()</code>. The rules by which these expressions are interpreted can be found by typing <code>?plotmath</code>.</p>
+<pre class="r"><code>values &lt;- seq(from = -2, to = 2, by = .01)
+df &lt;- data.frame(x = values, y = values ^ 3)
+
+ggplot(df, aes(x, y)) +
+  geom_path() +
+  labs(y = quote(f(x) == x^3))</code></pre>
+<p><img src="ggplot2_basic_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>ggplot2 includes the <code>annotate()</code> function for annotation</p>
+<pre class="r"><code>yrng &lt;- range(economics$unemploy)
+xrng &lt;- range(economics$date)
+caption &lt;- paste(
+  strwrap(&quot;Unemployment rates in the US have varied a lot over the years&quot;, 40),
+  collapse = &quot;\n&quot;
+)
+
+p &lt;- ggplot(economics, aes(date, unemploy)) +
+  geom_line() +
+  annotate(
+    geom = &quot;text&quot;, x = xrng[1], y = yrng[2], 
+    label = caption, hjust = 0, vjust = 1, size = 4
+  )
+p</code></pre>
+<p><img src="ggplot2_basic_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>The convenience of the <code>annotate()</code> function comes in handy in other situations.</p>
+<p>For example, a common form of annotation is to highlight a subset of points by drawing larger points in a different colour underneath the main data set.</p>
+<p>To highlight vehicles manufactured by Subaru you could use this to create the basic plot:</p>
+<pre class="r"><code>p &lt;- ggplot(mpg, aes(displ, hwy)) +
+  geom_point(
+    data = dplyr::filter(mpg, manufacturer == &quot;subaru&quot;), 
+    colour = &quot;orange&quot;,
+    size = 3
+  ) +
+  geom_point()
+p</code></pre>
+<p><img src="ggplot2_basic_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>The problem with this is that the highlighted category would not be labelled. This is easily rectified using <code>annotate()</code></p>
+<pre class="r"><code>p +
+  annotate(geom = &quot;point&quot;, x = 5.5, y = 40, colour = &quot;orange&quot;, size = 3) +
+  annotate(geom = &quot;point&quot;, x = 5.5, y = 40) +
+  annotate(geom = &quot;text&quot;, x = 5.6, y = 40, label = &quot;subaru&quot;, hjust = &quot;left&quot;)</code></pre>
+<p><img src="ggplot2_basic_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
+</div>
+<div id="theme" class="section level1">
+<h1>Theme</h1>
+<p>Use <code>theme()</code> or <code>theme_*()</code> if you just need to tweak the display of an existing theme.</p>
+<pre class="r"><code>p &lt;- ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = factor(cyl))) +
+  labs(
+    x = &quot;Engine displacement (litres)&quot;, 
+    y = &quot;Highway miles per gallon&quot;, 
+    colour = &quot;Number of cylinders&quot;,
+    title = &quot;Mileage by engine size and cylinders&quot;,
+    subtitle = &quot;Source: http://fueleconomy.gov&quot;
+  ) +
+  # theme_bw() +
+  theme_classic()
+p</code></pre>
+<p><img src="ggplot2_basic_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
+<div id="output" class="section level1">
+<h1>Output</h1>
+<p>Use <code>ggsave()</code> function to save the figure.</p>
+<pre class="r"><code>p &lt;- ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = factor(cyl))) +
+  labs(
+    x = &quot;Engine displacement (litres)&quot;, 
+    y = &quot;Highway miles per gallon&quot;, 
+    colour = &quot;Number of cylinders&quot;,
+    title = &quot;Mileage by engine size and cylinders&quot;,
+    subtitle = &quot;Source: http://fueleconomy.gov&quot;
+  ) +
+  theme_classic()
+
+if (!dir.exists(&#39;./output/figures&#39;)) {dir.create(&#39;./output/figures&#39;, recursive = T)}
+ggsave(&#39;./output/figures/plot.pdf&#39;, plot = p, width = 5, height = 5)
+ggsave(&#39;./output/figures/plot.png&#39;, plot = p, width = 5, height = 5)</code></pre>
+<p>Use <code>pdf()</code> <code>png()</code> <code>jpeg()</code> function to save the figure.</p>
+<pre class="r"><code>p &lt;- ggplot(mpg, aes(displ, hwy)) +
+  geom_point(aes(colour = factor(cyl))) +
+  labs(
+    x = &quot;Engine displacement (litres)&quot;, 
+    y = &quot;Highway miles per gallon&quot;, 
+    colour = &quot;Number of cylinders&quot;,
+    title = &quot;Mileage by engine size and cylinders&quot;,
+    subtitle = &quot;Source: http://fueleconomy.gov&quot;
+  ) +
+  theme_bw()
+
+pdf(&#39;./output/figures/plot1.pdf&#39;)
+p
+dev.off()
+
+png(&#39;./output/figures/plot1.png&#39;)
+p
+dev.off()</code></pre>
+</div>
+<div id="reference" class="section level1">
+<h1>Reference</h1>
+<p><a href="https://github.com/rstudio/cheatsheets/blob/master/data-visualization.pdf" target="_blank">cheatsheet - ggplot2</a></p>
+<p><a href="https://ggplot2-book.org/" target="_blank">ggplot2-book</a></p>
+<p><a href="https://www.r-graph-gallery.com/ggplot2-package.html" target="_blank">r-graph</a></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

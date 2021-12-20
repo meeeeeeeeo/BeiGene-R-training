@@ -1,0 +1,674 @@
+---
+title: "DATETIME"
+# author: 'Qi Wang'
+# date: '`r Sys.Date()`'
+output:
+  html_document:
+    toc: TRUE
+    toc_depth: 3        # the lowest level of table of contents
+    toc_float: TRUE
+    css: [config/style.css]
+---
+
+```{r setup, include=FALSE}
+# global settings for this document
+
+# options for r code chunk
+knitr::opts_chunk$set(
+  eval = TRUE,          # run (or not) the code in the chunk
+  echo = TRUE,          # display (or not) the code of the chunk
+  message = TRUE,       # display (or not) the messages of the chunk
+  warning = TRUE,       # display (or not) the warning message of the chunk
+  error = TRUE,        # display (or not) the error message of the chunk
+  collapse = TRUE,      # collapse (or not) all the source and output blocks in to a single block
+  comment = '#>'        # the start of each line of results in the final document
+)
+# for each r chunk, you can add setting respectively, overriding the global settings
+# like: {r eval=FALSE}
+# or:   {r eval=TRUE, collapse=FALSE}
+
+# options for tibble print
+# 10 rows will be print now
+options(tibble.print_min = 5L, tibble.print_max = 5L)
+
+# random seed
+set.seed(233)
+```
+
+# Dates, date-times, and times \(readr-parse\_datetime\)
+
+```{r message = FALSE}
+library(tidyverse)
+library(readr)
+```
+
+You pick between three parsers depending on whether you want a date (the number of days since 1970-01-01), a date-time (the number of seconds since midnight 1970-01-01), or a time (the number of seconds since midnight). When called without any additional arguments:
+
+*   `parse_datetime()` expects an ISO8601 date-time. ISO8601 is an
+    international standard in which the components of a date are
+    organised from biggest to smallest: year, month, day, hour, minute, 
+    second.
+    
+    ```{r}
+    parse_datetime("2010-10-01T2010")
+    # If time is omitted, it will be set to midnight
+    parse_datetime("20101010")
+    ```
+    
+*   `parse_date()` expects a four digit year, a `-` or `/`, the month, a `-` 
+    or `/`, then the day:
+    
+    ```{r}
+    parse_date("2010-10-01")
+    parse_date("2010/10/01")
+    parse_date("10/10/01")
+    parse_date("20101001")
+    ```
+
+*   `parse_time()` expects the hour, `:`, minutes, optionally `:` and seconds, 
+    and an optional `am`/`pm` specifier:
+  
+    ```{r}
+    library(hms)
+    parse_time("01:10 am")
+    parse_time("20:10:01")
+    ```
+
+
+If these defaults don't work for your data you can supply your own date-time `format`, built up of the following pieces:
+
+  Year
+  : `%Y` (4 digits). 
+  : `%y` (2 digits); 00-69 -> 2000-2069, 70-99 -> 1970-1999.
+  
+  Month
+  : `%m` (2 digits).
+  : `%b` (abbreviated name, like "Jan").
+  : `%B` (full name, "January").
+  
+  Day
+  : `%d` (2 digits or 1 digit).
+  : `%e` (2 digits).
+  
+  Time
+  : `%H` 0-23 hour.
+  : `%I` 0-12, must be used with `%p`.
+  : `%p` AM/PM indicator.
+  : `%M` minutes.
+  : `%S` integer seconds.
+  : `%OS` real seconds. 
+  : `%Z` Time zone (as name, e.g. `America/Chicago`, `Asia/Shanghai`). Beware of abbreviations:
+    if you're American, note that "EST" is a Canadian time zone that does not
+    have daylight savings time. It is _not_ Eastern Standard Time! We'll
+    come back to this [time zones].
+  : `%z` (as offset from UTC, e.g. `+0800`). 
+  
+  Non-digits
+  : `%.` skips one non-digit character.
+  : `%*` skips any number of non-digits.
+
+The best way to figure out the correct format is to create a few examples in a character vector, and test with one of the parsing functions. For example:
+
+```{r}
+parse_date("01/02/15", "%m/%d/%y")
+parse_date("01/02/15", "%d/%m/%y")
+parse_date("2015年2月1日", "%Y年%m月%d日")
+parse_date("01/02/15", "%y/%m/%d")
+parse_date("01/02/15", "%y%.%m%.%d")
+parse_date("01//02/15", "%y%*%m%*%d")
+```
+
+If you're using `%b` or `%B` with non-English month names, you'll need to set the  `lang` argument to `locale()`. See the list of built-in languages in `date_names_langs()`, or if your language is not already included, create your own with `date_names()`.
+
+```{r}
+date_names_langs()
+parse_date("1 janvier 2015", "%d %B %Y", locale = locale("fr"))
+parse_datetime("1 enero 2015", "%d %B %Y", locale = locale("es"))
+
+# Time zones
+Sys.time()
+Sys.timezone()
+a <- parse_datetime(as.character(Sys.time()), locale = locale(tz = "America/Los_Angeles"))
+a
+as.numeric(a)
+
+b <- parse_datetime(as.character(Sys.time()), locale = locale(tz = "Asia/Shanghai"))
+b
+as.numeric(b)
+
+# Your current time zone
+d <- Sys.time();
+attributes(d)$tzone <- "Asia/Shanghai"
+d
+as.numeric(d)
+
+```
+
+## Exercises
+
+1.  Generate the correct format string to parse each of the following 
+    dates and times:
+    
+    ```{r}
+    d1 <- "January 1, 2010"
+    d2 <- "2015-Mar-07"
+    d3 <- "06-Jun-2017"
+    d4 <- c("August 19 (2015)", "July 1 (2015)")
+    d5 <- "12/30/14" # Dec 30, 2014
+    t1 <- "1705"
+    t2 <- "11:15:10.12 PM"
+    ```
+
+
+
+
+# Dates, date-times, and times \(lubridate-datetimes\)
+
+## Prerequisites
+
+*   This chapter will focus on the __lubridate__ package, which makes it easier to work with dates and times in R. lubridate is not part of core tidyverse because you only need it when you're working with dates/times. We will also need __nycflights13__ for practice data.
+
+    ```{r message = FALSE}
+    library(tidyverse)
+    library(lubridate)
+    library(nycflights13)
+    ```
+
+## Creating date/times
+
+*   There are three types of date/time data that refer to an instant in time:
+    
+    * A __date__. Tibbles print this as `<date>`.
+    
+    * A __time__ within a day. Tibbles print this as `<time>`.
+    
+    * A __date-time__ is a date plus a time: it uniquely identifies an
+      instant in time (typically to the nearest second). Tibbles print this
+      as `<dttm>`. Elsewhere in R these are called POSIXct, but I don't think
+      that's a very useful name.
+    In this chapter we are only going to focus on dates and date-times as R doesn't have a native class for storing times. If you need one, you can use the __hms__ package.
+    
+    To get the current date or date-time you can use `today()` or `now()`:
+    
+    ```{r}
+    today()
+    now()
+    ```
+    
+    Otherwise, there are three ways you're likely to create a date/time:
+    
+    * From a string.
+    * From individual date-time components.
+    * From an existing date/time object.
+    
+
+### From strings
+
+*   Date/time data often comes as strings. You've seen one approach to parsing strings into date-times in date-times. Another approach is to use the helpers provided by lubridate. They automatically work out the format once you specify the order of the component. To use them, identify the order in which year, month, and day appear in your dates, then arrange "y", "m", and "d" in the same order. That gives you the name of the lubridate function that will parse your date. For example:
+
+    ```{r}
+    ymd("2017-01-31")
+    mdy("January 31st, 2017")
+    dmy("31-Jan-2017")
+  
+    ## m also matches b and B; y also matches Y   
+    guess_formats(
+      c(
+        "jan 3   10",
+        "Feb 20th 73",
+        "January 5 1999 at 7pm",
+        "January 5 1999 at pm",
+        "03:23:22 pm",
+        "DOB:12/11/00"
+      ),
+      orders = "mdy",
+      print_matches = TRUE
+    )
+    
+    parse_datetime("jan 3   10", "%b %d   %y")
+    parse_datetime("Feb 20th 73", "%b %dth %y")
+    parse_datetime("January 5 1999 at 7pm", "%B %d %Y at %I%p")
+    parse_datetime("03:23:22 pm", "%m:%d:%y pm")
+    parse_time("03:23:22 pm", "%I:%M:%S %p")
+    parse_datetime("DOB:12/11/00", "DOB:%m/%d/%y")
+
+    guess_formats("21 Aug 2011, 11:15:34 pm", "dmyHMS", print_matches = TRUE)
+    parse_datetime("21 Aug 2011, 11:15:34 pm", "%d %b %Y, %H:%M:%S pm")
+    parse_datetime("21 Aug 2011, 11:15:34 pm", "%d %b %Y, %I:%M:%S %p")
+  
+    ```
+
+    These functions also take unquoted numbers. This is the most concise way to create a single date/time object, as you might need when filtering date/time data. `ymd()` is short and unambiguous:
+
+    ```{r}
+    ymd(20170131)
+    ymd(170131)
+    ```
+
+    `ymd()` and friends create dates. To create a date-time, add an underscore and one or more of "h", "m", and "s" to the name of the parsing function:
+
+    ```{r}
+    ymd_hms("2017-01-31 20:11:59")
+    mdy_hm("01/31/2017 08:01")
+    ```
+
+    You can also force the creation of a date-time from a date by supplying a timezone:
+
+    ```{r}
+    ymd(20170131, tz = "UTC")
+    ```
+
+### From individual components
+
+*   Instead of a single string, sometimes you'll have the individual components of the date-time spread across multiple columns. 
+    To create a date/time from this sort of input, use `make_date()` for dates, or `make_datetime()` for date-times:
+
+    ```{r}
+    flights %>% 
+      select(year, month, day, hour, minute) %>% 
+      mutate(departure = make_datetime(year, month, day, hour, minute))
+    ```
+    
+    Let's do the same thing for each of the four time columns in `flights`. The times are represented in a slightly odd format, so we use modulus arithmetic to pull out the hour and minute components. Once I've created the date-time variables, I focus in on the variables we'll explore in the rest of the chapter.
+
+    ```{r}
+    make_datetime_100 <- function(year, month, day, time) {
+      make_datetime(year, month, day, time %/% 100, time %% 100)
+    }
+    
+    flights_dt <- flights %>% 
+      filter(!is.na(dep_time), !is.na(arr_time)) %>% 
+      mutate(
+        dep_time = make_datetime_100(year, month, day, dep_time),
+        arr_time = make_datetime_100(year, month, day, arr_time),
+        sched_dep_time = make_datetime_100(year, month, day, sched_dep_time),
+        sched_arr_time = make_datetime_100(year, month, day, sched_arr_time)
+      ) %>% 
+      select(origin, dest, ends_with("delay"), ends_with("time"))
+    
+    flights_dt
+    ```
+
+### From other types
+
+*   You may want to switch between a date-time and a date. That's the job of `as_datetime()` and `as_date()`:
+
+    ```{r}
+    as_datetime(today())
+    as_date(now())
+    ```
+
+    Sometimes you'll get date/times as numeric offsets from the "Unix Epoch", 1970-01-01. If the offset is in seconds, use `as_datetime()`; if it's in days, use `as_date()`.
+
+    ```{r}
+    as_datetime(60 * 60 * 10)
+    as_date(365 * 10 + 2)
+    ```
+
+## Date-time components
+
+*   Now that you know how to get date-time data into R's date-time data structures, let's explore what you can do with them. This section will focus on the accessor functions that let you get and set individual components. The next section will look at how arithmetic works with date-times.
+
+### Getting components
+
+*   You can pull out individual parts of the date with the accessor functions `year()`, `month()`, `mday()` (day of the month), `yday()` (day of the year), `wday()` (day of the week), `hour()`, `minute()`, and `second()`. 
+
+    ```{r}
+    datetime <- ymd_hms("2016-07-08 12:34:56")
+    
+    year(datetime)
+    month(datetime)
+    mday(datetime)
+    
+    yday(datetime)
+    wday(datetime)
+    ```
+
+    For `month()` and `wday()` you can set `label = TRUE` to return the abbreviated name of the month or day of the week. Set `abbr = FALSE` to return the full name.
+
+    ```{r}
+    month(datetime, label = TRUE)
+    wday(datetime, label = TRUE, abbr = FALSE)
+    ```
+
+### Rounding
+
+*   An alternative approach to plotting individual components is to round the date to a nearby unit of time, with `floor_date()`, `round_date()`, and `ceiling_date()`. Each function takes a vector of dates to adjust and then the name of the unit round down (floor), round up (ceiling), or round to.
+
+    ```{r}
+    Sys.time()
+    round_date(Sys.time(), '2 hours')
+    ceiling_date(Sys.time(), '2 hours')
+    floor_date(Sys.time(), '2 hours')
+    ```
+
+### Setting components
+
+*   You can also use each accessor function to set the components of a date/time: 
+
+    ```{r}
+    datetime <- ymd_hms("2016-07-08 12:34:56")
+    
+    year(datetime) <- 2020
+    datetime
+    month(datetime) <- 01
+    datetime
+    hour(datetime) <- hour(datetime) + 1
+    datetime
+    ```
+
+    Alternatively, rather than modifying in place, you can create a new date-time with `update()`. This also allows you to set multiple values at once.
+
+    ```{r}
+    update(datetime, year = 2020, month = 2, mday = 2, hour = 2)
+    ```
+
+    If values are too big, they will roll-over:
+
+    ```{r}
+    ymd("2015-02-01") %>% update(mday = 30)
+    ymd("2015-02-01") %>% update(hour = 400)
+    ```
+
+## Time spans
+
+*   Next you'll learn about how arithmetic with dates works, including subtraction, addition, and division. Along the way, you'll learn about three important classes that represent time spans:
+
+    * __durations__, which represent an exact number of seconds.
+    * __periods__, which represent human units like weeks and months.
+    * __intervals__, which represent a starting and ending point.
+
+### Durations
+
+*   In R, when you subtract two dates, you get a difftime object:
+
+    ```{r}
+    h_age <- today() - ymd(19791014)
+    h_age
+    ```
+    
+    A difftime class object records a time span of seconds, minutes, hours, days, or weeks. This ambiguity can make difftimes a little painful to work with, so lubridate provides an alternative which always uses seconds: the __duration__.
+    
+    ```{r}
+    as.duration(h_age)
+    ```
+    
+    Durations come with a bunch of convenient constructors:
+    
+    ```{r}
+    dseconds(15)
+    dminutes(10)
+    dhours(c(12, 24))
+    ddays(0:5)
+    dweeks(3)
+    dyears(1)
+    ```
+    
+    Durations always record the time span in seconds. Larger units are created by converting minutes, hours, days, weeks, and years to seconds at the standard rate (60 seconds in a minute, 60 minutes in an hour, 24 hours in day, 7 days in a week, 365 days in a year).
+    
+    You can add and multiply durations:
+    
+    ```{r}
+    2 * dyears(1)
+    dyears(1) + dweeks(12) + dhours(15)
+    ```
+    
+    You can add and subtract durations to and from days:
+    
+    ```{r}
+    tomorrow <- today() + ddays(1)
+    last_year <- today() - dyears(1)
+    ```
+    
+    However, because durations represent an exact number of seconds, sometimes you might get an unexpected result:
+    
+    ```{r}
+    one_pm <- ymd_hms("2016-03-12 13:00:00", tz = "America/New_York")
+    
+    one_pm
+    one_pm + ddays(1)
+    
+    one_pm <- ymd_hms("2016-03-12 13:00:00", tz = "Asia/Shanghai")
+    
+    one_pm
+    one_pm + ddays(1)
+    ```
+
+
+### Periods
+
+*   To solve this problem, lubridate provides __periods__. Periods are time spans but don't have a fixed length in seconds, instead they work with "human" times, like days and months. That allows them work in a more intuitive way:
+
+    ```{r}
+    one_pm
+    one_pm + days(1)
+    ```
+    
+    Like durations, periods can be created with a number of friendly constructor functions. 
+    
+    ```{r}
+    seconds(15)
+    minutes(10)
+    hours(c(12, 24))
+    days(7)
+    months(1:6)
+    weeks(3)
+    years(1)
+    ```
+    
+    You can add and multiply periods:
+    
+    ```{r}
+    10 * (months(6) + days(1))
+    days(50) + hours(25) + minutes(2)
+    ```
+    
+    And of course, add them to dates. Compared to durations, periods are more likely to do what you expect:
+    
+    ```{r}
+    # A leap year
+    leap_year(2020)
+    
+    ymd("2020-01-01") + dyears(1)
+    ymd("2020-01-01") + years(1)
+    ymd("2020-01-01") + weeks(0:5)
+    
+    # The last date of the month    
+    ymd("2020-01-31") + months(0:11)
+    ymd("2020-01-31") %m+% months(0:11)
+    
+    # Daylight Savings Time
+    one_pm + dmonths(1)  #datetime
+    one_pm + months(1)   #date
+    ```
+    
+    Let's use periods to fix an oddity related to our flight dates. Some planes appear to have arrived at their destination _before_ they departed from New York City.
+    
+    ```{r}
+    flights_dt %>% 
+      filter(arr_time < dep_time) 
+    ```
+    
+    These are overnight flights. We used the same date information for both the departure and the arrival times, but these flights arrived on the following day. We can fix this by adding `days(1)` to the arrival time of each overnight flight.
+    
+    ```{r}
+    flights_dt <- flights_dt %>% 
+      mutate(
+        overnight = arr_time < dep_time,
+        arr_time = arr_time + days(overnight * 1),
+        sched_arr_time = sched_arr_time + days(overnight * 1)
+      )
+    ```
+    
+    Now all of our flights obey the laws of physics.
+    
+    ```{r}
+    flights_dt %>% 
+      filter(overnight, arr_time < dep_time) 
+    ```
+
+## Intervals
+
+*   If you want a more accurate measurement, you'll have to use an __interval__. An interval is a duration with a starting point: that makes it precise so you  = an determine exactly how long it is:
+
+    ```{r}
+    dyears(1) / ddays(1)
+    years(1) / days(1)
+    
+    ```
+
+    ```{r}
+    date <- ymd("2020-01-01")
+    next_year <- today() + years(1)
+    (today() %--% next_year) / ddays(1)
+    (today() %--% next_year) %/% days(1)
+   
+    ymd('2020-02-29') + dyears(1)
+    ymd('2020-02-29') + years(1)
+    ymd('2020-02-29') %m+% years(1)
+ 
+    ```
+    
+    ```{r}
+    #overlap
+    
+    a1 <- ymd(c('2021-01-01', '2021-01-02', '2021-03-02'))
+    a2 <- ymd(c('2021-02-01', '2021-02-02', '2021-03-02'))
+    b1 <- ymd(c('2021-01-02', '2021-03-02', '2021-03-02'))
+    b2 <- ymd(c('2021-02-02', '2021-03-02', '2021-04-02'))
+    
+    
+    int_overlaps(interval(a1, a2), interval(b1, b2));
+    ```
+    
+    ```{r}
+    age <- function(dob){
+      floor((today() - ymd(dob)) / dyears(1))
+    }
+    age(c("1997-1-1", "2000-12-31"))
+    ```
+    
+## Time zones 
+
+*   You can find out what R thinks your current time zone is with `Sys.timezone()`:
+    
+    ```{r}
+    Sys.timezone()
+    ```
+    
+    (If R doesn't know, you'll get an `NA`.)
+    
+    And see the complete list of all time zone names with `OlsonNames()`:
+    
+    ```{r}
+    length(OlsonNames())
+    head(OlsonNames())
+    ```
+    
+    In R, the time zone is an attribute of the date-time that only controls printing. For example, these three objects represent the same instant in time:
+    
+    ```{r}
+    x1 <- ymd_hms("2015-06-01 12:01:00", tz = "America/New_York")
+    x2 <- ymd_hms("2015-06-01 18:01:00", tz = "Europe/Paris")
+    x3 <- ymd_hms("2015-06-02 01:01:00", tz = "Asia/Tokyo")
+    x4 <- ymd_hms("2015-06-02 00:01:00", tz = "Asia/Shanghai")
+    ```
+    
+    You can verify that they're the same time using subtraction:
+    
+    ```{r}
+    x1 - x2
+    x1 - x3
+    x1 - x4
+    ```
+    
+    Unless otherwise specified, lubridate always uses UTC. UTC (Coordinated Universal Time) is the standard time zone used by the scientific community and roughly equivalent to its predecessor GMT (Greenwich Mean Time). It does not have DST, which makes a convenient representation for computation. Operations that combine date-times, like `c()`, will often drop the time zone. In that case, the date-times will display in your local time zone:
+    
+    ```{r}
+    x4 <- c(x1, x2, x3)
+    x4
+    ```
+    
+    You can change the time zone in two ways:
+    
+    *   Keep the instant in time the same, and change how it's displayed.
+        Use this when the instant is correct, but you want a more natural
+        display.
+      
+        ```{r}
+        x4a <- with_tz(x4, tzone = "Asia/Shanghai")
+        x4a
+        x4a - x4
+        ```
+        
+        (This also illustrates another challenge of times zones: they're not
+        all integer hour offsets!)
+    
+    *   Change the underlying instant in time. Use this when you have an
+        instant that has been labelled with the incorrect time zone, and you
+        need to fix it.
+    
+        ```{r}
+        x4b <- force_tz(x4, tzone = "Asia/Shanghai")
+        x4b
+        x4b - x4
+        ```
+
+# Dates, date \(stringr-date\)
+
+```{r}
+a <- c(
+  "09 Sep 2018 12:00",
+  "19 Sep 2018",
+  "9 unk 2018",
+  "un Sep 2019",
+  "un-Sep-2019",
+  "un unk 2019",
+  "un-unk-19 12:00",
+  "un-unk-2019",
+  "un/unk/99",
+  "un/unk/1999"
+)
+
+make_date_10 <- function(indate) {
+  outdate <- indate %>% 
+    str_to_title() %>% 
+    str_extract("\\w{1,2}\\W*\\D{3}\\W*\\d{2,4}") %>% 
+    str_remove_all(pattern = "\\W") %>% 
+    str_replace(., "^(\\d{1}\\D)(\\w+)", "0\\1\\2") %>% 
+    str_replace(., "(\\w{2})(\\w{3})(\\d{2,4})", "\\3\\2\\1") %>% 
+    if_else(str_length(.) == 7,
+      (if_else(
+        str_replace(., "^(\\d{2})(\\w+)", "20\\1") > str_trim(as.character(year(today()))),
+        str_replace(., "^(\\d{2})(\\w+)", "19\\1\\2"),
+        str_replace(., "^(\\d{2})(\\w+)", "20\\1\\2")
+      )),
+      .
+    ) %>% 
+    str_replace_all(c(
+      "Jan" = "-01-",
+      "Feb" = "-02-",
+      "Mar" = "-03-",
+      "Apr" = "-04-",
+      "May" = "-05-",
+      "Jun" = "-06-",
+      "Jul" = "-07-",
+      "Aug" = "-08-",
+      "Sep" = "-09-",
+      "Oct" = "-10-",
+      "Nov" = "-11-",
+      "Dec" = "-12-",
+      "UnkUn" = "",
+      "Unk" = "-UN-",
+      "-Un" = ""
+    ))
+  
+  return(outdate)
+}
+
+b <- make_date_10(a)
+b
+
+```
+
+

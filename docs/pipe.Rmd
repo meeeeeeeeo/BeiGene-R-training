@@ -1,0 +1,105 @@
+---
+title: "pipe"
+output:
+  html_document:
+    toc: TRUE
+    toc_depth: 2
+    toc_float: TRUE
+    css: config/style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message=FALSE}
+library(tidyverse)
+```
+
+## Why pipe
+
+You can use the pipe to rewrite multiple operations that you can read left-to-right, top-to-bottom (reading the pipe operator as "then").
+
+* too many variables:
+
+    ```{r eval=FALSE}
+    n1 <- rnorm(10000)
+    n2 <- abs(n1)
+    n3 <- matrix(n2, ncol = 100)
+    n4 <- rowMeans(n3)
+    n5 <- round(n4)
+    hist(n5)
+    ```
+
+* nested functions:
+
+    ```{r eval=FALSE}
+    hist(round(rowMeans(matrix(abs(rnorm(10000)), ncol = 100))))
+    ```
+
+* more readable with `%>%`!
+
+    ```{r eval=FALSE}
+    rnorm(10000) %>% 
+      abs %>% 
+      matrix(ncol = 50) %>% 
+      rowMeans() %>% 
+      round %>% 
+      hist
+    ```
+
+Pipe make your code more readable by:
+
+* structuring sequences of data operations left-to-right (as opposed to from the inside and out),
+* avoiding nested function calls,
+* minimizing the need for local variables and function definitions, and
+* making it easy to add steps anywhere in the sequence of operations.
+
+## Usage
+
+### Basic piping
+  
+* `x %>% f` is equivalent to `f(x)`
+* `x %>% f(y)` is equivalent to `f(x, y)`
+* `x %>% f %>% g %>% h` is equivalent to `h(g(f(x)))`
+
+### The argument placeholder
+
+* `x %>% f(y, .)` is equivalent to `f(y, x)`
+* `x %>% f(y, z = .)` is equivalent to `f(y, z = x)`
+ 
+### Re-using the placeholder for attributes
+
+* `x %>% f(y = nrow(.), z = ncol(.))` is equivalent to 
+   `f(x, y = nrow(x), z = ncol(x))`
+
+* `x %>% {f(y = nrow(.), z = ncol(.))}` is equivalent to 
+   `f(y = nrow(x), z = ncol(x))`
+
+## Examples
+
+```{r}
+instancename <- c('Cycle 1 Day 1', 'Cycle 2 Day 1')
+
+folder <- instancename %>% 
+  str_replace_all('Cycle (\\d+) Day (\\d+)', 'C\\1D\\2')
+
+folder
+```
+
+```{r}
+starwars %>% 
+  select(name, height, species) %>% 
+  filter(species %in% c('Human', 'Droid')) %>% 
+  mutate(mean_height = mean(height, na.rm = T)) %>% 
+  group_by(species) %>% 
+  mutate(mean_height_by_species = mean(height, na.rm = T)) %>% 
+  ungroup()
+```
+
+## Reference
+
+[GitHub - tidyverse/magrittr](https://github.com/tidyverse/magrittr){target="_blank"}
+
+[R语言高效的管道操作magrittr](http://blog.fens.me/r-magrittr/){target="_blank"}
+

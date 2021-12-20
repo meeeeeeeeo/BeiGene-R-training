@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>stringr</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<link href="site_libs/str_view-0.1.0/str_view.css" rel="stylesheet" />
+<script src="site_libs/str_view-binding-1.4.0/str_view.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="config/style.css" type="text/css" />
+<link rel="stylesheet" href="config/multi-columns.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R training</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="RStudioIDE.html">RStudio IDE</a>
+</li>
+<li>
+  <a href="base_R.html">Base R</a>
+</li>
+<li>
+  <a href="tidyverse-base.html">tidyverse base</a>
+</li>
+<li>
+  <a href="stringr_hs.html">stringr</a>
+</li>
+<li>
+  <a href="datetime_qw.html">date and time</a>
+</li>
+<li>
+  <a href="read-write.html">data import/export</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    ggplot2
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ggplot2_basic.html">basic</a>
+    </li>
+    <li>
+      <a href="ggplot2_layers.html">layers</a>
+    </li>
+    <li>
+      <a href="arranging-plots.html">arranging plots</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    More
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="pipe.html">Using pipe</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">focusing on package</li>
+    <li>
+      <a href="data-process-dplyr.html">data process - dplyr</a>
+    </li>
+    <li>
+      <a href="data-process-tidyr.html">data process - tidyr</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Use SQL in R</li>
+    <li>
+      <a href="sqldf.html">sqldf</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">stringr</h1>
+
+</div>
+
+
+<pre class="r"><code>library(tidyverse)</code></pre>
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<p><strong>stringr</strong> is built on top of <strong>stringi</strong>, which uses the ICU C library to provide fast, correct implementations of common string manipulations. stringr focusses on the most important and commonly used string manipulation functions whereas stringi provides a comprehensive set covering almost anything you can imagine. If you find that stringr is missing a function that you need, try looking in stringi. Both packages share similar conventions, so once you’ve mastered stringr, you should find stringi similarly easy to use.</p>
+<div id="generate-data" class="section level4">
+<h4>generate data</h4>
+<pre class="r"><code>fruit &lt;- stringr::fruit[1:30]
+
+sentences &lt;- stringr::sentences[1:20]
+
+foo &lt;- c(&#39;   a   bc   d   &#39;)</code></pre>
+</div>
+</div>
+<div id="regular-expressions" class="section level2">
+<h2>Regular Expressions</h2>
+<div id="str_viewstring-pattern-match-na" class="section level4">
+<h4><code>str_view(string, pattern, match = NA)</code></h4>
+</div>
+<div id="str_view_allstring-pattern-match-na" class="section level4">
+<h4><code>str_view_all(string, pattern, match = NA)</code></h4>
+<pre class="r"><code>str_view(fruit[1:5], &#39;[aeiou]&#39;)</code></pre>
+<div id="htmlwidget-661c8cfb95dc9b6b2f20" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-661c8cfb95dc9b6b2f20">{"x":{"html":"<ul>\n  <li><span class='match'>a<\/span>pple<\/li>\n  <li><span class='match'>a<\/span>pricot<\/li>\n  <li><span class='match'>a<\/span>vocado<\/li>\n  <li>b<span class='match'>a<\/span>nana<\/li>\n  <li>b<span class='match'>e<\/span>ll pepper<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>str_view_all(fruit[1:5], &#39;[aeiou]&#39;)</code></pre>
+<div id="htmlwidget-2c941e659048e6565275" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2c941e659048e6565275">{"x":{"html":"<ul>\n  <li><span class='match'>a<\/span>ppl<span class='match'>e<\/span><\/li>\n  <li><span class='match'>a<\/span>pr<span class='match'>i<\/span>c<span class='match'>o<\/span>t<\/li>\n  <li><span class='match'>a<\/span>v<span class='match'>o<\/span>c<span class='match'>a<\/span>d<span class='match'>o<\/span><\/li>\n  <li>b<span class='match'>a<\/span>n<span class='match'>a<\/span>n<span class='match'>a<\/span><\/li>\n  <li>b<span class='match'>e<\/span>ll p<span class='match'>e<\/span>pp<span class='match'>e<\/span>r<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="special-character-." class="section level4">
+<h4>special character———<code>[ ]</code> <code>\</code> <code>^</code> <code>$</code> <code>.</code> <code>|</code> <code>?</code> <code>*</code> <code>+</code> <code>( )</code></h4>
+<ul>
+<li><p><code>\</code> (learn more about escaped characters: <code>?'"'</code>)</p>
+<pre class="r"><code>quote &lt;- c(&quot; &#39; &quot;, &#39; &quot; &#39;, &#39; \&#39; &#39;, &quot; \&quot; &quot;)
+writeLines(quote)</code></pre>
+<pre><code>#&gt;  &#39; 
+#&gt;  &quot; 
+#&gt;  &#39; 
+#&gt;  &quot;</code></pre>
+<pre class="r"><code>str_view_all(c(&quot;ab\nc&quot;, &quot;12d&quot;, &quot;ae2&quot;), &quot;\n&quot;)</code></pre>
+<div id="htmlwidget-f1592f6a3fdde9dffe66" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-f1592f6a3fdde9dffe66">{"x":{"html":"<ul>\n  <li>ab<span class='match'>\n<\/span>c<\/li>\n  <li>12d<\/li>\n  <li>ae2<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>str_view_all(c(&quot;ab\nc&quot;, &quot;12\bd&quot;, &quot;ae2&quot;), &quot;\b&quot;)</code></pre>
+<div id="htmlwidget-3b32dc2189802aba198e" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-3b32dc2189802aba198e">{"x":{"html":"<ul>\n  <li>ab\nc<\/li>\n  <li>12<span class='match'>\b<\/span>d<\/li>\n  <li>ae2<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>str_view_all(c(&quot;ab\nc&quot;, &quot;12\bd&quot;, &quot;ae2&quot;), &quot;\\b&quot;)</code></pre>
+<div id="htmlwidget-b91c97a92ff4cbfe2617" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b91c97a92ff4cbfe2617">{"x":{"html":"<ul>\n  <li><span class='match'><\/span>ab<span class='match'><\/span>\n<span class='match'><\/span>c<span class='match'><\/span><\/li>\n  <li><span class='match'><\/span>12<span class='match'><\/span>\b<span class='match'><\/span>d<span class='match'><\/span><\/li>\n  <li><span class='match'><\/span>ae2<span class='match'><\/span><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>str_view_all(c(&quot;ab\nc&quot;, &quot;12\\d&quot;, &quot;ae2&quot;), &quot;\\\\&quot;)</code></pre>
+<div id="htmlwidget-b4dbd527e05259a22a00" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b4dbd527e05259a22a00">{"x":{"html":"<ul>\n  <li>ab\nc<\/li>\n  <li>12<span class='match'>\\<\/span>d<\/li>\n  <li>ae2<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script></li>
+<li><p><code>\d</code> matches any digit(<code>\D</code>)</p></li>
+<li><p><code>\s</code> matches any whitespace (e.g. space, tab, newline)(<code>\S</code>)</p></li>
+<li><p><code>\w</code> match any word character,which includes alphabetic characters, marks and decimal numbers(<code>\W</code>)</p></li>
+<li><p><code>\b</code> matches word boundaries, the transition between word and non-word characters(<code>\B</code>)</p>
+<pre class="r"><code>str_view_all(c(&quot;abc&quot;, &quot;12d&quot;, &quot;ae2&quot;), &quot;\\d&quot;)</code></pre>
+<div id="htmlwidget-1c4d95451b73e8243cad" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1c4d95451b73e8243cad">{"x":{"html":"<ul>\n  <li>abc<\/li>\n  <li><span class='match'>1<\/span><span class='match'>2<\/span>d<\/li>\n  <li>ae<span class='match'>2<\/span><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>str_view_all(c(&quot;abc&quot;, &quot;\\12d&quot;, &quot;1e2&quot;), &quot;\\w&quot;)</code></pre>
+<div id="htmlwidget-70c255e2466d62322b30" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-70c255e2466d62322b30">{"x":{"html":"<ul>\n  <li><span class='match'>a<\/span><span class='match'>b<\/span><span class='match'>c<\/span><\/li>\n  <li>\\<span class='match'>1<\/span><span class='match'>2<\/span><span class='match'>d<\/span><\/li>\n  <li><span class='match'>1<\/span><span class='match'>e<\/span><span class='match'>2<\/span><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>str_view_all(c(&quot;a c&quot;, &quot;\\1\td&quot;, &quot;1e2&quot;), &quot;\\s&quot;)</code></pre>
+<div id="htmlwidget-683bf1b7f53031f6eeda" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-683bf1b7f53031f6eeda">{"x":{"html":"<ul>\n  <li>a<span class='match'> <\/span>c<\/li>\n  <li>\\1<span class='match'>\t<\/span>d<\/li>\n  <li>1e2<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>str_view_all(c(&quot;a c&quot;, &quot;\\1\td&quot;, &quot;1e2&quot;), &quot;\\b&quot;)</code></pre>
+<div id="htmlwidget-866e13789732348fd263" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-866e13789732348fd263">{"x":{"html":"<ul>\n  <li><span class='match'><\/span>a<span class='match'><\/span> <span class='match'><\/span>c<span class='match'><\/span><\/li>\n  <li>\\<span class='match'><\/span>1<span class='match'><\/span>\t<span class='match'><\/span>d<span class='match'><\/span><\/li>\n  <li><span class='match'><\/span>1e2<span class='match'><\/span><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script></li>
+<li><p><code>| [] ()</code></p>
+<pre class="r"><code>str_view(c(&quot;longest&quot;, &quot;lonlest&quot;, &quot;lonaest&quot;), &quot;lon(g|l)est&quot;)</code></pre>
+<div id="htmlwidget-812f402b66687bf94cd9" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-812f402b66687bf94cd9">{"x":{"html":"<ul>\n  <li><span class='match'>longest<\/span><\/li>\n  <li><span class='match'>lonlest<\/span><\/li>\n  <li>lonaest<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>str_view(c(&quot;longest&quot;, &quot;lonlest&quot;, &quot;lonaest&quot;), &quot;lon[gal]est&quot;)</code></pre>
+<div id="htmlwidget-61c11210a1ca1ea262ad" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-61c11210a1ca1ea262ad">{"x":{"html":"<ul>\n  <li><span class='match'>longest<\/span><\/li>\n  <li><span class='match'>lonlest<\/span><\/li>\n  <li><span class='match'>lonaest<\/span><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>str_view(c(&quot;longest&quot;, &quot;lonlest&quot;, &quot;lonaest&quot;), &quot;lon[a-g]est&quot;)</code></pre>
+<div id="htmlwidget-92ec4a0f2708315b7997" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-92ec4a0f2708315b7997">{"x":{"html":"<ul>\n  <li><span class='match'>longest<\/span><\/li>\n  <li>lonlest<\/li>\n  <li><span class='match'>lonaest<\/span><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>str_view(c(&quot;longest&quot;, &quot;lonlest&quot;, &quot;lonaest&quot;), &quot;lon[^a-g]est&quot;)</code></pre>
+<div id="htmlwidget-89cef3e4f89fe4a6dea4" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-89cef3e4f89fe4a6dea4">{"x":{"html":"<ul>\n  <li>longest<\/li>\n  <li><span class='match'>lonlest<\/span><\/li>\n  <li>lonaest<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script></li>
+<li><p><code>.</code> matches any character (except a newline)</p>
+<pre class="r"><code>x &lt;- c(&quot;apple&quot;, &quot;ba\nnana&quot;, &quot;pear&quot;)
+writeLines(x)</code></pre>
+<pre><code>#&gt; apple
+#&gt; ba
+#&gt; nana
+#&gt; pear</code></pre>
+<pre class="r"><code>str_view_all(x, &quot;.a.&quot;)</code></pre>
+<div id="htmlwidget-dc8b7d0dfbe5730f0e81" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-dc8b7d0dfbe5730f0e81">{"x":{"html":"<ul>\n  <li>apple<\/li>\n  <li>ba\n<span class='match'>nan<\/span>a<\/li>\n  <li>p<span class='match'>ear<\/span><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>str_view_all(x, &quot;.a\\b&quot;)</code></pre>
+<div id="htmlwidget-40ffc2f7c86510d37e84" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-40ffc2f7c86510d37e84">{"x":{"html":"<ul>\n  <li>apple<\/li>\n  <li><span class='match'>ba<\/span>\nna<span class='match'>na<\/span><\/li>\n  <li>pear<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>str_view_all(x, &quot;.a\\n&quot;)</code></pre>
+<div id="htmlwidget-28da6b9e74472330289c" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-28da6b9e74472330289c">{"x":{"html":"<ul>\n  <li>apple<\/li>\n  <li><span class='match'>ba\n<\/span>nana<\/li>\n  <li>pear<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script></li>
+<li><p><code>^</code>/<code>$</code> match the start/end of the string</p>
+<pre class="r"><code>str_view(c(&quot;a\\abpl^e&quot;, &quot;bbna\bna&quot;, &quot;pear&quot;, &quot;aaa&quot;), &quot;^a&quot;)</code></pre>
+<div id="htmlwidget-d43f8034d369ede9b857" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d43f8034d369ede9b857">{"x":{"html":"<ul>\n  <li><span class='match'>a<\/span>\\abpl^e<\/li>\n  <li>bbna\bna<\/li>\n  <li>pear<\/li>\n  <li><span class='match'>a<\/span>aa<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>str_view(c(&quot;apple&quot;, &quot;banana&quot;, &quot;pear&quot;), &quot;a$&quot;)</code></pre>
+<div id="htmlwidget-7434d565314f1dfd5c81" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-7434d565314f1dfd5c81">{"x":{"html":"<ul>\n  <li>apple<\/li>\n  <li>banan<span class='match'>a<\/span><\/li>\n  <li>pear<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>str_view(c(&quot;$^$&quot;), &quot;\\$\\^\\$&quot;)</code></pre>
+<div id="htmlwidget-477d4da3d9a7f4a447b7" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-477d4da3d9a7f4a447b7">{"x":{"html":"<ul>\n  <li><span class='match'>$^$<\/span><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script></li>
+<li><p>Repetition</p>
+<p><code>?</code>: 0 or 1</p>
+<p><code>+</code>: 1 or more</p>
+<p><code>*</code>: 0 or more</p>
+<p><code>{n}</code>/<code>{n,}</code>/<code>{n,m}</code></p>
+<pre class="r"><code>str_view(&quot;1888 is the longest year in Roman numerals: MDCCCLXXXVIII&quot;, &quot;CC?&quot;)</code></pre>
+<div id="htmlwidget-c6736370e9e378481a28" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-c6736370e9e378481a28">{"x":{"html":"<ul>\n  <li>1888 is the longest year in Roman numerals: MD<span class='match'>CC<\/span>CLXXXVIII<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>str_view(&quot;1888 is the longest year in Roman numerals: MDCCCCLXXXVIII&quot;, &quot;CC+&quot;)</code></pre>
+<div id="htmlwidget-0eb8253d8583227c624c" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-0eb8253d8583227c624c">{"x":{"html":"<ul>\n  <li>1888 is the longest year in Roman numerals: MD<span class='match'>CCCC<\/span>LXXXVIII<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>str_view(&quot;1888 is the longest year in Roman numerals: MDCCCLXXXVIII&quot;, &quot;CC*&quot;)</code></pre>
+<div id="htmlwidget-68b846981eed24ffdbfe" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-68b846981eed24ffdbfe">{"x":{"html":"<ul>\n  <li>1888 is the longest year in Roman numerals: MD<span class='match'>CCC<\/span>LXXXVIII<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>str_view(&quot;1888 is the longest year in Roman numerals: MDCCCLXXXVIII&quot;, &quot;C{2,3}&quot;)</code></pre>
+<div id="htmlwidget-e61bf33d931c7e293be7" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e61bf33d931c7e293be7">{"x":{"html":"<ul>\n  <li>1888 is the longest year in Roman numerals: MD<span class='match'>CCC<\/span>LXXXVIII<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script></li>
+<li><p>Grouping and backreferences</p>
+<pre class="r"><code>str_view(fruit[16:25], &quot;(..)\\1&quot;)</code></pre>
+<div id="htmlwidget-c01b4d1e0b5c4f2bc961" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-c01b4d1e0b5c4f2bc961">{"x":{"html":"<ul>\n  <li>cherry<\/li>\n  <li>chili pepper<\/li>\n  <li>clementine<\/li>\n  <li>cloudberry<\/li>\n  <li><span class='match'>coco<\/span>nut<\/li>\n  <li>cranberry<\/li>\n  <li><span class='match'>cucu<\/span>mber<\/li>\n  <li>currant<\/li>\n  <li>damson<\/li>\n  <li>date<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>str_view(c(&quot;bacdb&quot;,&quot;bacdbacd&quot;), &quot;^(.).*\\1$&quot;)</code></pre>
+<div id="htmlwidget-19f020fb83b47455d817" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-19f020fb83b47455d817">{"x":{"html":"<ul>\n  <li><span class='match'>bacdb<\/span><\/li>\n  <li>bacdbacd<\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script></li>
+</ul>
+</div>
+<div id="regexpattern-ignore_case-false-multiline-false-comments-false-dotall-false" class="section level4">
+<h4><code>regex(pattern, ignore_case = FALSE, multiline = FALSE, comments = FALSE, dotall = FALSE)</code></h4>
+<ul>
+<li><code>ignore_case</code>: Should case differences be ignored in the match?</li>
+<li><code>multiline</code>: If <code>TRUE</code>, “$” and “^” match the beginning and end of each line. If <code>FALSE</code>, the default, only match the start and end of the input.</li>
+<li><code>comments</code>: If <code>TRUE</code>, white space and comments beginning with “#” are ignored. Escape literal spaces with “\”.</li>
+<li><code>dotall</code>: If <code>TRUE</code>, “.” will also match line terminators.</li>
+</ul>
+<pre class="r"><code>x &lt;- c(&quot;apple&quot;, &quot;ba\nnana&quot;, &quot;pear&quot;)
+
+str_view_all(x, regex(&quot;.A.&quot;, ignore_case=T, dotall = T))</code></pre>
+<div id="htmlwidget-246b0e0deed0ee5160df" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-246b0e0deed0ee5160df">{"x":{"html":"<ul>\n  <li>apple<\/li>\n  <li><span class='match'>ba\n<\/span><span class='match'>nan<\/span>a<\/li>\n  <li>p<span class='match'>ear<\/span><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>str_view_all(&quot;A\nb&quot;, regex(&quot;^b&quot;, multiline=T))</code></pre>
+<div id="htmlwidget-473437e9e6c6daeab1ff" style="width:960px;height:100%;" class="str_view html-widget"></div>
+<script type="application/json" data-for="htmlwidget-473437e9e6c6daeab1ff">{"x":{"html":"<ul>\n  <li>A\n<span class='match'>b<\/span><\/li>\n<\/ul>"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div id="detect-matches" class="section level2">
+<h2>Detect Matches</h2>
+<ul>
+<li><code>str_detect(string, pattern, negate = FALSE)</code>: Detect the presence or absence of a pattern in a string.</li>
+<li><code>str_which(string, pattern, negate = FALSE)</code>: find positions.</li>
+<li><code>str_count(string, pattern = "")</code>: Count the number of matches in a string.</li>
+<li><code>str_locate(string, pattern)</code>: returns an integer matrix</li>
+<li><code>str_locate_all(string, pattern)</code>: returns a list of integer matrices</li>
+</ul>
+<pre class="r"><code>fruit
+#&gt;  [1] &quot;apple&quot;        &quot;apricot&quot;      &quot;avocado&quot;      &quot;banana&quot;       &quot;bell pepper&quot; 
+#&gt;  [6] &quot;bilberry&quot;     &quot;blackberry&quot;   &quot;blackcurrant&quot; &quot;blood orange&quot; &quot;blueberry&quot;   
+#&gt; [11] &quot;boysenberry&quot;  &quot;breadfruit&quot;   &quot;canary melon&quot; &quot;cantaloupe&quot;   &quot;cherimoya&quot;   
+#&gt; [16] &quot;cherry&quot;       &quot;chili pepper&quot; &quot;clementine&quot;   &quot;cloudberry&quot;   &quot;coconut&quot;     
+#&gt; [21] &quot;cranberry&quot;    &quot;cucumber&quot;     &quot;currant&quot;      &quot;damson&quot;       &quot;date&quot;        
+#&gt; [26] &quot;dragonfruit&quot;  &quot;durian&quot;       &quot;eggplant&quot;     &quot;elderberry&quot;   &quot;feijoa&quot;</code></pre>
+<div id="str_detectstring-pattern-negate-false" class="section level4">
+<h4><code>str_detect(string, pattern, negate = FALSE)</code></h4>
+<pre class="r"><code>str_detect(fruit[1:5], &#39;a&#39;, negate = T)
+#&gt; [1] FALSE FALSE FALSE FALSE  TRUE
+
+test &lt;- matrix(fruit[1:10],nrow=5)
+str_detect(test,&#39;a&#39;)
+#&gt;  [1]  TRUE  TRUE  TRUE  TRUE FALSE FALSE  TRUE  TRUE  TRUE FALSE
+
+str_detect(&#39;appleapricot&#39;, fruit[1:5])
+#&gt; [1]  TRUE  TRUE FALSE FALSE FALSE
+
+str_detect(fruit[1:5], c(&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;))
+#&gt; [1]  TRUE FALSE  TRUE FALSE  TRUE</code></pre>
+</div>
+<div id="str_whichstring-pattern-negate-false" class="section level4">
+<h4><code>str_which(string, pattern, negate = FALSE)</code></h4>
+<pre class="r"><code>str_which(fruit[1:5], &#39;a&#39;)
+#&gt; [1] 1 2 3 4
+
+str_which(fruit, &#39;a&#39;, negate = T)
+#&gt;  [1]  5  6 10 11 16 17 18 19 20 22 29</code></pre>
+</div>
+<div id="str_countstring-pattern" class="section level4">
+<h4><code>str_count(string, pattern = "")</code></h4>
+<pre class="r"><code>str_count(fruit[1:5], &#39;a&#39;)
+#&gt; [1] 1 1 2 3 0
+
+str_count(&#39;abababa&#39;, &#39;aba&#39;)
+#&gt; [1] 2</code></pre>
+</div>
+<div id="str_locatestring-pattern" class="section level4">
+<h4><code>str_locate(string, pattern)</code></h4>
+</div>
+<div id="str_locate_allstring-pattern" class="section level4">
+<h4><code>str_locate_all(string, pattern)</code></h4>
+<pre class="r"><code>str_locate(fruit[1:5], &#39;a&#39;)
+#&gt;      start end
+#&gt; [1,]     1   1
+#&gt; [2,]     1   1
+#&gt; [3,]     1   1
+#&gt; [4,]     2   2
+#&gt; [5,]    NA  NA
+
+str_locate_all(fruit[1:5], &#39;a&#39;)
+#&gt; [[1]]
+#&gt;      start end
+#&gt; [1,]     1   1
+#&gt; 
+#&gt; [[2]]
+#&gt;      start end
+#&gt; [1,]     1   1
+#&gt; 
+#&gt; [[3]]
+#&gt;      start end
+#&gt; [1,]     1   1
+#&gt; [2,]     5   5
+#&gt; 
+#&gt; [[4]]
+#&gt;      start end
+#&gt; [1,]     2   2
+#&gt; [2,]     4   4
+#&gt; [3,]     6   6
+#&gt; 
+#&gt; [[5]]
+#&gt;      start end</code></pre>
+</div>
+</div>
+<div id="subset-strings" class="section level2">
+<h2>Subset Strings</h2>
+<ul>
+<li><code>str_sub(string, start = 1L, end = -1L)</code> Extract and replace substrings from a character vector.</li>
+<li><code>str_subset(string, pattern, negate = FALSE)</code> Keep strings matching a pattern, or find positions.</li>
+<li><code>str_extract(string, pattern)</code> Extract matched groups from a string.</li>
+<li><code>str_extract_all(string, pattern, simplify = FALSE)</code> Extract matched groups from a string.</li>
+</ul>
+<pre class="r"><code>fruit
+#&gt;  [1] &quot;apple&quot;        &quot;apricot&quot;      &quot;avocado&quot;      &quot;banana&quot;       &quot;bell pepper&quot; 
+#&gt;  [6] &quot;bilberry&quot;     &quot;blackberry&quot;   &quot;blackcurrant&quot; &quot;blood orange&quot; &quot;blueberry&quot;   
+#&gt; [11] &quot;boysenberry&quot;  &quot;breadfruit&quot;   &quot;canary melon&quot; &quot;cantaloupe&quot;   &quot;cherimoya&quot;   
+#&gt; [16] &quot;cherry&quot;       &quot;chili pepper&quot; &quot;clementine&quot;   &quot;cloudberry&quot;   &quot;coconut&quot;     
+#&gt; [21] &quot;cranberry&quot;    &quot;cucumber&quot;     &quot;currant&quot;      &quot;damson&quot;       &quot;date&quot;        
+#&gt; [26] &quot;dragonfruit&quot;  &quot;durian&quot;       &quot;eggplant&quot;     &quot;elderberry&quot;   &quot;feijoa&quot;</code></pre>
+<div id="str_substring-start-1l-end--1l" class="section level4">
+<h4><code>str_sub(string, start = 1L, end = -1L)</code></h4>
+<pre class="r"><code>str_sub(fruit[1:5], 1, 3)
+#&gt; [1] &quot;app&quot; &quot;apr&quot; &quot;avo&quot; &quot;ban&quot; &quot;bel&quot;
+
+str_sub(fruit[1:5], end = -2)
+#&gt; [1] &quot;appl&quot;       &quot;aprico&quot;     &quot;avocad&quot;     &quot;banan&quot;      &quot;bell peppe&quot;
+
+str_sub(fruit[1:5], -2)
+#&gt; [1] &quot;le&quot; &quot;ot&quot; &quot;do&quot; &quot;na&quot; &quot;er&quot;
+
+str_sub(fruit[1:5], c(1, 2, 3, 1, 1), c(3, 3, 4, 3, 3))
+#&gt; [1] &quot;app&quot; &quot;pr&quot;  &quot;oc&quot;  &quot;ban&quot; &quot;bel&quot;
+
+# str_locate(fruit[1:5], &#39;(..)\\1&#39;)
+# str_sub(fruit[1:5], str_locate(fruit[1:5], &#39;(..)\\1&#39;))</code></pre>
+</div>
+<div id="str_subsetstring-pattern-negate-false" class="section level4">
+<h4><code>str_subset(string, pattern, negate = FALSE)</code></h4>
+<pre class="r"><code>str_subset(fruit, &#39;b&#39;)
+#&gt;  [1] &quot;banana&quot;       &quot;bell pepper&quot;  &quot;bilberry&quot;     &quot;blackberry&quot;   &quot;blackcurrant&quot;
+#&gt;  [6] &quot;blood orange&quot; &quot;blueberry&quot;    &quot;boysenberry&quot;  &quot;breadfruit&quot;   &quot;cloudberry&quot;  
+#&gt; [11] &quot;cranberry&quot;    &quot;cucumber&quot;     &quot;elderberry&quot;
+
+# fruit[str_detect(fruit,&#39;b&#39;)]</code></pre>
+</div>
+<div id="str_extractstring-pattern" class="section level4">
+<h4><code>str_extract(string, pattern)</code></h4>
+</div>
+<div id="str_extract_allstring-pattern-simplify-false" class="section level4">
+<h4><code>str_extract_all(string, pattern, simplify = FALSE)</code></h4>
+<pre class="r"><code>str_extract(c(&#39;aeaebcbc&#39;,&#39;bcaebc&#39;,&#39;abcccc&#39;),&#39;(..)\\1&#39;)
+#&gt; [1] &quot;aeae&quot; NA     &quot;cccc&quot;
+str_extract(sentences, &#39;\\w+(es|s)\\b&#39;)
+#&gt;  [1] &quot;planks&quot;    NA          NA          &quot;days&quot;      &quot;is&quot;        &quot;lemons&quot;   
+#&gt;  [7] &quot;was&quot;       &quot;hogs&quot;      &quot;hours&quot;     &quot;stockings&quot; &quot;was&quot;       &quot;is&quot;       
+#&gt; [13] &quot;is&quot;        NA          NA          &quot;helps&quot;     &quot;fires&quot;     NA         
+#&gt; [19] &quot;across&quot;    &quot;bonds&quot;
+
+str_extract_all(c(&#39;aeaebcbc&#39;,&#39;bcaebc&#39;,&#39;abcccc&#39;),&#39;(..)\\1&#39;)
+#&gt; [[1]]
+#&gt; [1] &quot;aeae&quot; &quot;bcbc&quot;
+#&gt; 
+#&gt; [[2]]
+#&gt; character(0)
+#&gt; 
+#&gt; [[3]]
+#&gt; [1] &quot;cccc&quot;
+
+str_extract_all(c(&#39;aeaebcbc&#39;,&#39;bcaebc&#39;,&#39;abcccc&#39;),&#39;(..)\\1&#39;, simplify = T)
+#&gt;      [,1]   [,2]  
+#&gt; [1,] &quot;aeae&quot; &quot;bcbc&quot;
+#&gt; [2,] &quot;&quot;     &quot;&quot;    
+#&gt; [3,] &quot;cccc&quot; &quot;&quot;</code></pre>
+</div>
+<div id="str_matchstring-pattern-extract-matched-groups-from-a-string." class="section level4">
+<h4><code>str_match(string, pattern)</code> Extract matched groups from a string.</h4>
+</div>
+<div id="str_match_allstring-pattern" class="section level4">
+<h4><code>str_match_all(string, pattern)</code></h4>
+<pre class="r"><code>sentences[1:10]
+#&gt;  [1] &quot;The birch canoe slid on the smooth planks.&quot; 
+#&gt;  [2] &quot;Glue the sheet to the dark blue background.&quot;
+#&gt;  [3] &quot;It&#39;s easy to tell the depth of a well.&quot;     
+#&gt;  [4] &quot;These days a chicken leg is a rare dish.&quot;   
+#&gt;  [5] &quot;Rice is often served in round bowls.&quot;       
+#&gt;  [6] &quot;The juice of lemons makes fine punch.&quot;      
+#&gt;  [7] &quot;The box was thrown beside the parked truck.&quot;
+#&gt;  [8] &quot;The hogs were fed chopped corn and garbage.&quot;
+#&gt;  [9] &quot;Four hours of steady work faced us.&quot;        
+#&gt; [10] &quot;Large size in stockings is hard to sell.&quot;
+
+str_match(sentences[1:10], &#39;(a|the) ([^ ]+)&#39;)
+#&gt;       [,1]         [,2]  [,3]     
+#&gt;  [1,] &quot;the smooth&quot; &quot;the&quot; &quot;smooth&quot; 
+#&gt;  [2,] &quot;the sheet&quot;  &quot;the&quot; &quot;sheet&quot;  
+#&gt;  [3,] &quot;the depth&quot;  &quot;the&quot; &quot;depth&quot;  
+#&gt;  [4,] &quot;a chicken&quot;  &quot;a&quot;   &quot;chicken&quot;
+#&gt;  [5,] NA           NA    NA       
+#&gt;  [6,] NA           NA    NA       
+#&gt;  [7,] &quot;the parked&quot; &quot;the&quot; &quot;parked&quot; 
+#&gt;  [8,] NA           NA    NA       
+#&gt;  [9,] NA           NA    NA       
+#&gt; [10,] NA           NA    NA
+
+# str_extract(sentences[1:10], &#39;(a|the) ([^ ]+)&#39;)
+# str_match(sentences[1:10], &#39;(a|the) ([^ ]+)&#39;)[,1]
+
+str_match_all(sentences[1:5], &#39;(a|the) ([^ ]+)&#39;)
+#&gt; [[1]]
+#&gt;      [,1]         [,2]  [,3]    
+#&gt; [1,] &quot;the smooth&quot; &quot;the&quot; &quot;smooth&quot;
+#&gt; 
+#&gt; [[2]]
+#&gt;      [,1]        [,2]  [,3]   
+#&gt; [1,] &quot;the sheet&quot; &quot;the&quot; &quot;sheet&quot;
+#&gt; [2,] &quot;the dark&quot;  &quot;the&quot; &quot;dark&quot; 
+#&gt; 
+#&gt; [[3]]
+#&gt;      [,1]        [,2]  [,3]   
+#&gt; [1,] &quot;the depth&quot; &quot;the&quot; &quot;depth&quot;
+#&gt; [2,] &quot;a well.&quot;   &quot;a&quot;   &quot;well.&quot;
+#&gt; 
+#&gt; [[4]]
+#&gt;      [,1]        [,2] [,3]     
+#&gt; [1,] &quot;a chicken&quot; &quot;a&quot;  &quot;chicken&quot;
+#&gt; [2,] &quot;a rare&quot;    &quot;a&quot;  &quot;rare&quot;   
+#&gt; 
+#&gt; [[5]]
+#&gt;      [,1] [,2] [,3]</code></pre>
+</div>
+</div>
+<div id="mutate-strings" class="section level2">
+<h2>Mutate Strings</h2>
+<ul>
+<li><code>str_sub(string, start = 1L, end = -1L, omit_na=FALSE) &lt;- value</code></li>
+<li><code>str_replace(string, pattern, replacement)</code></li>
+<li><code>str_replace_all(string, pattern, replacement)</code></li>
+<li><code>str_remove(string, pattern)</code></li>
+<li><code>str_remove_all(string, pattern)</code></li>
+<li><code>str_to_upper(string, locale = "en")</code></li>
+<li><code>str_to_lower(string, locale = "en")</code></li>
+<li><code>str_to_title(string, locale = "en")</code></li>
+</ul>
+<pre class="r"><code>fruit
+#&gt;  [1] &quot;apple&quot;        &quot;apricot&quot;      &quot;avocado&quot;      &quot;banana&quot;       &quot;bell pepper&quot; 
+#&gt;  [6] &quot;bilberry&quot;     &quot;blackberry&quot;   &quot;blackcurrant&quot; &quot;blood orange&quot; &quot;blueberry&quot;   
+#&gt; [11] &quot;boysenberry&quot;  &quot;breadfruit&quot;   &quot;canary melon&quot; &quot;cantaloupe&quot;   &quot;cherimoya&quot;   
+#&gt; [16] &quot;cherry&quot;       &quot;chili pepper&quot; &quot;clementine&quot;   &quot;cloudberry&quot;   &quot;coconut&quot;     
+#&gt; [21] &quot;cranberry&quot;    &quot;cucumber&quot;     &quot;currant&quot;      &quot;damson&quot;       &quot;date&quot;        
+#&gt; [26] &quot;dragonfruit&quot;  &quot;durian&quot;       &quot;eggplant&quot;     &quot;elderberry&quot;   &quot;feijoa&quot;
+fruit_temp &lt;- fruit</code></pre>
+<div id="str_substring-start-1l-end--1l-omit_nafalse---value" class="section level4">
+<h4><code>str_sub(string, start = 1L, end = -1L, omit_na=FALSE) &lt;- value</code></h4>
+<pre class="r"><code>str_sub(fruit_temp,1,3) &lt;- &#39;str&#39;
+fruit_temp
+#&gt;  [1] &quot;strle&quot;        &quot;stricot&quot;      &quot;strcado&quot;      &quot;strana&quot;       &quot;strl pepper&quot; 
+#&gt;  [6] &quot;strberry&quot;     &quot;strckberry&quot;   &quot;strckcurrant&quot; &quot;strod orange&quot; &quot;streberry&quot;   
+#&gt; [11] &quot;strsenberry&quot;  &quot;stradfruit&quot;   &quot;strary melon&quot; &quot;strtaloupe&quot;   &quot;strrimoya&quot;   
+#&gt; [16] &quot;strrry&quot;       &quot;strli pepper&quot; &quot;strmentine&quot;   &quot;strudberry&quot;   &quot;stronut&quot;     
+#&gt; [21] &quot;strnberry&quot;    &quot;strumber&quot;     &quot;strrant&quot;      &quot;strson&quot;       &quot;stre&quot;        
+#&gt; [26] &quot;strgonfruit&quot;  &quot;strian&quot;       &quot;strplant&quot;     &quot;strerberry&quot;   &quot;strjoa&quot;</code></pre>
+</div>
+<div id="str_replacestring-pattern-replacement" class="section level4">
+<h4><code>str_replace(string, pattern, replacement)</code></h4>
+</div>
+<div id="str_replace_allstring-pattern-replacement" class="section level4">
+<h4><code>str_replace_all(string, pattern, replacement)</code></h4>
+<pre class="r"><code>str_replace(fruit[1:5], &#39;a&#39;, &#39;-&#39;)
+#&gt; [1] &quot;-pple&quot;       &quot;-pricot&quot;     &quot;-vocado&quot;     &quot;b-nana&quot;      &quot;bell pepper&quot;
+
+str_replace_all(fruit[1:5], &#39;a&#39;, &#39;-&#39;)
+#&gt; [1] &quot;-pple&quot;       &quot;-pricot&quot;     &quot;-voc-do&quot;     &quot;b-n-n-&quot;      &quot;bell pepper&quot;</code></pre>
+</div>
+<div id="str_removestring-pattern" class="section level4">
+<h4><code>str_remove(string, pattern)</code></h4>
+</div>
+<div id="str_remove_allstring-pattern" class="section level4">
+<h4><code>str_remove_all(string, pattern)</code></h4>
+<pre class="r"><code>example &lt;- c(&quot;apple&quot;, &quot;apap&quot;, &quot;ap&quot;)
+str_remove(example, &#39;ap&#39;) 
+#&gt; [1] &quot;ple&quot; &quot;ap&quot;  &quot;&quot;
+
+str_remove_all(example, &#39;ap&#39;)
+#&gt; [1] &quot;ple&quot; &quot;&quot;    &quot;&quot;
+
+str_remove_all(example, &#39;[ap]&#39;)
+#&gt; [1] &quot;le&quot; &quot;&quot;   &quot;&quot;</code></pre>
+</div>
+<div id="str_to_upperstring-locale-en" class="section level4">
+<h4><code>str_to_upper(string, locale = "en")</code></h4>
+</div>
+<div id="str_to_lowerstring-locale-en" class="section level4">
+<h4><code>str_to_lower(string, locale = "en")</code></h4>
+</div>
+<div id="str_to_titlestring-locale-en" class="section level4">
+<h4><code>str_to_title(string, locale = "en")</code></h4>
+<pre class="r"><code>sentences[1:5]
+#&gt; [1] &quot;The birch canoe slid on the smooth planks.&quot; 
+#&gt; [2] &quot;Glue the sheet to the dark blue background.&quot;
+#&gt; [3] &quot;It&#39;s easy to tell the depth of a well.&quot;     
+#&gt; [4] &quot;These days a chicken leg is a rare dish.&quot;   
+#&gt; [5] &quot;Rice is often served in round bowls.&quot;
+
+str_to_upper(sentences[1:5])
+#&gt; [1] &quot;THE BIRCH CANOE SLID ON THE SMOOTH PLANKS.&quot; 
+#&gt; [2] &quot;GLUE THE SHEET TO THE DARK BLUE BACKGROUND.&quot;
+#&gt; [3] &quot;IT&#39;S EASY TO TELL THE DEPTH OF A WELL.&quot;     
+#&gt; [4] &quot;THESE DAYS A CHICKEN LEG IS A RARE DISH.&quot;   
+#&gt; [5] &quot;RICE IS OFTEN SERVED IN ROUND BOWLS.&quot;
+
+str_to_lower(sentences[1:5])
+#&gt; [1] &quot;the birch canoe slid on the smooth planks.&quot; 
+#&gt; [2] &quot;glue the sheet to the dark blue background.&quot;
+#&gt; [3] &quot;it&#39;s easy to tell the depth of a well.&quot;     
+#&gt; [4] &quot;these days a chicken leg is a rare dish.&quot;   
+#&gt; [5] &quot;rice is often served in round bowls.&quot;
+
+str_to_title(sentences[1:5])
+#&gt; [1] &quot;The Birch Canoe Slid On The Smooth Planks.&quot; 
+#&gt; [2] &quot;Glue The Sheet To The Dark Blue Background.&quot;
+#&gt; [3] &quot;It&#39;s Easy To Tell The Depth Of A Well.&quot;     
+#&gt; [4] &quot;These Days A Chicken Leg Is A Rare Dish.&quot;   
+#&gt; [5] &quot;Rice Is Often Served In Round Bowls.&quot;</code></pre>
+</div>
+</div>
+<div id="join-and-split" class="section level2">
+<h2>Join and Split</h2>
+<p>join</p>
+<ul>
+<li><p><code>str_c(..., sep = "", collapse = NULL)</code></p></li>
+<li><p><code>str_dup(string, times)</code></p></li>
+<li><p><code>str_glue(...)</code></p></li>
+<li><p><code>str_glue_data(.x, ..., .na = "NA")</code></p></li>
+</ul>
+<p>Split</p>
+<ul>
+<li><p><code>str_split(string, pattern, n = Inf, simplify = FALSE)</code></p></li>
+<li><p><code>str_split_fixed(string, pattern, n)</code></p></li>
+</ul>
+<p><code>str_c(..., sep = "", collapse = NULL)</code>:</p>
+<pre class="r"><code>letters[1:5]
+#&gt; [1] &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot; &quot;e&quot;
+
+LETTERS[1:5]
+#&gt; [1] &quot;A&quot; &quot;B&quot; &quot;C&quot; &quot;D&quot; &quot;E&quot;
+
+# for one part
+str_c(letters[1:5], collapse =&#39; &#39;)
+#&gt; [1] &quot;a b c d e&quot;
+
+# for two or more part
+str_c(letters[1:5], LETTERS[1:5], sep = &#39;/&#39;)
+#&gt; [1] &quot;a/A&quot; &quot;b/B&quot; &quot;c/C&quot; &quot;d/D&quot; &quot;e/E&quot;
+
+str_c(letters[1:5], LETTERS[1:5], sep = &#39;/&#39;, collapse = &#39; &#39;)
+#&gt; [1] &quot;a/A b/B c/C d/D e/E&quot;</code></pre>
+<p><code>str_dup(string, times)</code>:</p>
+<pre class="r"><code>str_dup(fruit[1:6], times = 2)
+#&gt; [1] &quot;appleapple&quot;             &quot;apricotapricot&quot;         &quot;avocadoavocado&quot;        
+#&gt; [4] &quot;bananabanana&quot;           &quot;bell pepperbell pepper&quot; &quot;bilberrybilberry&quot;
+
+str_dup(fruit[1:6], 1:3)
+#&gt; [1] &quot;apple&quot;                    &quot;apricotapricot&quot;          
+#&gt; [3] &quot;avocadoavocadoavocado&quot;    &quot;banana&quot;                  
+#&gt; [5] &quot;bell pepperbell pepper&quot;   &quot;bilberrybilberrybilberry&quot;</code></pre>
+<div id="str_glue..." class="section level4">
+<h4><code>str_glue(...)</code></h4>
+</div>
+<div id="str_glue_data.x-...-.na-na" class="section level4">
+<h4><code>str_glue_data(.x, ..., .na = "NA")</code></h4>
+<pre class="r"><code>name &lt;- &#39;Bob&#39;
+age &lt;- 50
+anniversary &lt;- as.Date(&quot;1991-10-12&quot;)
+str_glue(
+  &quot;My name is {name}, &quot;,
+  &quot;my age next year is {age + 1}, &quot;,
+  &quot;and my anniversary is {format(anniversary, &#39;%A, %B %d, %Y&#39;)}.&quot;
+)
+#&gt; My name is Bob, my age next year is 51, and my anniversary is Saturday, October 12, 1991.
+
+str_glue(
+  &quot;My name is {name}, &quot;,
+  &quot;and my age next year is {age + 1}.&quot;,
+  name = &quot;Joe&quot;,
+  age = 40
+)
+#&gt; My name is Joe, and my age next year is 41.
+
+str_glue(&#39;the {i}th letter is {letters[1:5]}&#39;, i = 1:5)
+#&gt; the 1th letter is a
+#&gt; the 2th letter is b
+#&gt; the 3th letter is c
+#&gt; the 4th letter is d
+#&gt; the 5th letter is e
+
+# here str_glue() is more readable than str_c()
+str_c(&#39;the &#39;, 1:5, &#39;th letter is &#39;, letters[1:5])
+#&gt; [1] &quot;the 1th letter is a&quot; &quot;the 2th letter is b&quot; &quot;the 3th letter is c&quot;
+#&gt; [4] &quot;the 4th letter is d&quot; &quot;the 5th letter is e&quot;
+
+str_glue(&#39;the {i}th {{letter}} is {{{letters[1:5]}}&#39;, i=1:5)
+#&gt; the 1th {letter} is {a}
+#&gt; the 2th {letter} is {b}
+#&gt; the 3th {letter} is {c}
+#&gt; the 4th {letter} is {d}
+#&gt; the 5th {letter} is {e}
+
+str_glue_data(mtcars[1:5, ], &#39;{hp} hp&#39;)
+#&gt; 110 hp
+#&gt; 110 hp
+#&gt; 93 hp
+#&gt; 110 hp
+#&gt; 175 hp
+
+mtcars[1:5, ] %&gt;% str_glue_data(&#39;the {rownames(.)} has {hp} hp&#39;)
+#&gt; the Mazda RX4 has 110 hp
+#&gt; the Mazda RX4 Wag has 110 hp
+#&gt; the Datsun 710 has 93 hp
+#&gt; the Hornet 4 Drive has 110 hp
+#&gt; the Hornet Sportabout has 175 hp</code></pre>
+</div>
+<div id="str_splitstring-pattern-n-inf-simplify-false" class="section level4">
+<h4><code>str_split(string, pattern, n = Inf, simplify = FALSE)</code></h4>
+</div>
+<div id="str_split_fixedstring-pattern-n" class="section level4">
+<h4><code>str_split_fixed(string, pattern, n)</code></h4>
+<p><code>str_split(string, pattern, simplify = T)</code> is equivalent to <code>str_split_fixed(string, pattern, n = Inf)</code></p>
+<pre class="r"><code>fruits_split &lt;- c(
+  &quot;apples and oranges and pears and bananas&quot;,
+  &quot;pineapples and mangos and guavas&quot;
+)
+
+str_split(fruits_split, &quot; and &quot;)
+#&gt; [[1]]
+#&gt; [1] &quot;apples&quot;  &quot;oranges&quot; &quot;pears&quot;   &quot;bananas&quot;
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] &quot;pineapples&quot; &quot;mangos&quot;     &quot;guavas&quot;
+
+str_split(fruits_split, &quot; and &quot;, simplify = TRUE)
+#&gt;      [,1]         [,2]      [,3]     [,4]     
+#&gt; [1,] &quot;apples&quot;     &quot;oranges&quot; &quot;pears&quot;  &quot;bananas&quot;
+#&gt; [2,] &quot;pineapples&quot; &quot;mangos&quot;  &quot;guavas&quot; &quot;&quot;
+
+
+# Specify n to restrict the number of possible matches
+str_split(fruits_split, &quot; and &quot;, n = 3)
+#&gt; [[1]]
+#&gt; [1] &quot;apples&quot;            &quot;oranges&quot;           &quot;pears and bananas&quot;
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] &quot;pineapples&quot; &quot;mangos&quot;     &quot;guavas&quot;
+
+str_split(fruits_split, &quot; and &quot;, n = 2)
+#&gt; [[1]]
+#&gt; [1] &quot;apples&quot;                        &quot;oranges and pears and bananas&quot;
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] &quot;pineapples&quot;        &quot;mangos and guavas&quot;
+
+# If n greater than number of pieces, no padding occurs
+str_split(fruits_split, &quot; and &quot;, n = 5)
+#&gt; [[1]]
+#&gt; [1] &quot;apples&quot;  &quot;oranges&quot; &quot;pears&quot;   &quot;bananas&quot;
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] &quot;pineapples&quot; &quot;mangos&quot;     &quot;guavas&quot;
+
+
+# Use str_split_fixed() to return a character matrix
+str_split_fixed(fruits_split, &quot; and &quot;, 3)
+#&gt;      [,1]         [,2]      [,3]               
+#&gt; [1,] &quot;apples&quot;     &quot;oranges&quot; &quot;pears and bananas&quot;
+#&gt; [2,] &quot;pineapples&quot; &quot;mangos&quot;  &quot;guavas&quot;
+
+str_split_fixed(fruits_split, &quot; and &quot;, 4)
+#&gt;      [,1]         [,2]      [,3]     [,4]     
+#&gt; [1,] &quot;apples&quot;     &quot;oranges&quot; &quot;pears&quot;  &quot;bananas&quot;
+#&gt; [2,] &quot;pineapples&quot; &quot;mangos&quot;  &quot;guavas&quot; &quot;&quot;</code></pre>
+</div>
+</div>
+<div id="manage-lengths" class="section level2">
+<h2>Manage Lengths</h2>
+<ul>
+<li><code>str_length(string)</code></li>
+<li><code>str_pad(string, width, side = c("left", "right", "both"), pad =" ")</code> Pad a string</li>
+<li><code>str_trunc(string, width, side = c("right", "left", "center"), ellipsis = "...")</code> Truncate a character string.</li>
+<li><code>str_trim(string, side = c("both", "left", "right"))</code> Trim whitespace from a string</li>
+<li><code>str_squish(string)</code></li>
+</ul>
+<pre class="r"><code>fruit
+#&gt;  [1] &quot;apple&quot;        &quot;apricot&quot;      &quot;avocado&quot;      &quot;banana&quot;       &quot;bell pepper&quot; 
+#&gt;  [6] &quot;bilberry&quot;     &quot;blackberry&quot;   &quot;blackcurrant&quot; &quot;blood orange&quot; &quot;blueberry&quot;   
+#&gt; [11] &quot;boysenberry&quot;  &quot;breadfruit&quot;   &quot;canary melon&quot; &quot;cantaloupe&quot;   &quot;cherimoya&quot;   
+#&gt; [16] &quot;cherry&quot;       &quot;chili pepper&quot; &quot;clementine&quot;   &quot;cloudberry&quot;   &quot;coconut&quot;     
+#&gt; [21] &quot;cranberry&quot;    &quot;cucumber&quot;     &quot;currant&quot;      &quot;damson&quot;       &quot;date&quot;        
+#&gt; [26] &quot;dragonfruit&quot;  &quot;durian&quot;       &quot;eggplant&quot;     &quot;elderberry&quot;   &quot;feijoa&quot;</code></pre>
+<div id="str_lengthstring" class="section level4">
+<h4><code>str_length(string)</code></h4>
+<pre class="r"><code>x &lt;- c(&#39;adv&#39;, &#39;ss&#39;, &#39;awsd&#39;)
+writeLines(x)
+#&gt; adv
+#&gt; ss
+#&gt; awsd
+
+length(x)
+#&gt; [1] 3
+
+str_length(x)
+#&gt; [1] 3 2 4</code></pre>
+</div>
+<div id="str_padstring-width-side-cleft-right-both-pad-pad-a-string" class="section level4">
+<h4><code>str_pad(string, width, side = c("left", "right", "both"), pad =" ")</code> Pad a string</h4>
+<pre class="r"><code>str_pad(c(&quot;a&quot;, &quot;abc&quot;, &quot;abcdef&quot;), 10, side = &#39;right&#39;)
+#&gt; [1] &quot;a         &quot; &quot;abc       &quot; &quot;abcdef    &quot;
+
+str_pad(&quot;a&quot;, c(5, 7, 10))
+#&gt; [1] &quot;    a&quot;      &quot;      a&quot;    &quot;         a&quot;
+
+str_pad(&quot;a&quot;, 10, pad = c(&quot;-&quot;, &quot;_&quot;, &quot; &quot;))
+#&gt; [1] &quot;---------a&quot; &quot;_________a&quot; &quot;         a&quot;</code></pre>
+</div>
+<div id="str_truncstring-width-side-cright-left-center-ellipsis-...-truncate-a-character-string." class="section level4">
+<h4><code>str_trunc(string, width, side = c("right", "left", "center"), ellipsis = "...")</code> Truncate a character string.</h4>
+<pre class="r"><code>str_trunc(fruit, 7)
+#&gt;  [1] &quot;apple&quot;   &quot;apricot&quot; &quot;avocado&quot; &quot;banana&quot;  &quot;bell...&quot; &quot;bilb...&quot; &quot;blac...&quot;
+#&gt;  [8] &quot;blac...&quot; &quot;bloo...&quot; &quot;blue...&quot; &quot;boys...&quot; &quot;brea...&quot; &quot;cana...&quot; &quot;cant...&quot;
+#&gt; [15] &quot;cher...&quot; &quot;cherry&quot;  &quot;chil...&quot; &quot;clem...&quot; &quot;clou...&quot; &quot;coconut&quot; &quot;cran...&quot;
+#&gt; [22] &quot;cucu...&quot; &quot;currant&quot; &quot;damson&quot;  &quot;date&quot;    &quot;drag...&quot; &quot;durian&quot;  &quot;eggp...&quot;
+#&gt; [29] &quot;elde...&quot; &quot;feijoa&quot;
+
+str_trunc(fruit, 7, side = &#39;left&#39;, ellipsis = &#39;**&#39;)
+#&gt;  [1] &quot;apple&quot;   &quot;apricot&quot; &quot;avocado&quot; &quot;banana&quot;  &quot;**epper&quot; &quot;**berry&quot; &quot;**berry&quot;
+#&gt;  [8] &quot;**rrant&quot; &quot;**range&quot; &quot;**berry&quot; &quot;**berry&quot; &quot;**fruit&quot; &quot;**melon&quot; &quot;**loupe&quot;
+#&gt; [15] &quot;**imoya&quot; &quot;cherry&quot;  &quot;**epper&quot; &quot;**ntine&quot; &quot;**berry&quot; &quot;coconut&quot; &quot;**berry&quot;
+#&gt; [22] &quot;**umber&quot; &quot;currant&quot; &quot;damson&quot;  &quot;date&quot;    &quot;**fruit&quot; &quot;durian&quot;  &quot;**plant&quot;
+#&gt; [29] &quot;**berry&quot; &quot;feijoa&quot;</code></pre>
+</div>
+<div id="str_trimstring-side-cboth-left-right-trim-whitespace-from-a-string" class="section level4">
+<h4><code>str_trim(string, side = c("both", "left", "right"))</code> Trim whitespace from a string</h4>
+</div>
+<div id="str_squishstring" class="section level4">
+<h4><code>str_squish(string)</code></h4>
+<pre class="r"><code>str_trim(c(&#39;    a&#39;, &#39;b     &#39;, &#39;c   d&#39;))
+#&gt; [1] &quot;a&quot;     &quot;b&quot;     &quot;c   d&quot;
+
+str_trim(c(&#39;    a&#39;, &#39;b     &#39;, &#39;c   d&#39;), side = &#39;left&#39;)
+#&gt; [1] &quot;a&quot;      &quot;b     &quot; &quot;c   d&quot;
+
+str_squish(c(&#39;    a&#39;, &#39;b     &#39;, &#39;c   d&#39;))
+#&gt; [1] &quot;a&quot;   &quot;b&quot;   &quot;c d&quot;
+
+#str_replace_all(c(&#39;    a&#39;, &#39;b     &#39;, &#39;c   d&#39;), &#39;\\s&#39;, &#39;&#39;)</code></pre>
+</div>
+</div>
+<div id="order-strings" class="section level2">
+<h2>Order Strings</h2>
+<ul>
+<li><code>str_order(x, decreasing = FALSE, na_last = TRUE, locale = "en", numeric = FALSE, ...)</code></li>
+<li><code>str_sort(x, decreasing = FALSE, na_last = TRUE, locale = "en", numeric = FALSE, ...)</code></li>
+</ul>
+<pre class="r"><code>bar &lt;- c(&#39;b&#39;, &#39;c&#39;, &#39;a&#39;, &#39;d&#39;)
+
+str_order(bar)
+#&gt; [1] 3 1 2 4
+
+bar[str_order(bar)]
+#&gt; [1] &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot;
+
+x &lt;- c(&quot;100a10&quot;, &quot;100a5&quot;, &quot;2b&quot;, &quot;2a&quot;)
+str_sort(x)
+#&gt; [1] &quot;100a10&quot; &quot;100a5&quot;  &quot;2a&quot;     &quot;2b&quot;
+str_sort(x, numeric = TRUE)
+#&gt; [1] &quot;2a&quot;     &quot;2b&quot;     &quot;100a5&quot;  &quot;100a10&quot;</code></pre>
+</div>
+<div id="exercise" class="section level2">
+<h2>Exercise</h2>
+<ol style="list-style-type: decimal">
+<li>Use <code>str_length()</code> and <code>str_sub()</code> to extract the middle character from a string. What will you do if the string has an even number of characters?</li>
+<li>Find all words that start with a <strong>vowel</strong> and end with a <strong>consonant</strong> (words).</li>
+</ol>
+</div>
+<div id="helpers" class="section level2">
+<h2>Helpers</h2>
+<p>More details about regular expressions: <a href="https://cran.r-project.org/web/packages/stringr/vignettes/regular-expressions.html" target="_blank">CRAN | stringr/Regular expressions</a></p>
+</div>
+<div id="reference" class="section level2">
+<h2>Reference</h2>
+<p><a href="https://github.com/rstudio/cheatsheets/blob/master/strings.pdf" target="_blank">cheatsheet - stringr</a></p>
+<p><a href="https://github.com/tidyverse/stringr" target="_blank">GitHub - tidyverse/stringr</a></p>
+<p><a href="https://r4ds.had.co.nz/strings.html" target="_blank">14 Strings | R for Data Science</a></p>
+<p><a href="https://stringr.tidyverse.org/" target="_blank">Simple, Consistent Wrappers for Common String Operations • stringr</a></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

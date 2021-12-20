@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Arranging plots</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="config/style.css" type="text/css" />
+<link rel="stylesheet" href="config/multi-columns.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R training</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="RStudioIDE.html">RStudio IDE</a>
+</li>
+<li>
+  <a href="base_R.html">Base R</a>
+</li>
+<li>
+  <a href="tidyverse-base.html">tidyverse base</a>
+</li>
+<li>
+  <a href="stringr_hs.html">stringr</a>
+</li>
+<li>
+  <a href="datetime_qw.html">date and time</a>
+</li>
+<li>
+  <a href="read-write.html">data import/export</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    ggplot2
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ggplot2_basic.html">basic</a>
+    </li>
+    <li>
+      <a href="ggplot2_layers.html">layers</a>
+    </li>
+    <li>
+      <a href="arranging-plots.html">arranging plots</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    More
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="pipe.html">Using pipe</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">focusing on package</li>
+    <li>
+      <a href="data-process-dplyr.html">data process - dplyr</a>
+    </li>
+    <li>
+      <a href="data-process-tidyr.html">data process - tidyr</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Use SQL in R</li>
+    <li>
+      <a href="sqldf.html">sqldf</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Arranging plots</h1>
+
+</div>
+
+
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.3     ✓ purrr   0.3.4
+## ✓ tibble  3.1.1     ✓ dplyr   1.0.6
+## ✓ tidyr   1.1.3     ✓ stringr 1.4.0
+## ✓ readr   1.4.0     ✓ forcats 0.5.1</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<p>The grammar presented in ggplot2 is concerned with creating single plots. While the faceting system provides the means to produce several subplots all of these are part of the same main visualization, sharing layers, data, and scales. However, it is often necessary to use multiple disparate plots to tell a story or make an argument. These can of course be created individually and assembled in a layout program, but it is beneficial to do this in code to avoid time consuming and non-reproducible manual labor. A range of packages have risen to the occasion and provide different approaches to arranging separate plots. While this chapter will focus on the patchwork package you may also find some of the same functionalities in the cowplot, gridExtra and ggpubr packages.</p>
+<p>This chapter will be split into two parts. The first will be concerned with arranging plots side by side with no overlap, while the second will be concerned with arranging plots on top of each other. While these two scenarios are not necessarily in opposition to each other, the former scenario will often benefit from functionality that makes little sense in the latter, e.g. alignment of plotting regions.</p>
+<div id="laying-out-plots-side-by-side" class="section level1">
+<h1>Laying out plots side by side</h1>
+<p>Often, one wants to show two or more plots side by side to show different aspects of the same story in a compelling way. This is the scenario that patchwork was build to solve. At it’s heart, patchwork is a package that extends ggplot2’s use of the <code>+</code> operator to work between multiple plots, as well as add additional operators for specialized compositions and working with compositions of plots.</p>
+<p>As an example of the most basic use of patchwork, we’ll use the following 4 plots of the <code>mpg</code> dataset</p>
+<pre class="r"><code>p1 &lt;- ggplot(mpg) + 
+  geom_point(aes(x = displ, y = hwy))
+
+p2 &lt;- ggplot(mpg) + 
+  geom_bar(aes(x = as.character(year), fill = drv), position = &quot;dodge&quot;) + 
+  labs(x = &quot;year&quot;)
+
+p3 &lt;- ggplot(mpg) + 
+  geom_density(aes(x = hwy, fill = drv), colour = NA) + 
+  facet_grid(rows = vars(drv))
+
+p4 &lt;- ggplot(mpg) + 
+  stat_summary(aes(x = drv, y = hwy, fill = drv), geom = &quot;col&quot;, fun.data = mean_se) +
+  stat_summary(aes(x = drv, y = hwy), geom = &quot;errorbar&quot;, fun.data = mean_se, width = 0.5)</code></pre>
+<p>The most simple use of patchwork is to use <code>+</code> to add plots together thus creating an assemble of plots to display together:</p>
+<pre class="r"><code>library(patchwork)
+
+p1 + p2</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><code>+</code> does not specify any specific layout, only that the plots should be displayed together. In the absence of a layout the same algorithm that governs the number of rows and columns in <code>facet_wrap()</code> will decide the number of rows and columns. This means that adding 3 plots together will create a 1x3 grid while adding 4 plots together will create a 2x2 grid.</p>
+<pre class="r"><code>p1 + p2 + p3 + p4</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>As can be seen from the two examples above, patchwork takes care of aligning the different parts of the plots with each other. You can see that all plotting regions are aligned, even in the presence of faceting. Further, you can see that the y-axis titles in the two left-most plots are aligned despite the axis text in the bottom left plot being wider.</p>
+<div id="taking-control-of-the-layout" class="section level2">
+<h2>Taking control of the layout</h2>
+<p>It is often that the automatically created grid is not what you want and it is of course possible to control it. The most direct and powerful way is to do this is to add a <code>plot_layout()</code> specification to the plot:</p>
+<pre class="r"><code>p1 + p2 + p3 + plot_layout(ncol = 2)</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>A common scenario is wanting to force a single row or column. patchwork provides two operators, <code>/</code> and <code>|</code> respectively, to facilitate this (under the hood they simply set number of rows or columns in the layout to 1).</p>
+<pre class="r"><code>p1 / p2</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code># Basically the same as using `+` but the intend is clearer
+p3 | p4</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>patchwork allows nesting layouts which means that it is possible to create some very intricate layouts using just these two operators</p>
+<pre class="r"><code>p3 | (p2 / (p1 | p4))</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>Alternatively, for very complex layouts, it is possible to specify non-tabular layouts with a textual representation in the <code>design</code> argument in <code>plot_layout()</code>.</p>
+<pre class="r"><code>layout &lt;- &quot;
+AAB
+C#B
+CDD
+&quot;
+
+p1 + p2 + p3 + p4 + plot_layout(design = layout)</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>As has been apparent in the last couple of plots the legend often becomes redundant between plots. While it is possible to remove the legend in all but one plot before assembling them, patchwork provides something easier for the common case:</p>
+<pre class="r"><code>p1 + p2 + p3 + plot_layout(ncol = 2, guides = &quot;collect&quot;)</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>Electing to collect guides will take all guides and put them together at the position governed by the global theme. Further, it will remove any duplicate guide leaving only unique guides in the plot. The duplication detection looks at the appearance of the guide, and not the underlying scale it comes from. Thus, it will only remove guides that are exactly alike. If you want to optimize space use by putting guides in an empty area of the layout, you can specify a plotting area for collected guides:</p>
+<pre class="r"><code>p1 + p2 + p3 + guide_area() + plot_layout(ncol = 2, guides = &quot;collect&quot;)</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+</div>
+<div id="modifying-subplots" class="section level2">
+<h2>Modifying subplots</h2>
+<p>One of the tenets of patchwork is that the plots remain as standard ggplot objects until rendered. This means that they are amenable to modification after they have been assembled. The specific plots can by retrieved and set with <code>[[]]</code> indexing:</p>
+<pre class="r"><code>p12 &lt;- p1 + p2
+p12[[2]] &lt;- p12[[2]] + theme_light()
+p12</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>Often though, it is necessary to modify all subplots at once to e.g. give them a common theme. patchwork provides the <code>&amp;</code> for this scenario:</p>
+<pre class="r"><code>p1 + p4 &amp; theme_minimal()</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p>This can also be used to give plots a common axis if they share the same aesthetic on that axis:</p>
+<pre class="r"><code>p1 + p4 &amp; scale_y_continuous(limits = c(0, 45))</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+</div>
+<div id="adding-annotation" class="section level2">
+<h2>Adding annotation</h2>
+<p>Once plots have been assembled they start to form a single unit. This also means that titles, subtitles, and captions will often pertain to the full ensemble and not individual plots. Titles etc. can be added to patchwork plots using the <code>plot_annotation()</code> function.</p>
+<pre class="r"><code>p34 &lt;- p3 + p4 + plot_annotation(
+  title = &quot;A closer look at the effect of drive train in cars&quot;,
+  caption = &quot;Source: mpg dataset in ggplot2&quot;
+)
+p34</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p>The titles formatted according to the theme specification in the <code>plot_annotation()</code> call.</p>
+<pre class="r"><code>p34 + plot_annotation(theme = theme_gray(base_family = &quot;mono&quot;))</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p>As the global theme often follows the theme of the subplots, using <code>&amp;</code> along with a theme object will modify the global theme as well as the themes of the subplots</p>
+<pre class="r"><code>p34 &amp; theme_gray(base_family = &quot;mono&quot;)</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p>Another type of annotation, known especially in scientific literature, is to add tags to each subplot that will then be used to identify them in the text and caption. ggplot2 has the <code>tag</code> element for exactly this and patchwork offers functionality to set this automatically using the <code>tag_levels</code> argument. It can generate automatic levels in latin characters, arabic numerals, or roman numerals</p>
+<pre class="r"><code>p123 &lt;- p1 | (p2 / p3)
+p123 + plot_annotation(tag_levels = &quot;I&quot;) # Uppercase roman numerics</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p>An additional feature is that it is possible to use nesting to define new tagging levels:</p>
+<pre class="r"><code>p123[[2]] &lt;- p123[[2]] + plot_layout(tag_level = &quot;new&quot;)
+p123 + plot_annotation(tag_levels = c(&quot;I&quot;, &quot;a&quot;))</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<hr />
+<p>As can be seen, patchwork offers a long range of possibilities when it comes to arranging plots, and the API scales with the level of complexity of the assembly, from simply using <code>+</code> to place multiple plots in the same area, to using nesting, layouts, and annotations to create advanced custom layouts.</p>
+</div>
+</div>
+<div id="arranging-plots-on-top-of-each-other" class="section level1">
+<h1>Arranging plots on top of each other</h1>
+<p>While a lot of the functionality in patchwork is concerned with aligning plots in a grid, it also allows you to make insets, i.e. small plots placed on top of another plot. The functionality for this is wrapped in the <code>inset_element()</code> function which serves to mark the given plot as an inset to be placed on the preceding plot, along with recording the wanted placement etc. The basic usage is like this:</p>
+<pre class="r"><code>p1 + inset_element(p2, left = 0.5, bottom = 0.4, right = 0.9, top = 0.95)</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p>The position is specified by given the left, right, top, and bottom location of the inset. The default is to use <code>npc</code> units which goes from 0 to 1 in the given area, but any <code>grid::unit()</code> can be used by giving them explicitly. The location is by default set to the panel area, but this can be changed with the <code>align_to</code> argument. Combining all this we can place an inset exactly 15 mm from the top right corner like this:</p>
+<pre class="r"><code>p1 + 
+  inset_element(
+    p2, 
+    left = 0.4, 
+    bottom = 0.4, 
+    right = unit(1, &quot;npc&quot;) - unit(15, &quot;mm&quot;), 
+    top = unit(1, &quot;npc&quot;) - unit(15, &quot;mm&quot;),
+    align_to = &quot;full&quot;
+  )</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p>insets are not confined to ggplots. Any graphics supported by <code>wrap_elements()</code> can be used, including patchworks:</p>
+<pre class="r"><code>p24 &lt;- p2 / p4 + plot_layout(guides = &quot;collect&quot;)
+p1 + inset_element(p24, left = 0.5, bottom = 0.05, right = 0.95, top = 0.9)</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p>A nice feature of insets is that they behave as standard patchwork subplots until they are rendered. This means that they are amenable to modifications after assembly, e.g. using <code>&amp;</code>:</p>
+<pre class="r"><code>p12 &lt;- p1 + inset_element(p2, left = 0.5, bottom = 0.5, right = 0.9, top = 0.95)
+p12 &amp; theme_bw()</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p>And auto tagging works as expected as well:</p>
+<pre class="r"><code>p12 + plot_annotation(tag_levels = &#39;A&#39;)</code></pre>
+<p><img src="arranging-plots_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+</div>
+<div id="wrapping-up" class="section level1">
+<h1>Wrapping up</h1>
+<p>This chapter has given a brief overview of some of the composition possibilities provided by patchwork, but is in no way exhaustive. Patchwork provides support for more than just ggplots and allows you to combine grid and base graphic elements with your plots as well if need be. It also allows even more complex designs using the <code>area()</code> constructor instead of the textual representation showcased here. All of these functionalities and many more are covered in the different guides available on its website: <a href="https://patchwork.data-imaginist.com" target="_blank">https://patchwork.data-imaginist.com</a></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

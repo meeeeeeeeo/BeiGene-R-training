@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Data Import and Write</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="config/style.css" type="text/css" />
+<link rel="stylesheet" href="config/multi-columns.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R training</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="RStudioIDE.html">RStudio IDE</a>
+</li>
+<li>
+  <a href="base_R.html">Base R</a>
+</li>
+<li>
+  <a href="tidyverse-base.html">tidyverse base</a>
+</li>
+<li>
+  <a href="stringr_hs.html">stringr</a>
+</li>
+<li>
+  <a href="datetime_qw.html">date and time</a>
+</li>
+<li>
+  <a href="read-write.html">data import/export</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    ggplot2
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ggplot2_basic.html">basic</a>
+    </li>
+    <li>
+      <a href="ggplot2_layers.html">layers</a>
+    </li>
+    <li>
+      <a href="arranging-plots.html">arranging plots</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    More
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="pipe.html">Using pipe</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">focusing on package</li>
+    <li>
+      <a href="data-process-dplyr.html">data process - dplyr</a>
+    </li>
+    <li>
+      <a href="data-process-tidyr.html">data process - tidyr</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Use SQL in R</li>
+    <li>
+      <a href="sqldf.html">sqldf</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Data Import and Write</h1>
+
+</div>
+
+
+<div id="read-files-into-r" class="section level1">
+<h1>Read files into R</h1>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<p>You can download all the supported files: <a href="./data/text.csv">text.csv</a> <a href="./data/text.zip">text.zip</a> <a href="./data/import_test.xlsx">import_test.xlsx</a> <a href="./data/training.sas7bdat" download="training.sas7bdat">training.sas7bdat</a> and put them in your folder: <code>./data/</code></p>
+<div id="import-a-delimited-file-including-csv-tsv-into-a-tibble" class="section level2">
+<h2>Import a delimited file (including csv &amp; tsv) into a tibble</h2>
+<div id="readr-package" class="section level3">
+<h3>readr package</h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Functions</th>
+<th align="left">Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><strong>read_csv</strong></td>
+<td align="left"><strong>Read a comma-delimited file</strong></td>
+</tr>
+<tr class="even">
+<td align="left">read_csv2</td>
+<td align="left">Read a semicolon-delimited file</td>
+</tr>
+<tr class="odd">
+<td align="left">read_tsv</td>
+<td align="left">Read a tab-delimited file</td>
+</tr>
+<tr class="even">
+<td align="left">read_delim</td>
+<td align="left">Read a general-delimited file</td>
+</tr>
+<tr class="odd">
+<td align="left">read_fwf</td>
+<td align="left">Read a fixed width file</td>
+</tr>
+<tr class="even">
+<td align="left">read_table</td>
+<td align="left">Read whitespace-separated columns</td>
+</tr>
+<tr class="odd">
+<td align="left">read_log</td>
+<td align="left">Read common/combined log file</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="read-a-comma-delimited-file-read_csv" class="section level3">
+<h3>Read a comma-delimited file: <a href="https://readr.tidyverse.org/reference/read_delim.html" target="_blank">read_csv</a></h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Arguments</th>
+<th align="left">Default</th>
+<th align="left">Option</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">file</td>
+<td align="left">location</td>
+<td align="left">a file, a connection, or literal data</td>
+</tr>
+<tr class="even">
+<td align="left">col_names</td>
+<td align="left"><code>TRUE</code></td>
+<td align="left"><code>TRUE</code>/<code>FALSE</code>(x1-xn)</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">character vector of column names</td>
+</tr>
+<tr class="even">
+<td align="left">col_types</td>
+<td align="left"></td>
+<td align="left"><code>cols(var1 = col_character())</code></td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"><code>cols_only(X1 = col_character())</code></td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"><code>cols(var1 = col_skip())</code></td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"><code>c("ic_")</code></td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"><code>col_types = list(.default = col_character())</code></td>
+</tr>
+<tr class="odd">
+<td align="left">locale</td>
+<td align="left"><code>default_locale()</code></td>
+<td align="left">default or customize</td>
+</tr>
+<tr class="even">
+<td align="left">na</td>
+<td align="left"><code>c("", "NA")</code></td>
+<td align="left">a vector, <code>c(" ", "NA", ".")</code></td>
+</tr>
+<tr class="odd">
+<td align="left">quote</td>
+<td align="left"><code>"\""</code></td>
+<td align="left"><code>"\""</code></td>
+</tr>
+<tr class="even">
+<td align="left">n_max</td>
+<td align="left"><code>Inf</code></td>
+<td align="left">integer</td>
+</tr>
+<tr class="odd">
+<td align="left">skip</td>
+<td align="left"><code>0</code></td>
+<td align="left">integer</td>
+</tr>
+<tr class="even">
+<td align="left">guess_max</td>
+<td align="left"><code>Inf or 1000</code></td>
+<td align="left">integer</td>
+</tr>
+<tr class="odd">
+<td align="left">trim_ws</td>
+<td align="left"><code>TRUE</code></td>
+<td align="left"><code>TRUE</code>/<code>FALSE</code></td>
+</tr>
+<tr class="even">
+<td align="left">skip_empty_rows</td>
+<td align="left"><code>TRUE</code></td>
+<td align="left"><code>TRUE</code>/<code>FALSE</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="arguments" class="section level3">
+<h3>Arguments</h3>
+<ol style="list-style-type: decimal">
+<li><p><strong>file</strong>: A path, a connection, or literal data</p>
+<pre class="r"><code>read_csv(&quot;x,y\n1,2\n3,4&quot;)
+#&gt; # A tibble: 2 x 2
+#&gt;       x     y
+#&gt;   &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1     1     2
+#&gt; 2     3     4
+
+read_csv(&quot;./data/text.csv&quot;)
+#&gt; 
+#&gt; ── Column specification ────────────────────────────────────────────────────────
+#&gt; cols(
+#&gt;   StudyName = col_character(),
+#&gt;   age = col_double(),
+#&gt;   EnvironmentName = col_character(),
+#&gt;   SiteGroupName = col_character(),
+#&gt;   SiteNumber = col_character()
+#&gt; )
+#&gt; # A tibble: 11 x 5
+#&gt;    StudyName      age EnvironmentName SiteGroupName SiteNumber
+#&gt;    &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;         &lt;chr&gt;     
+#&gt;  1 BGB-3111-217    56 UAT             &quot;World&quot;       UATU0001  
+#&gt;  2 BGB-3111-217    65 .               &quot;World&quot;       &lt;NA&gt;      
+#&gt;  3 BGB-3111-217    45 UAT             &quot;\&quot;\&quot;&quot;        UATU0001  
+#&gt;  4 BGB-3111-217    65 UAT              &lt;NA&gt;         UATU0001  
+#&gt;  5 BGB-3111-217    21 UAT             &quot;World&quot;       UATU0001  
+#&gt;  6 &lt;NA&gt;            NA &lt;NA&gt;             &lt;NA&gt;         &lt;NA&gt;      
+#&gt;  7 BGB-3111-217    54 UAT             &quot;World&quot;       UATU#0001 
+#&gt;  8 BGB-3111-217    78 UAT             &quot;World&quot;       UATU0001  
+#&gt;  9 BGB-3111-217    89 UAT             &quot;World&quot;       UATU0001  
+#&gt; 10 BGB-3111-217    36 UAT             &quot;World&quot;       #UATU0001 
+#&gt; 11 BGB-3111-217    58 UAT             &quot;World&quot;       UATU0001
+
+read_csv(&quot;./data/text.zip&quot;)
+#&gt; 
+#&gt; ── Column specification ────────────────────────────────────────────────────────
+#&gt; cols(
+#&gt;   .default = col_character(),
+#&gt;   SiteID = col_double(),
+#&gt;   SubjectID = col_double(),
+#&gt;   CRFVersion = col_double()
+#&gt; )
+#&gt; ℹ Use `spec()` for the full column specifications.
+#&gt; # A tibble: 240 x 20
+#&gt;    StudyName  EnvironmentName SiteGroupName SiteID SiteNumber SiteName SubjectID
+#&gt;    &lt;chr&gt;      &lt;chr&gt;           &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;        &lt;dbl&gt;
+#&gt;  1 BGB-3111-… UAT             World           1721 UATU0001   BGB UAT…    258577
+#&gt;  2 BGB-3111-… UAT             World           1721 UATU0001   BGB UAT…    303338
+#&gt;  3 BGB-3111-… UAT             World           1721 UATU0001   BGB UAT…    305387
+#&gt;  4 BGB-3111-… UAT             World           1721 UATU0001   BGB UAT…    309326
+#&gt;  5 BGB-3111-… UAT             World           1721 UATU0001   BGB UAT…    312356
+#&gt;  6 BGB-3111-… UAT             World           1721 UATU0001   BGB UAT…    320585
+#&gt;  7 BGB-3111-… UAT             World           1721 UATU0001   BGB UAT…    362433
+#&gt;  8 BGB-3111-… UAT             World           1721 UATU0001   BGB UAT…    363219
+#&gt;  9 BGB-3111-… UAT             World           1721 UATU0001   BGB UAT…    316194
+#&gt; 10 BGB-3111-… UAT             World           1721 UATU0001   BGB UAT…    316250
+#&gt; 11 BGB-3111-… UAT             World           1722 UATU0002   BGB UAT…    259154
+#&gt; # … with 229 more rows, and 13 more variables: SubjectName &lt;chr&gt;,
+#&gt; #   CRFVersion &lt;dbl&gt;, SubjectStatus &lt;chr&gt;, Created &lt;chr&gt;, ParamStudy &lt;chr&gt;,
+#&gt; #   ParamEnvironment &lt;chr&gt;, ParamSiteGroup &lt;chr&gt;, ParamSites &lt;chr&gt;,
+#&gt; #   ParamSubjects &lt;chr&gt;, Login &lt;chr&gt;, RoleName &lt;chr&gt;, PrintDateTime &lt;chr&gt;,
+#&gt; #   TimeZone &lt;chr&gt;
+
+read_csv(&quot;https://github.com/tidyverse/readr/raw/master/inst/extdata/mtcars.csv&quot;)
+#&gt; 
+#&gt; ── Column specification ────────────────────────────────────────────────────────
+#&gt; cols(
+#&gt;   mpg = col_double(),
+#&gt;   cyl = col_double(),
+#&gt;   disp = col_double(),
+#&gt;   hp = col_double(),
+#&gt;   drat = col_double(),
+#&gt;   wt = col_double(),
+#&gt;   qsec = col_double(),
+#&gt;   vs = col_double(),
+#&gt;   am = col_double(),
+#&gt;   gear = col_double(),
+#&gt;   carb = col_double()
+#&gt; )
+#&gt; # A tibble: 32 x 11
+#&gt;      mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+#&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt;  1  21       6  160    110  3.9   2.62  16.5     0     1     4     4
+#&gt;  2  21       6  160    110  3.9   2.88  17.0     0     1     4     4
+#&gt;  3  22.8     4  108     93  3.85  2.32  18.6     1     1     4     1
+#&gt;  4  21.4     6  258    110  3.08  3.22  19.4     1     0     3     1
+#&gt;  5  18.7     8  360    175  3.15  3.44  17.0     0     0     3     2
+#&gt;  6  18.1     6  225    105  2.76  3.46  20.2     1     0     3     1
+#&gt;  7  14.3     8  360    245  3.21  3.57  15.8     0     0     3     4
+#&gt;  8  24.4     4  147.    62  3.69  3.19  20       1     0     4     2
+#&gt;  9  22.8     4  141.    95  3.92  3.15  22.9     1     0     4     2
+#&gt; 10  19.2     6  168.   123  3.92  3.44  18.3     1     0     4     4
+#&gt; 11  17.8     6  168.   123  3.92  3.44  18.9     1     0     4     4
+#&gt; # … with 21 more rows</code></pre></li>
+<li><p><strong>col_names</strong>: Define var names–either <code>TRUE</code>, <code>FALSE</code> or a character vector of column names, <code>TRUE</code> by default.</p>
+<pre class="r"><code>read_csv(&quot;./data/text.csv&quot;, col_names = TRUE)
+#&gt; 
+#&gt; ── Column specification ────────────────────────────────────────────────────────
+#&gt; cols(
+#&gt;   StudyName = col_character(),
+#&gt;   age = col_double(),
+#&gt;   EnvironmentName = col_character(),
+#&gt;   SiteGroupName = col_character(),
+#&gt;   SiteNumber = col_character()
+#&gt; )
+#&gt; # A tibble: 11 x 5
+#&gt;    StudyName      age EnvironmentName SiteGroupName SiteNumber
+#&gt;    &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;         &lt;chr&gt;     
+#&gt;  1 BGB-3111-217    56 UAT             &quot;World&quot;       UATU0001  
+#&gt;  2 BGB-3111-217    65 .               &quot;World&quot;       &lt;NA&gt;      
+#&gt;  3 BGB-3111-217    45 UAT             &quot;\&quot;\&quot;&quot;        UATU0001  
+#&gt;  4 BGB-3111-217    65 UAT              &lt;NA&gt;         UATU0001  
+#&gt;  5 BGB-3111-217    21 UAT             &quot;World&quot;       UATU0001  
+#&gt;  6 &lt;NA&gt;            NA &lt;NA&gt;             &lt;NA&gt;         &lt;NA&gt;      
+#&gt;  7 BGB-3111-217    54 UAT             &quot;World&quot;       UATU#0001 
+#&gt;  8 BGB-3111-217    78 UAT             &quot;World&quot;       UATU0001  
+#&gt;  9 BGB-3111-217    89 UAT             &quot;World&quot;       UATU0001  
+#&gt; 10 BGB-3111-217    36 UAT             &quot;World&quot;       #UATU0001 
+#&gt; 11 BGB-3111-217    58 UAT             &quot;World&quot;       UATU0001
+
+read_csv(&quot;./data/text.csv&quot;, col_names = FALSE)
+#&gt; 
+#&gt; ── Column specification ────────────────────────────────────────────────────────
+#&gt; cols(
+#&gt;   X1 = col_character(),
+#&gt;   X2 = col_character(),
+#&gt;   X3 = col_character(),
+#&gt;   X4 = col_character(),
+#&gt;   X5 = col_character()
+#&gt; )
+#&gt; # A tibble: 12 x 5
+#&gt;    X1           X2    X3              X4              X5        
+#&gt;    &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;           &lt;chr&gt;           &lt;chr&gt;     
+#&gt;  1 StudyName    age   EnvironmentName &quot;SiteGroupName&quot; SiteNumber
+#&gt;  2 BGB-3111-217 56    UAT             &quot;World&quot;         UATU0001  
+#&gt;  3 BGB-3111-217 65    .               &quot;World&quot;         &lt;NA&gt;      
+#&gt;  4 BGB-3111-217 45    UAT             &quot;\&quot;\&quot;&quot;          UATU0001  
+#&gt;  5 BGB-3111-217 65    UAT              &lt;NA&gt;           UATU0001  
+#&gt;  6 BGB-3111-217 21    UAT             &quot;World&quot;         UATU0001  
+#&gt;  7 &lt;NA&gt;         &lt;NA&gt;  &lt;NA&gt;             &lt;NA&gt;           &lt;NA&gt;      
+#&gt;  8 BGB-3111-217 54    UAT             &quot;World&quot;         UATU#0001 
+#&gt;  9 BGB-3111-217 78    UAT             &quot;World&quot;         UATU0001  
+#&gt; 10 BGB-3111-217 89    UAT             &quot;World&quot;         UATU0001  
+#&gt; 11 BGB-3111-217 36    UAT             &quot;World&quot;         #UATU0001 
+#&gt; # … with 1 more row
+
+read_csv(&quot;./data/text.csv&quot;, col_names = c(&quot;var1&quot;, &quot;var2&quot;, &quot;var3&quot;))
+#&gt; 
+#&gt; ── Column specification ────────────────────────────────────────────────────────
+#&gt; cols(
+#&gt;   var1 = col_character(),
+#&gt;   var2 = col_character(),
+#&gt;   var3 = col_character()
+#&gt; )
+#&gt; Warning: 12 parsing failures.
+#&gt; row col  expected    actual              file
+#&gt;   1  -- 3 columns 5 columns &#39;./data/text.csv&#39;
+#&gt;   2  -- 3 columns 5 columns &#39;./data/text.csv&#39;
+#&gt;   3  -- 3 columns 5 columns &#39;./data/text.csv&#39;
+#&gt;   4  -- 3 columns 5 columns &#39;./data/text.csv&#39;
+#&gt;   5  -- 3 columns 5 columns &#39;./data/text.csv&#39;
+#&gt; ... ... ......... ......... .................
+#&gt; See problems(...) for more details.
+#&gt; # A tibble: 12 x 3
+#&gt;    var1         var2  var3           
+#&gt;    &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;          
+#&gt;  1 StudyName    age   EnvironmentName
+#&gt;  2 BGB-3111-217 56    UAT            
+#&gt;  3 BGB-3111-217 65    .              
+#&gt;  4 BGB-3111-217 45    UAT            
+#&gt;  5 BGB-3111-217 65    UAT            
+#&gt;  6 BGB-3111-217 21    UAT            
+#&gt;  7 &lt;NA&gt;         &lt;NA&gt;  &lt;NA&gt;           
+#&gt;  8 BGB-3111-217 54    UAT            
+#&gt;  9 BGB-3111-217 78    UAT            
+#&gt; 10 BGB-3111-217 89    UAT            
+#&gt; 11 BGB-3111-217 36    UAT            
+#&gt; # … with 1 more row</code></pre></li>
+<li><p><strong>col_types</strong>: Define var types–<code>NULL</code>, a <code>cols()</code> specification, or a string, “GUESS” by default.</p>
+<table>
+<tbody>
+<tr class="odd">
+<td>c = character</td>
+<td>i = integer</td>
+<td>n = number</td>
+</tr>
+<tr class="even">
+<td>d = double</td>
+<td>l = logical</td>
+<td>f = factor</td>
+</tr>
+<tr class="odd">
+<td>D = date</td>
+<td>T = date time</td>
+<td>t = time</td>
+</tr>
+<tr class="even">
+<td>? = guess</td>
+<td>_ or - = skip</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>read_csv(&quot;./data/text.csv&quot;, col_types = cols(age = col_character()))
+#&gt; # A tibble: 11 x 5
+#&gt;    StudyName    age   EnvironmentName SiteGroupName SiteNumber
+#&gt;    &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;           &lt;chr&gt;         &lt;chr&gt;     
+#&gt;  1 BGB-3111-217 56    UAT             &quot;World&quot;       UATU0001  
+#&gt;  2 BGB-3111-217 65    .               &quot;World&quot;       &lt;NA&gt;      
+#&gt;  3 BGB-3111-217 45    UAT             &quot;\&quot;\&quot;&quot;        UATU0001  
+#&gt;  4 BGB-3111-217 65    UAT              &lt;NA&gt;         UATU0001  
+#&gt;  5 BGB-3111-217 21    UAT             &quot;World&quot;       UATU0001  
+#&gt;  6 &lt;NA&gt;         &lt;NA&gt;  &lt;NA&gt;             &lt;NA&gt;         &lt;NA&gt;      
+#&gt;  7 BGB-3111-217 54    UAT             &quot;World&quot;       UATU#0001 
+#&gt;  8 BGB-3111-217 78    UAT             &quot;World&quot;       UATU0001  
+#&gt;  9 BGB-3111-217 89    UAT             &quot;World&quot;       UATU0001  
+#&gt; 10 BGB-3111-217 36    UAT             &quot;World&quot;       #UATU0001 
+#&gt; 11 BGB-3111-217 58    UAT             &quot;World&quot;       UATU0001
+
+read_csv(&quot;./data/text.csv&quot;, col_types = cols_only(StudyName = col_character(), SiteNumber = col_character()))
+#&gt; # A tibble: 11 x 2
+#&gt;    StudyName    SiteNumber
+#&gt;    &lt;chr&gt;        &lt;chr&gt;     
+#&gt;  1 BGB-3111-217 UATU0001  
+#&gt;  2 BGB-3111-217 &lt;NA&gt;      
+#&gt;  3 BGB-3111-217 UATU0001  
+#&gt;  4 BGB-3111-217 UATU0001  
+#&gt;  5 BGB-3111-217 UATU0001  
+#&gt;  6 &lt;NA&gt;         &lt;NA&gt;      
+#&gt;  7 BGB-3111-217 UATU#0001 
+#&gt;  8 BGB-3111-217 UATU0001  
+#&gt;  9 BGB-3111-217 UATU0001  
+#&gt; 10 BGB-3111-217 #UATU0001 
+#&gt; 11 BGB-3111-217 UATU0001
+
+read_csv(&quot;./data/text.csv&quot;, col_types = cols(SiteNumber = col_skip(), StudyName = col_skip()))
+#&gt; # A tibble: 11 x 3
+#&gt;      age EnvironmentName SiteGroupName
+#&gt;    &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;        
+#&gt;  1    56 UAT             &quot;World&quot;      
+#&gt;  2    65 .               &quot;World&quot;      
+#&gt;  3    45 UAT             &quot;\&quot;\&quot;&quot;       
+#&gt;  4    65 UAT              &lt;NA&gt;        
+#&gt;  5    21 UAT             &quot;World&quot;      
+#&gt;  6    NA &lt;NA&gt;             &lt;NA&gt;        
+#&gt;  7    54 UAT             &quot;World&quot;      
+#&gt;  8    78 UAT             &quot;World&quot;      
+#&gt;  9    89 UAT             &quot;World&quot;      
+#&gt; 10    36 UAT             &quot;World&quot;      
+#&gt; 11    58 UAT             &quot;World&quot;
+
+read_csv(&quot;./data/text.csv&quot;, col_types = c(&quot;cn_cc&quot;))
+#&gt; # A tibble: 11 x 4
+#&gt;    StudyName      age SiteGroupName SiteNumber
+#&gt;    &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;         &lt;chr&gt;     
+#&gt;  1 BGB-3111-217    56 &quot;World&quot;       UATU0001  
+#&gt;  2 BGB-3111-217    65 &quot;World&quot;       &lt;NA&gt;      
+#&gt;  3 BGB-3111-217    45 &quot;\&quot;\&quot;&quot;        UATU0001  
+#&gt;  4 BGB-3111-217    65  &lt;NA&gt;         UATU0001  
+#&gt;  5 BGB-3111-217    21 &quot;World&quot;       UATU0001  
+#&gt;  6 &lt;NA&gt;            NA  &lt;NA&gt;         &lt;NA&gt;      
+#&gt;  7 BGB-3111-217    54 &quot;World&quot;       UATU#0001 
+#&gt;  8 BGB-3111-217    78 &quot;World&quot;       UATU0001  
+#&gt;  9 BGB-3111-217    89 &quot;World&quot;       UATU0001  
+#&gt; 10 BGB-3111-217    36 &quot;World&quot;       #UATU0001 
+#&gt; 11 BGB-3111-217    58 &quot;World&quot;       UATU0001
+
+read_csv(&quot;./data/text.csv&quot;, col_types = list(.default = col_character()))
+#&gt; # A tibble: 11 x 5
+#&gt;    StudyName    age   EnvironmentName SiteGroupName SiteNumber
+#&gt;    &lt;chr&gt;        &lt;chr&gt; &lt;chr&gt;           &lt;chr&gt;         &lt;chr&gt;     
+#&gt;  1 BGB-3111-217 56    UAT             &quot;World&quot;       UATU0001  
+#&gt;  2 BGB-3111-217 65    .               &quot;World&quot;       &lt;NA&gt;      
+#&gt;  3 BGB-3111-217 45    UAT             &quot;\&quot;\&quot;&quot;        UATU0001  
+#&gt;  4 BGB-3111-217 65    UAT              &lt;NA&gt;         UATU0001  
+#&gt;  5 BGB-3111-217 21    UAT             &quot;World&quot;       UATU0001  
+#&gt;  6 &lt;NA&gt;         &lt;NA&gt;  &lt;NA&gt;             &lt;NA&gt;         &lt;NA&gt;      
+#&gt;  7 BGB-3111-217 54    UAT             &quot;World&quot;       UATU#0001 
+#&gt;  8 BGB-3111-217 78    UAT             &quot;World&quot;       UATU0001  
+#&gt;  9 BGB-3111-217 89    UAT             &quot;World&quot;       UATU0001  
+#&gt; 10 BGB-3111-217 36    UAT             &quot;World&quot;       #UATU0001 
+#&gt; 11 BGB-3111-217 58    UAT             &quot;World&quot;       UATU0001
+
+read_csv(&quot;./data/text.csv&quot;, col_types = cols())
+#&gt; # A tibble: 11 x 5
+#&gt;    StudyName      age EnvironmentName SiteGroupName SiteNumber
+#&gt;    &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;         &lt;chr&gt;     
+#&gt;  1 BGB-3111-217    56 UAT             &quot;World&quot;       UATU0001  
+#&gt;  2 BGB-3111-217    65 .               &quot;World&quot;       &lt;NA&gt;      
+#&gt;  3 BGB-3111-217    45 UAT             &quot;\&quot;\&quot;&quot;        UATU0001  
+#&gt;  4 BGB-3111-217    65 UAT              &lt;NA&gt;         UATU0001  
+#&gt;  5 BGB-3111-217    21 UAT             &quot;World&quot;       UATU0001  
+#&gt;  6 &lt;NA&gt;            NA &lt;NA&gt;             &lt;NA&gt;         &lt;NA&gt;      
+#&gt;  7 BGB-3111-217    54 UAT             &quot;World&quot;       UATU#0001 
+#&gt;  8 BGB-3111-217    78 UAT             &quot;World&quot;       UATU0001  
+#&gt;  9 BGB-3111-217    89 UAT             &quot;World&quot;       UATU0001  
+#&gt; 10 BGB-3111-217    36 UAT             &quot;World&quot;       #UATU0001 
+#&gt; 11 BGB-3111-217    58 UAT             &quot;World&quot;       UATU0001</code></pre></li>
+<li><p><strong>na</strong>: Character vector of strings to interpret as missing values – <code>c('', 'NA')</code></p>
+<pre class="r"><code>read_csv(&quot;./data/text.csv&quot;, na = c(&quot;&quot;, &quot;NA&quot;, &quot;.&quot;))
+#&gt; 
+#&gt; ── Column specification ────────────────────────────────────────────────────────
+#&gt; cols(
+#&gt;   StudyName = col_character(),
+#&gt;   age = col_double(),
+#&gt;   EnvironmentName = col_character(),
+#&gt;   SiteGroupName = col_character(),
+#&gt;   SiteNumber = col_character()
+#&gt; )
+#&gt; # A tibble: 11 x 5
+#&gt;    StudyName      age EnvironmentName SiteGroupName SiteNumber
+#&gt;    &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;         &lt;chr&gt;     
+#&gt;  1 BGB-3111-217    56 UAT             &quot;World&quot;       UATU0001  
+#&gt;  2 BGB-3111-217    65 &lt;NA&gt;            &quot;World&quot;       &lt;NA&gt;      
+#&gt;  3 BGB-3111-217    45 UAT             &quot;\&quot;\&quot;&quot;        UATU0001  
+#&gt;  4 BGB-3111-217    65 UAT              &lt;NA&gt;         UATU0001  
+#&gt;  5 BGB-3111-217    21 UAT             &quot;World&quot;       UATU0001  
+#&gt;  6 &lt;NA&gt;            NA &lt;NA&gt;             &lt;NA&gt;         &lt;NA&gt;      
+#&gt;  7 BGB-3111-217    54 UAT             &quot;World&quot;       UATU#0001 
+#&gt;  8 BGB-3111-217    78 UAT             &quot;World&quot;       UATU0001  
+#&gt;  9 BGB-3111-217    89 UAT             &quot;World&quot;       UATU0001  
+#&gt; 10 BGB-3111-217    36 UAT             &quot;World&quot;       #UATU0001 
+#&gt; 11 BGB-3111-217    58 UAT             &quot;World&quot;       UATU0001</code></pre></li>
+<li><p><strong>comment</strong>: A string used to identify comments. Any text after the comment characters will be silently ignored.</p>
+<pre class="r"><code>read_csv(&quot;./data/text.csv&quot;, comment = &quot;#&quot;)
+#&gt; 
+#&gt; ── Column specification ────────────────────────────────────────────────────────
+#&gt; cols(
+#&gt;   StudyName = col_character(),
+#&gt;   age = col_double(),
+#&gt;   EnvironmentName = col_character(),
+#&gt;   SiteGroupName = col_character(),
+#&gt;   SiteNumber = col_character()
+#&gt; )
+#&gt; Warning: 1 parsing failure.
+#&gt; row col  expected    actual              file
+#&gt;  10  -- 5 columns 4 columns &#39;./data/text.csv&#39;
+#&gt; # A tibble: 11 x 5
+#&gt;    StudyName      age EnvironmentName SiteGroupName SiteNumber
+#&gt;    &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;         &lt;chr&gt;     
+#&gt;  1 BGB-3111-217    56 UAT             &quot;World&quot;       UATU0001  
+#&gt;  2 BGB-3111-217    65 .               &quot;World&quot;       &lt;NA&gt;      
+#&gt;  3 BGB-3111-217    45 UAT             &quot;\&quot;\&quot;&quot;        UATU0001  
+#&gt;  4 BGB-3111-217    65 UAT              &lt;NA&gt;         UATU0001  
+#&gt;  5 BGB-3111-217    21 UAT             &quot;World&quot;       UATU0001  
+#&gt;  6 &lt;NA&gt;            NA &lt;NA&gt;             &lt;NA&gt;         &lt;NA&gt;      
+#&gt;  7 BGB-3111-217    54 UAT             &quot;World&quot;       UATU      
+#&gt;  8 BGB-3111-217    78 UAT             &quot;World&quot;       UATU0001  
+#&gt;  9 BGB-3111-217    89 UAT             &quot;World&quot;       UATU0001  
+#&gt; 10 BGB-3111-217    36 UAT             &quot;World&quot;       &lt;NA&gt;      
+#&gt; 11 BGB-3111-217    58 UAT             &quot;World&quot;       UATU0001</code></pre></li>
+<li><p><strong>trim_ws</strong>: Should leading and trailing whitespace be trimmed from each field before parsing it?</p>
+<pre class="r"><code>read_csv(&quot;./data/text.csv&quot;, trim_ws = FALSE)
+#&gt; 
+#&gt; ── Column specification ────────────────────────────────────────────────────────
+#&gt; cols(
+#&gt;   StudyName = col_character(),
+#&gt;   age = col_double(),
+#&gt;   EnvironmentName = col_character(),
+#&gt;   SiteGroupName = col_character(),
+#&gt;   SiteNumber = col_character()
+#&gt; )
+#&gt; # A tibble: 11 x 5
+#&gt;    StudyName      age EnvironmentName SiteGroupName  SiteNumber
+#&gt;    &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;          &lt;chr&gt;     
+#&gt;  1 BGB-3111-217    56 &quot;UAT&quot;           &quot;World&quot;        UATU0001  
+#&gt;  2 BGB-3111-217    65 &quot;.&quot;             &quot;World&quot;        &lt;NA&gt;      
+#&gt;  3 BGB-3111-217    45 &quot;UAT&quot;           &quot;\&quot;\&quot;&quot;         UATU0001  
+#&gt;  4 BGB-3111-217    65 &quot;  UAT&quot;          &lt;NA&gt;          UATU0001  
+#&gt;  5 BGB-3111-217    21 &quot;UAT&quot;           &quot;  World     &quot; UATU0001  
+#&gt;  6 &lt;NA&gt;            NA  &lt;NA&gt;            &lt;NA&gt;          &lt;NA&gt;      
+#&gt;  7 BGB-3111-217    54 &quot;UAT&quot;           &quot;World&quot;        UATU#0001 
+#&gt;  8 BGB-3111-217    78 &quot;UAT&quot;           &quot;World&quot;        UATU0001  
+#&gt;  9 BGB-3111-217    89 &quot;UAT&quot;           &quot;World&quot;        UATU0001  
+#&gt; 10 BGB-3111-217    36 &quot;UAT&quot;           &quot;World&quot;        #UATU0001 
+#&gt; 11 BGB-3111-217    58 &quot;UAT&quot;           &quot;World&quot;        UATU0001</code></pre></li>
+<li><p><strong>skip</strong>: Number of lines to skip before reading data.</p>
+<pre class="r"><code>read_csv(&quot;./data/text.csv&quot;, skip = 2)
+#&gt; Warning: Missing column names filled in: &#39;X5&#39; [5]
+#&gt; 
+#&gt; ── Column specification ────────────────────────────────────────────────────────
+#&gt; cols(
+#&gt;   `BGB-3111-217` = col_character(),
+#&gt;   `65` = col_double(),
+#&gt;   . = col_character(),
+#&gt;   World = col_character(),
+#&gt;   X5 = col_character()
+#&gt; )
+#&gt; # A tibble: 9 x 5
+#&gt;   `BGB-3111-217`  `65` .     World   X5       
+#&gt;   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;    
+#&gt; 1 BGB-3111-217      45 UAT   &quot;\&quot;\&quot;&quot;  UATU0001 
+#&gt; 2 BGB-3111-217      65 UAT    &lt;NA&gt;   UATU0001 
+#&gt; 3 BGB-3111-217      21 UAT   &quot;World&quot; UATU0001 
+#&gt; 4 &lt;NA&gt;              NA &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;     
+#&gt; 5 BGB-3111-217      54 UAT   &quot;World&quot; UATU#0001
+#&gt; 6 BGB-3111-217      78 UAT   &quot;World&quot; UATU0001 
+#&gt; 7 BGB-3111-217      89 UAT   &quot;World&quot; UATU0001 
+#&gt; 8 BGB-3111-217      36 UAT   &quot;World&quot; #UATU0001
+#&gt; 9 BGB-3111-217      58 UAT   &quot;World&quot; UATU0001</code></pre></li>
+<li><p><strong>n_max</strong>: Maximum number of records to read.</p>
+<pre class="r"><code>read_csv(&quot;./data/text.csv&quot;, n_max = 5)
+#&gt; 
+#&gt; ── Column specification ────────────────────────────────────────────────────────
+#&gt; cols(
+#&gt;   StudyName = col_character(),
+#&gt;   age = col_double(),
+#&gt;   EnvironmentName = col_character(),
+#&gt;   SiteGroupName = col_character(),
+#&gt;   SiteNumber = col_character()
+#&gt; )
+#&gt; # A tibble: 5 x 5
+#&gt;   StudyName      age EnvironmentName SiteGroupName SiteNumber
+#&gt;   &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;         &lt;chr&gt;     
+#&gt; 1 BGB-3111-217    56 UAT             &quot;World&quot;       UATU0001  
+#&gt; 2 BGB-3111-217    65 .               &quot;World&quot;       &lt;NA&gt;      
+#&gt; 3 BGB-3111-217    45 UAT             &quot;\&quot;\&quot;&quot;        UATU0001  
+#&gt; 4 BGB-3111-217    65 UAT              &lt;NA&gt;         UATU0001  
+#&gt; 5 BGB-3111-217    21 UAT             &quot;World&quot;       UATU0001</code></pre></li>
+<li><p><strong>locale</strong>: The locale controls defaults that vary from place to place</p>
+<pre class="r"><code>locale()
+#&gt; &lt;locale&gt;
+#&gt; Numbers:  123,456.78
+#&gt; Formats:  %AD / %AT
+#&gt; Timezone: UTC
+#&gt; Encoding: UTF-8
+#&gt; &lt;date_names&gt;
+#&gt; Days:   Sunday (Sun), Monday (Mon), Tuesday (Tue), Wednesday (Wed), Thursday
+#&gt;         (Thu), Friday (Fri), Saturday (Sat)
+#&gt; Months: January (Jan), February (Feb), March (Mar), April (Apr), May (May),
+#&gt;         June (Jun), July (Jul), August (Aug), September (Sep), October
+#&gt;         (Oct), November (Nov), December (Dec)
+#&gt; AM/PM:  AM/PM
+
+locale(
+  date_names = &quot;en&quot;,
+  date_format = &quot;%AD&quot;,
+  time_format = &quot;%AT&quot;,
+  decimal_mark = &quot;.&quot;,
+  grouping_mark = &quot;,&quot;,
+  tz = &quot;UTC&quot;,
+  encoding = &quot;UTF-8&quot;,
+  asciify = FALSE
+)
+#&gt; &lt;locale&gt;
+#&gt; Numbers:  123,456.78
+#&gt; Formats:  %AD / %AT
+#&gt; Timezone: UTC
+#&gt; Encoding: UTF-8
+#&gt; &lt;date_names&gt;
+#&gt; Days:   Sunday (Sun), Monday (Mon), Tuesday (Tue), Wednesday (Wed), Thursday
+#&gt;         (Thu), Friday (Fri), Saturday (Sat)
+#&gt; Months: January (Jan), February (Feb), March (Mar), April (Apr), May (May),
+#&gt;         June (Jun), July (Jul), August (Aug), September (Sep), October
+#&gt;         (Oct), November (Nov), December (Dec)
+#&gt; AM/PM:  AM/PM</code></pre></li>
+<li><p><strong>guess_max</strong>: Maximum number of records to use for guessing column types.</p></li>
+<li><p><strong>quoted_na</strong>: Should missing values inside quotes be treated as missing values (the default) or strings</p></li>
+</ol>
+</div>
+</div>
+<div id="import-xls-and-xlsx-files-readxlread_xlsx" class="section level2">
+<h2>Import xls and xlsx files： <a href="https://readxl.tidyverse.org/" target="_blank">readxl::read_xlsx</a></h2>
+<div id="readxl-package" class="section level3">
+<h3>readxl package</h3>
+<pre class="r"><code>library(readxl)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Functions</th>
+<th align="left">Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">read_excel</td>
+<td align="left">Read xls and xlsx files</td>
+</tr>
+<tr class="even">
+<td align="left"><strong>read_xlsx</strong></td>
+<td align="left"><strong>Read xlsx files</strong></td>
+</tr>
+<tr class="odd">
+<td align="left">read_xls</td>
+<td align="left">Read xls files</td>
+</tr>
+<tr class="even">
+<td align="left">excel_sheet</td>
+<td align="left">List all sheets in an excel spreadsheet</td>
+</tr>
+<tr class="odd">
+<td align="left">excel_format</td>
+<td align="left">Determine if files are xls or xlsx</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="excel_sheet-excel_format" class="section level3">
+<h3><code>excel_sheet()</code>, <code>excel_format()</code></h3>
+<pre class="r"><code>loc &lt;-  c(&quot;./data/import_test.xlsx&quot;)
+a &lt;- excel_sheets(loc)
+a
+#&gt; [1] &quot;Sheet1&quot; &quot;Sheet2&quot;
+
+b &lt;- excel_format(loc)
+b
+#&gt; [1] &quot;xlsx&quot;</code></pre>
+</div>
+<div id="read_xlsx" class="section level3">
+<h3>read_xlsx</h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Arguments</th>
+<th align="left">Default</th>
+<th align="left">Option</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">sheet</td>
+<td align="left"><code>1</code></td>
+<td align="left"><code>"sheetname"</code>, <code>2</code></td>
+</tr>
+<tr class="even">
+<td align="left">range</td>
+<td align="left">full</td>
+<td align="left"><code>"A1:D15"</code>, "<code>Sheet!A1:B14"</code></td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"><code>cell_limits(c(4, 3), c(NA, NA))</code></td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"><code>cell_rows()</code></td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"><code>cell_cols()</code></td>
+</tr>
+<tr class="even">
+<td align="left">col_names</td>
+<td align="left"><code>TRUE</code></td>
+<td align="left"><code>TRUE</code>/<code>FALSE</code>(x1-xn)</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left">character vector of column names</td>
+</tr>
+<tr class="even">
+<td align="left">col_types</td>
+<td align="left"></td>
+<td align="left"><code>cols(var1 = col_character())</code></td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"><code>cols_only(X1 = col_character())</code></td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"><code>cols(var1 = col_skip())</code></td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"><code>c("ic\_")</code> <code>c('text', 'guess', 'numeric')</code></td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"><code>col_types = "text"</code></td>
+</tr>
+<tr class="odd">
+<td align="left">na</td>
+<td align="left"><code>c("", "NA")</code></td>
+<td align="left">a vector, <code>c(" ", "NA", ".")</code></td>
+</tr>
+<tr class="even">
+<td align="left">n_max</td>
+<td align="left"><code>Inf</code></td>
+<td align="left">integer</td>
+</tr>
+<tr class="odd">
+<td align="left">skip</td>
+<td align="left"><code>0</code></td>
+<td align="left">integer</td>
+</tr>
+<tr class="even">
+<td align="left">guess_max</td>
+<td align="left"><code>Inf or 1000</code></td>
+<td align="left">integer</td>
+</tr>
+<tr class="odd">
+<td align="left">trim_ws</td>
+<td align="left"><code>TRUE</code></td>
+<td align="left"><code>TRUE</code>/<code>FALSE</code></td>
+</tr>
+<tr class="even">
+<td align="left">.name_repair</td>
+<td align="left"><code>"unique"</code></td>
+<td align="left">default or customize</td>
+</tr>
+</tbody>
+</table>
+<ol style="list-style-type: decimal">
+<li><p><strong>sheet</strong>: Sheet to read – <code>"sheetname"</code> or an integer (the position of the sheet).</p>
+<pre class="r"><code>read_xlsx(&quot;./data/import_test.xlsx&quot;, sheet = 1)
+#&gt; # A tibble: 6 x 8
+#&gt;   Subject Sex      Age Height `Wei-ght` Score quote_escape eol        
+#&gt;   &lt;chr&gt;   &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;      
+#&gt; 1 001     Female    26    165        64    89 &quot;\&quot;aa\&quot;&quot;     &quot;aaa\\nbbb&quot;
+#&gt; 2 002     Female    28    170        67    78 &quot;\&quot;65\&quot;&quot;     &quot;aaa\\bbb&quot; 
+#&gt; 3 003     Male      30    181        80    64 &quot;\&quot;aa\&quot;&quot;     &quot;aaanbbb&quot;  
+#&gt; 4 004     Male      25    160        60    87 &quot;\&quot;65\&quot;&quot;     &quot;ccc\\nbbb&quot;
+#&gt; 5 005     Female    36    175        60    57 &quot;\&quot;aa\&quot;&quot;     &quot;ccc\\bbb&quot; 
+#&gt; 6 006     Male      19    163        68    64 &quot;\&quot;65\&quot;&quot;     &quot;cccnbbb&quot;</code></pre></li>
+<li><p><strong>range</strong>: A cell range to read from</p>
+<pre class="r"><code>read_xlsx(&quot;./data/import_test.xlsx&quot;, range = &quot;A1:D5&quot;)
+#&gt; # A tibble: 4 x 4
+#&gt;   Subject Sex      Age Height
+#&gt;   &lt;chr&gt;   &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+#&gt; 1 001     Female    26    165
+#&gt; 2 002     Female    28    170
+#&gt; 3 003     Male      30    181
+#&gt; 4 004     Male      25    160
+
+read_xlsx(&quot;./data/import_test.xlsx&quot;, range = cell_limits(c(4, 3), c(NA, NA)))
+#&gt; # A tibble: 3 x 6
+#&gt;    `30` `181`  `80`  `64` `&quot;aa&quot;`   aaanbbb    
+#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;      
+#&gt; 1    25   160    60    87 &quot;\&quot;65\&quot;&quot; &quot;ccc\\nbbb&quot;
+#&gt; 2    36   175    60    57 &quot;\&quot;aa\&quot;&quot; &quot;ccc\\bbb&quot; 
+#&gt; 3    19   163    68    64 &quot;\&quot;65\&quot;&quot; &quot;cccnbbb&quot;
+
+read_xlsx(&quot;./data/import_test.xlsx&quot;, range = cell_rows(1:3))
+#&gt; # A tibble: 2 x 8
+#&gt;   Subject Sex      Age Height `Wei-ght` Score quote_escape eol        
+#&gt;   &lt;chr&gt;   &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;      
+#&gt; 1 001     Female    26    165        64    89 &quot;\&quot;aa\&quot;&quot;     &quot;aaa\\nbbb&quot;
+#&gt; 2 002     Female    28    170        67    78 &quot;\&quot;65\&quot;&quot;     &quot;aaa\\bbb&quot;
+
+read_xlsx(&quot;./data/import_test.xlsx&quot;, range = cell_cols(1:5))
+#&gt; # A tibble: 6 x 5
+#&gt;   Subject Sex      Age Height `Wei-ght`
+#&gt;   &lt;chr&gt;   &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;
+#&gt; 1 001     Female    26    165        64
+#&gt; 2 002     Female    28    170        67
+#&gt; 3 003     Male      30    181        80
+#&gt; 4 004     Male      25    160        60
+#&gt; 5 005     Female    36    175        60
+#&gt; 6 006     Male      19    163        68</code></pre></li>
+<li><p><strong>col_types</strong>: Either <code>NULL</code> to guess all from the spreadsheet or a character vector containing one entry per column from these options: “skip”, “guess”, “logical”, “numeric”, “date”, “text” or “list”. If exactly one <code>col_type</code> is specified, it will be recycled.</p>
+<pre class="r"><code>read_xlsx(&quot;./data/import_test.xlsx&quot;, col_types = &quot;text&quot;)
+#&gt; # A tibble: 6 x 8
+#&gt;   Subject Sex    Age   Height `Wei-ght` Score quote_escape eol        
+#&gt;   &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;        &lt;chr&gt;      
+#&gt; 1 001     Female 26    165    64        89    &quot;\&quot;aa\&quot;&quot;     &quot;aaa\\nbbb&quot;
+#&gt; 2 002     Female 28    170    67        78    &quot;\&quot;65\&quot;&quot;     &quot;aaa\\bbb&quot; 
+#&gt; 3 003     Male   30    181    80        64    &quot;\&quot;aa\&quot;&quot;     &quot;aaanbbb&quot;  
+#&gt; 4 004     Male   25    160    60        87    &quot;\&quot;65\&quot;&quot;     &quot;ccc\\nbbb&quot;
+#&gt; 5 005     Female 36    175    60        57    &quot;\&quot;aa\&quot;&quot;     &quot;ccc\\bbb&quot; 
+#&gt; 6 006     Male   19    163    68        64    &quot;\&quot;65\&quot;&quot;     &quot;cccnbbb&quot;</code></pre></li>
+<li><p><strong>.name_repair</strong>: Handling of column names. By default, readxl ensures column names are not empty and are unique.</p>
+<pre class="r"><code>my_custom_name_repair &lt;- function(nms) {tolower(gsub(&quot;[.-]&quot;, &quot;_&quot;, nms))}
+read_xlsx(&quot;./data/import_test.xlsx&quot;, .name_repair= my_custom_name_repair)
+#&gt; # A tibble: 6 x 8
+#&gt;   subject sex      age height wei_ght score quote_escape eol        
+#&gt;   &lt;chr&gt;   &lt;chr&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;      
+#&gt; 1 001     Female    26    165      64    89 &quot;\&quot;aa\&quot;&quot;     &quot;aaa\\nbbb&quot;
+#&gt; 2 002     Female    28    170      67    78 &quot;\&quot;65\&quot;&quot;     &quot;aaa\\bbb&quot; 
+#&gt; 3 003     Male      30    181      80    64 &quot;\&quot;aa\&quot;&quot;     &quot;aaanbbb&quot;  
+#&gt; 4 004     Male      25    160      60    87 &quot;\&quot;65\&quot;&quot;     &quot;ccc\\nbbb&quot;
+#&gt; 5 005     Female    36    175      60    57 &quot;\&quot;aa\&quot;&quot;     &quot;ccc\\bbb&quot; 
+#&gt; 6 006     Male      19    163      68    64 &quot;\&quot;65\&quot;&quot;     &quot;cccnbbb&quot;</code></pre></li>
+</ol>
+</div>
+</div>
+<div id="import-sas-files-into-r-havenread_sas" class="section level2">
+<h2>Import SAS files into R: <a href="https://haven.tidyverse.org/reference/read_sas.html" target="_blank">haven::read_sas</a></h2>
+<pre class="r"><code>library(haven)</code></pre>
+<table>
+<colgroup>
+<col width="26%" />
+<col width="23%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Arguments</th>
+<th align="left">Default</th>
+<th align="left">Option</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">catalog_file</td>
+<td align="left"><code>NULL</code></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">encoding</td>
+<td align="left"><code>NULL</code></td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">catalog_encoding</td>
+<td align="left"><code>NULL</code></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">n_max</td>
+<td align="left"><code>Inf</code></td>
+<td align="left">integer</td>
+</tr>
+<tr class="odd">
+<td align="left">skip</td>
+<td align="left"><code>0</code></td>
+<td align="left">integer</td>
+</tr>
+<tr class="even">
+<td align="left">col_select</td>
+<td align="left"><code>NULL</code></td>
+<td align="left">a vector, <code>c('subject', 'age')</code></td>
+</tr>
+<tr class="odd">
+<td align="left">.name_repair</td>
+<td align="left"><code>"unique"</code></td>
+<td align="left">default or customize</td>
+</tr>
+</tbody>
+</table>
+<ol style="list-style-type: decimal">
+<li><p><strong>col_select</strong>: One or more selection expressions</p>
+<pre class="r"><code>sas &lt;- read_sas(&quot;./data/training.sas7bdat&quot;, col_select = c(&quot;Age&quot;, &quot;Score&quot;, &quot;quote_escape&quot;))
+sas
+#&gt; # A tibble: 6 x 3
+#&gt;     Age Score quote_escape
+#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;       
+#&gt; 1    26    89 &quot;\&quot;aa\&quot;&quot;    
+#&gt; 2    28    78 &quot;\&quot;65\&quot;&quot;    
+#&gt; 3    30    64 &quot;\&quot;aa\&quot;&quot;    
+#&gt; 4    25    87 &quot;\&quot;65\&quot;&quot;    
+#&gt; 5    36    57 &quot;\&quot;aa\&quot;&quot;    
+#&gt; 6    19    64 &quot;\&quot;65\&quot;&quot;</code></pre></li>
+</ol>
+</div>
+</div>
+<div id="data-output" class="section level1">
+<h1>Data Output</h1>
+<div id="write-a-data-frame-to-a-comma-delimited-file-readrwrite_csv" class="section level2">
+<h2>Write a data frame to a comma-delimited file: <code>readr::write_csv</code></h2>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Arguments</th>
+<th align="left">Default</th>
+<th align="left">Option</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">file</td>
+<td align="left"></td>
+<td align="left">File or connection</td>
+</tr>
+<tr class="even">
+<td align="left">delim</td>
+<td align="left"></td>
+<td align="left"><code>','</code>, <code>';'</code>, <code>'/'</code></td>
+</tr>
+<tr class="odd">
+<td align="left">na</td>
+<td align="left"><code>"NA"</code></td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">append</td>
+<td align="left"><code>FALSE</code></td>
+<td align="left"><code>FALSE</code>/<code>TRUE</code></td>
+</tr>
+<tr class="odd">
+<td align="left">col_names</td>
+<td align="left"><code>TRUE</code></td>
+<td align="left"><code>FALSE</code>/<code>TRUE</code></td>
+</tr>
+<tr class="even">
+<td align="left">quote_escape</td>
+<td align="left"><code>"double"</code></td>
+<td align="left"><code>"double"</code>, <code>"backslash"</code>, <code>"none"</code></td>
+</tr>
+<tr class="odd">
+<td align="left">eol</td>
+<td align="left"></td>
+<td align="left"><code>"\n"</code></td>
+</tr>
+</tbody>
+</table>
+<ol style="list-style-type: decimal">
+<li><p><strong>append</strong>: If <code>FALSE</code>, will overwrite existing file. If <code>TRUE</code>, will append to existing file. In both cases, if the file does not exist a new file is created.</p>
+<pre class="r"><code>getwd()
+if (!dir.exists(&#39;./output&#39;)) {dir.create(&#39;./output&#39;)}
+
+write_csv(sas, &quot;./output/output.csv&quot;, append = FALSE)
+write_csv(sas, &quot;./output/output.csv&quot;, append = TRUE) </code></pre></li>
+<li><p><strong>col_names</strong>: If <code>FALSE</code>, column names will not be included at the top of the file. If <code>TRUE</code>, column names will be included. If not specified, col_names will take the opposite value given to append.</p>
+<pre class="r"><code>write_csv(sas, &quot;./output/output.csv&quot;, col_names = FALSE)
+write_csv(sas, &quot;./output/output.csv&quot;, col_names = TRUE)</code></pre></li>
+<li><p><strong>eol</strong>: The end of line character to use. Most commonly either <code>"\n"</code> for Unix style newlines, or <code>"\r\n"</code> for Windows style newlines.</p>
+<pre class="r"><code>write_csv(sas, &quot;./output/output.csv&quot;, eol = &quot; a\n&quot;)</code></pre></li>
+<li><p><strong>quote_escape</strong>: The type of escaping to use for quoted values, one of <code>"double"</code>, <code>"backslash"</code> or <code>"none"</code>.</p>
+<pre class="r"><code>write_csv(sas, &quot;./output/output.csv&quot;, quote_escape = &quot;none&quot;)</code></pre></li>
+</ol>
+</div>
+<div id="write-a-data-frame-to-a-excel-file-openxlsxwrite.xlsx" class="section level2">
+<h2>Write a data frame to a excel file: <code>openxlsx::write.xlsx</code></h2>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Arguments</th>
+<th align="left">Default</th>
+<th align="left">Option</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">asTable</td>
+<td align="left"><code>FALSE</code></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">creator</td>
+<td align="left"><code>NULL</code></td>
+<td align="left">string</td>
+</tr>
+<tr class="odd">
+<td align="left">sheetName</td>
+<td align="left"><code>NULL</code></td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">gridLines</td>
+<td align="left"><code>TRUE</code></td>
+<td align="left"><code>TRUE</code>/<code>FALSE</code></td>
+</tr>
+<tr class="odd">
+<td align="left">tabColour</td>
+<td align="left"><code>NULL</code></td>
+<td align="left">yellow</td>
+</tr>
+<tr class="even">
+<td align="left">zoom</td>
+<td align="left"><code>100</code></td>
+<td align="left"><code>10</code>—<code>400</code></td>
+</tr>
+<tr class="odd">
+<td align="left">startCol</td>
+<td align="left"><code>1</code></td>
+<td align="left">vector or numberic</td>
+</tr>
+<tr class="even">
+<td align="left">startRow</td>
+<td align="left"><code>1</code></td>
+<td align="left">vector or numberic</td>
+</tr>
+<tr class="odd">
+<td align="left">xy</td>
+<td align="left"><code>c(1, 1)</code></td>
+<td align="left">vector</td>
+</tr>
+<tr class="even">
+<td align="left">colNames/col.names</td>
+<td align="left"><code>TRUE</code></td>
+<td align="left"><code>TRUE</code>/<code>FALSE</code></td>
+</tr>
+<tr class="odd">
+<td align="left">rowNames/row.names</td>
+<td align="left"><code>FALSE</code></td>
+<td align="left"><code>TRUE</code>/<code>FALSE</code></td>
+</tr>
+<tr class="even">
+<td align="left">headerStyle</td>
+<td align="left"><code>NULL</code></td>
+<td align="left">custom by <code>createstyle()</code></td>
+</tr>
+<tr class="odd">
+<td align="left">borders</td>
+<td align="left"><code>NULL</code></td>
+<td align="left"><code>"surrounding"</code>, <code>"columns"</code> or <code>"rows"</code> or <code>NULL</code></td>
+</tr>
+<tr class="even">
+<td align="left">borderColour</td>
+<td align="left"><code>NULL</code></td>
+<td align="left">color</td>
+</tr>
+<tr class="odd">
+<td align="left">borderStyle</td>
+<td align="left"><code>NULL</code></td>
+<td align="left">custom by <code>createstyle()</code></td>
+</tr>
+<tr class="even">
+<td align="left">keepNA</td>
+<td align="left"><code>FALSE</code></td>
+<td align="left"><code>TRUE</code>/<code>FALSE</code></td>
+</tr>
+<tr class="odd">
+<td align="left">na.string</td>
+<td align="left"><code>NULL</code></td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">firstActiveRow</td>
+<td align="left"><code>1</code></td>
+<td align="left">numeric</td>
+</tr>
+<tr class="odd">
+<td align="left">firstActiveCol</td>
+<td align="left"><code>1</code></td>
+<td align="left">numeric</td>
+</tr>
+<tr class="even">
+<td align="left">firstRow</td>
+<td align="left"><code>FALSE</code></td>
+<td align="left"><code>TRUE</code>/<code>FALSE</code></td>
+</tr>
+<tr class="odd">
+<td align="left">firstCol</td>
+<td align="left"><code>FALSE</code></td>
+<td align="left"><code>TRUE</code>/<code>FALSE</code></td>
+</tr>
+<tr class="even">
+<td align="left">colWidths</td>
+<td align="left"><code>NA</code></td>
+<td align="left"><code>"auto"</code></td>
+</tr>
+<tr class="odd">
+<td align="left">overwrite</td>
+<td align="left"><code>TRUE</code></td>
+<td align="left"><code>TRUE</code>/<code>FALSE</code></td>
+</tr>
+</tbody>
+</table>
+<ol style="list-style-type: decimal">
+<li><p><strong>asTable</strong>: whether with border and filter button, <code>FALSE</code> by default</p></li>
+<li><p><strong>creator</strong>: A string specifying the workbook author</p></li>
+<li><p><strong>sheetName</strong>: Name of the worksheet</p></li>
+<li><p><strong>gridLines</strong>: A logical. If <code>FALSE</code>, the worksheet grid lines will be hidden.</p></li>
+<li><p><strong>tabColour</strong>: Colour of the worksheet tab</p></li>
+<li><p><strong>zoom</strong>: A numeric between <code>10</code> and <code>400</code>. Worksheet zoom level as a percentage.</p>
+<pre class="r"><code>write.xlsx(
+  sas,
+  &quot;./output/output.xlsx&quot;,
+  asTable = TRUE,
+  creator = &quot;yuhang&quot;,
+  sheetName = &#39;name&#39;,
+  gridLines = TRUE,
+  tabColour = &#39;yellow&#39;,
+  zoom = 200
+)</code></pre></li>
+<li><p><strong>startCol</strong>: A vector specifying the starting column(s) to write <code>df</code></p></li>
+<li><p><strong>startRow</strong>: A vector specifying the starting row(s) to write <code>df</code></p></li>
+<li><p><strong>xy</strong>: An alternative to specifying <code>startCol</code> and <code>startRow</code> individually. A vector of the form <code>c(startCol, startRow)</code></p></li>
+<li><p><strong>colNames/col.names</strong>: If <code>TRUE</code>, column names of <code>x</code> are written.</p></li>
+<li><p><strong>rowNames/row.names</strong>: If <code>TRUE</code>, row names of <code>x</code> are written.</p></li>
+<li><p><strong>headerStyle</strong>: Custom style to apply to column names.</p></li>
+<li><p><strong>borders</strong>: Either <code>"surrounding"</code>, <code>"columns"</code> or <code>"rows"</code> or <code>NULL</code>.</p></li>
+<li><p><strong>borderColour</strong>: Colour of cell border, only borders is not <code>NULL</code></p></li>
+<li><p><strong>borderStyle</strong>: Border line style, customize by <code>createstyle()</code></p>
+<pre class="r"><code>write.xlsx(
+  sas,
+  &quot;./output/output.xlsx&quot;,
+  startCol = 4, startRow = 3,
+  # xy = c(2, 3),
+  col.names = FALSE,
+  rowNames = TRUE,
+  borders = &quot;surrounding&quot;, borderColour = &quot;blue&quot;
+)</code></pre></li>
+<li><p><strong>keepNA</strong>: If <code>TRUE</code>, NA values are converted to #N/A (or <code>na.string</code>, if not <code>NULL</code>) in Excel, else NA cells will be empty. Defaults to <code>FALSE.</code></p></li>
+<li><p><strong>na.string</strong>: If not <code>NULL</code>, and if <code>keepNA</code> is <code>TRUE</code>, NA values are converted to this string in Excel. Defaults to <code>NULL.</code></p></li>
+<li><p><strong>firstActiveRow</strong>: Top row of active region to freeze pane, begin at <code>1</code>.</p></li>
+<li><p><strong>firstActiveCol</strong>: Furthest left column of active region to freeze pane, begin at <code>1</code>.</p></li>
+<li><p><strong>firstRow</strong>: If <code>TRUE</code>, freezes the first row (equivalent to <code>firstActiveRow = 2</code>).</p></li>
+<li><p><strong>firstCol</strong>: If <code>TRUE</code>, freezes the first column (equivalent to <code>firstActiveCol = 2</code>).</p></li>
+<li><p><strong>colWidths</strong>: Must be value <code>"auto"</code>. Sets all columns containing data to auto width.</p></li>
+<li><p><strong>overwrite</strong>: Overwrite existing file (Defaults to <code>TRUE</code> as with <code>write.table</code>)</p>
+<pre class="r"><code>write.xlsx(
+  sas,
+  &quot;./output/output.xlsx&quot;,
+  firstActiveRow = 3, firstActiveCol = 3,
+  # firstRow = TRUE, firstCol = TRUE,
+  colWidths= &quot;auto&quot;
+)</code></pre></li>
+</ol>
+<div id="open-more-than-one-dataframe-into-different-sheets" class="section level3">
+<h3>Open more than one dataframe into different sheets</h3>
+<pre class="r"><code>l &lt;- list(sas, sas, sas)
+write.xlsx(
+  l,
+  &quot;./output/writeList1.xlsx&quot;,
+  sheetName = c(&#39;a&#39;, &#39;b&#39;, &#39;c&#39;),
+  colWidths = c(NA, &quot;auto&quot;, &quot;auto&quot;),
+  startCol = c(1, 2, 3),
+  startRow = 2,
+  asTable = c(TRUE, TRUE, FALSE),
+  withFilter = c(TRUE, FALSE, FALSE)
+)</code></pre>
+</div>
+</div>
+</div>
+<div id="filefolder-operations" class="section level1">
+<h1>File/folder operations</h1>
+<div id="folder-operations" class="section level2">
+<h2>Folder operations</h2>
+<ul>
+<li><p><code>dir.exists()</code>: judge whether location exist, return <code>TRUE</code> or <code>FALSE</code></p></li>
+<li><p><code>dir.create()</code>: create a path</p></li>
+<li><p><code>unlink()</code>: deletes the file(s) or directories</p></li>
+</ul>
+<pre class="r"><code>base::dir.exists(&quot;./output/test&quot;)
+dir.create(&quot;./output/test/r&quot;, recursive = TRUE)
+unlink(&quot;./output/test/r&quot;, recursive = TRUE)
+dir.create(&quot;./output/test&quot;)
+base::dir.exists(&quot;./output/test&quot;)
+unlink(&quot;./output/test&quot;)</code></pre>
+</div>
+<div id="file-operations" class="section level2">
+<h2>File operations</h2>
+<table>
+<colgroup>
+<col width="22%" />
+<col width="77%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Functions</th>
+<th align="left">Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">file.create</td>
+<td align="left">creates files with the given names</td>
+</tr>
+<tr class="even">
+<td align="left">file.exists</td>
+<td align="left">indicating whether the files exist</td>
+</tr>
+<tr class="odd">
+<td align="left">file.remove</td>
+<td align="left">remove the files</td>
+</tr>
+<tr class="even">
+<td align="left">file.rename</td>
+<td align="left">rename files</td>
+</tr>
+<tr class="odd">
+<td align="left">file.copy</td>
+<td align="left">copy files</td>
+</tr>
+<tr class="even">
+<td align="left">dir/list.files</td>
+<td align="left">list the names of files or directories in the named directory</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>file.create(&quot;./output/test/r/read.txt&quot;)
+file.exists(&quot;./output/test/r/read.txt&quot;)
+file.rename(&#39;./output/test/r/read.txt&#39;, &#39;./output/test/r/read2.txt&#39;)
+file.copy(&#39;./output/test/r/read2.txt&#39;, &#39;./output/test/r/read.txt&#39;)
+dir(&#39;./output/test/r&#39;)
+file.remove(&#39;./output/test/r/read2.txt&#39;)</code></pre>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

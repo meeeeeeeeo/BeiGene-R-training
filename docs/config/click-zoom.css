@@ -1,0 +1,48 @@
+.click-zoom-1-5 input[type=checkbox] {
+  display: none
+}
+
+.click-zoom-1-5 img {
+  margin: 0px;
+  transition: transform 0.25s ease;
+  cursor: zoom-in
+}
+
+.click-zoom-1-5 input[type=checkbox]:checked~img {
+  transform: scale(1.5);
+  cursor: zoom-out
+}
+
+
+
+.click-zoom-1-5-left-100 input[type=checkbox] {
+  display: none
+}
+
+.click-zoom-1-5-left-100 img {
+  margin: 0px;
+  transition: transform 0.25s ease;
+  cursor: zoom-in
+}
+
+.click-zoom-1-5-left-100 input[type=checkbox]:checked~img {
+  transform: scale(1.5) translate(-100px);
+  cursor: zoom-out
+}
+
+
+
+.click-zoom-2-0 input[type=checkbox] {
+  display: none
+}
+
+.click-zoom-2-0 img {
+  margin: 0px;
+  transition: transform 0.25s ease;
+  cursor: zoom-in
+}
+
+.click-zoom-2-0 input[type=checkbox]:checked~img {
+  transform: scale(2);
+  cursor: zoom-out
+}

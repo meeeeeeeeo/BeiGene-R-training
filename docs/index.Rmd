@@ -1,0 +1,31 @@
+---
+title: "R training"
+output: html_document
+---
+
+This website contains R training documents about:
+
+- Introduction to RStudio IDE: [RStudio IDE](RStudioIDE.html)
+
+- Introduction to R: [Base R](base_R.html)
+
+- Data transformation: [tidyverse base](tidyverse-base.html)
+
+- String operation (mostly work with regular expressions): [stringr](stringr_hs.html)
+
+- Work with date and time in R: [date and time](datetime_qw.html)
+
+- Data import/export: [data import/export](read-write.html)
+
+- Data visualization - ggplot2: [basic](ggplot2_basic.html), [layers](ggplot2_layers.html), and [arranging plots](arranging-plots.html)
+
+- Tips of pipe operator: [Using pipe](pipe.html)
+
+- Focusing on packages, all functions and concepts in a package: [data process - dplyr](data-process-dplyr.html) and [data process - tidyr](data-process-tidyr.html)
+
+- Use SQL in R: [sqldf](sqldf.html)
+
+Thanks for below co-authors: kaiping.yang@beigene.com; cheng2.zhang@beigene.com; huan.song@beigene.com; jinzhi.zhou@beigene.com; yuhang.liu@beigene.com; qi2.wang@beigene.com; changming.yang@beigene.com
+
+Many thanks to jie1.liu@beigene.com and michael.blanks@beigene.com for the encouragement and support.
+

@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>ggplot2 Layers</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="config/style.css" type="text/css" />
+<link rel="stylesheet" href="config/multi-columns.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R training</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="RStudioIDE.html">RStudio IDE</a>
+</li>
+<li>
+  <a href="base_R.html">Base R</a>
+</li>
+<li>
+  <a href="tidyverse-base.html">tidyverse base</a>
+</li>
+<li>
+  <a href="stringr_hs.html">stringr</a>
+</li>
+<li>
+  <a href="datetime_qw.html">date and time</a>
+</li>
+<li>
+  <a href="read-write.html">data import/export</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    ggplot2
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ggplot2_basic.html">basic</a>
+    </li>
+    <li>
+      <a href="ggplot2_layers.html">layers</a>
+    </li>
+    <li>
+      <a href="arranging-plots.html">arranging plots</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    More
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="pipe.html">Using pipe</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">focusing on package</li>
+    <li>
+      <a href="data-process-dplyr.html">data process - dplyr</a>
+    </li>
+    <li>
+      <a href="data-process-tidyr.html">data process - tidyr</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Use SQL in R</li>
+    <li>
+      <a href="sqldf.html">sqldf</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">ggplot2 Layers</h1>
+
+</div>
+
+
+<pre class="r"><code>library(tidyverse)
+library(ggplot2)</code></pre>
+<div id="introduction" class="section level1">
+<h1>1 Introduction</h1>
+<p>The layered structure of ggplot2 encourages you to design and construct graphics in a structured manner. It is useful to think about the purpose of each layer before it is added. In general, there are three purposes for a layer:</p>
+<ul>
+<li><p>To display the <strong>data</strong>. We plot the raw data for many reasons, relying on our skills at pattern detection to spot gross structure, local structure, and outliers. This layer appears on virtually every graphic. In the earliest stages of data exploration, it is often the only layer.</p></li>
+<li><p>To display a statistical <strong>summary</strong> of the data. As we develop and explore models of the data, it is useful to display model predictions in the context of the data. Showing the data helps us improve the model, and showing the model helps reveal subtleties of the data that we might otherwise miss. Summaries are usually drawn on top of the data.</p></li>
+<li><p>To add additional <strong>metadata</strong>: context, annotations, and references. A metadata layer displays background context, annotations that help to give meaning to the raw data, or fixed references that aid comparisons across panels. Metadata can be useful in the background and foreground.</p></li>
+</ul>
+</div>
+<div id="geometric-objects" class="section level1">
+<h1>2 Geometric objects</h1>
+<p>How are these two plots similar?</p>
+<p><img src="ggplot2_layers_files/figure-html/unnamed-chunk-2-1.png" width="50%" /><img src="ggplot2_layers_files/figure-html/unnamed-chunk-2-2.png" width="50%" /></p>
+<p>Both plots contain the same x variable, the same y variable, and both describe the same data. But the plots are not identical. Each plot uses a different visual object to represent the data. In ggplot2 syntax, we say that they use different <strong>geoms</strong>.</p>
+<p>A <strong>geom</strong> is the geometrical object that a plot uses to represent data. People often describe plots by the type of geom that the plot uses. For example, bar charts use bar geoms, line charts use line geoms, boxplots use boxplot geoms, and so on. Scatterplots break the trend; they use the point geom. As we see above, you can use different geoms to plot the same data. The plot on the left uses the point geom, and the plot on the right uses the smooth geom, a smooth line fitted to the data.</p>
+<p>To change the geom in your plot, change the geom function that you add to <code>ggplot()</code>. For instance, to make the plots above, you can use this code:</p>
+<pre class="r"><code># left
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+
+# right
+ggplot(data = mpg) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy))</code></pre>
+<p>Every geom function in ggplot2 takes a <code>mapping</code> argument. However, not every aesthetic works with every geom. You could set the shape of a point, but you couldn’t set the “shape” of a line. On the other hand, you <em>could</em> set the linetype of a line. <code>geom_smooth()</code> will draw a different line, with a different linetype, for each unique value of the variable that you map to linetype.</p>
+<pre class="r"><code>ggplot(data = mpg) + 
+  geom_smooth(mapping = aes(x = displ, y = hwy, linetype = drv))</code></pre>
+<p><img src="ggplot2_layers_files/figure-html/unnamed-chunk-4-1.png" width="80%" /></p>
+<p>Here <code>geom_smooth()</code> separates the cars into three lines based on their <code>drv</code> value, which describes a car’s drivetrain. One line describes all of the points with a <code>4</code> value, one line describes all of the points with an <code>f</code> value, and one line describes all of the points with an <code>r</code> value. Here, <code>4</code> stands for four-wheel drive, <code>f</code> for front-wheel drive, and <code>r</code> for rear-wheel drive.</p>
+<p>If this sounds strange, we can make it more clear by overlaying the lines on top of the raw data and then coloring everything according to <code>drv</code>.</p>
+<pre class="r"><code>ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) + 
+  geom_point() +
+  geom_smooth(mapping = aes(linetype = drv))</code></pre>
+<p><img src="ggplot2_layers_files/figure-html/unnamed-chunk-5-1.png" width="80%" /></p>
+<p>Notice that this plot contains two geoms in the same graph! If this makes you excited, buckle up. We will learn how to place multiple geoms in the same plot very soon.</p>
+<p>ggplot2 provides over 40 geoms, and extension packages provide even more (see <a href="https://exts.ggplot2.tidyverse.org/gallery/" target="_blank">https://exts.ggplot2.tidyverse.org/gallery/</a> for a sampling). The best way to get a comprehensive overview is the ggplot2 cheatsheet, which you can find at <a href="https://www.rstudio.com/resources/cheatsheets/" target="_blank">https://www.rstudio.com/resources/cheatsheets/</a>. To learn more about any single geom, use help: <code>?geom_smooth</code>.</p>
+<p>Many geoms, like <code>geom_smooth()</code>, use a single geometric object to display multiple rows of data. For these geoms, you can set the <code>group</code> aesthetic to a categorical variable to draw multiple objects. ggplot2 will draw a separate object for each unique value of the grouping variable. In practice, ggplot2 will automatically group the data for these geoms whenever you map an aesthetic to a discrete variable (as in the <code>linetype</code> example). It is convenient to rely on this feature because the group aesthetic by itself does not add a legend or distinguishing features to the geoms.</p>
+<pre class="r"><code>ggplot(data = mpg) +
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+              
+ggplot(data = mpg) +
+  geom_smooth(mapping = aes(x = displ, y = hwy, group = drv))
+    
+ggplot(data = mpg) +
+  geom_smooth(
+    mapping = aes(x = displ, y = hwy, color = drv),
+    show.legend = FALSE
+  )</code></pre>
+<p><img src="ggplot2_layers_files/figure-html/unnamed-chunk-7-1.png" width="33%" /><img src="ggplot2_layers_files/figure-html/unnamed-chunk-7-2.png" width="33%" /><img src="ggplot2_layers_files/figure-html/unnamed-chunk-7-3.png" width="33%" /></p>
+<p>To display multiple geoms in the same plot, add multiple geom functions to <code>ggplot()</code>:</p>
+<pre class="r"><code>ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  geom_smooth(mapping = aes(x = displ, y = hwy))</code></pre>
+<p><img src="ggplot2_layers_files/figure-html/unnamed-chunk-8-1.png" width="80%" /></p>
+<p>This, however, introduces some duplication in our code. Imagine if you wanted to change the y-axis to display <code>cty</code> instead of <code>hwy</code>. You’d need to change the variable in two places, and you might forget to update one. You can avoid this type of repetition by passing a set of mappings to <code>ggplot()</code>. ggplot2 will treat these mappings as global mappings that apply to each geom in the graph. In other words, this code will produce the same plot as the previous code:</p>
+<pre class="r"><code>ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point() + 
+  geom_smooth()</code></pre>
+<p>If you place mappings in a geom function, ggplot2 will treat them as local mappings for the layer. It will use these mappings to extend or overwrite the global mappings <em>for that layer only</em>. This makes it possible to display different aesthetics in different layers.</p>
+<pre class="r"><code>ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point(mapping = aes(color = class)) + 
+  geom_smooth()</code></pre>
+<p><img src="ggplot2_layers_files/figure-html/unnamed-chunk-10-1.png" width="80%" /></p>
+<p>You can use the same idea to specify different <code>data</code> for each layer. Here, our smooth line displays just a subset of the <code>mpg</code> dataset, the subcompact cars. The local data argument in <code>geom_smooth()</code> overrides the global data argument in <code>ggplot()</code> for that layer only.</p>
+<pre class="r"><code>ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point(mapping = aes(color = class)) + 
+  geom_smooth(data = filter(mpg, class == &quot;subcompact&quot;), se = FALSE)</code></pre>
+<p><img src="ggplot2_layers_files/figure-html/unnamed-chunk-11-1.png" width="80%" /></p>
+</div>
+<div id="statistical-transformations" class="section level1">
+<h1>3 Statistical transformations</h1>
+<p>Next, let’s take a look at a bar chart. Bar charts seem simple, but they are interesting because they reveal something subtle about plots. Consider a basic bar chart, as drawn with <code>geom_bar()</code>. The following chart displays the total number of diamonds in the <code>diamonds</code> dataset, grouped by <code>cut</code>. The <code>diamonds</code> dataset comes in ggplot2 and contains information about ~54,000 diamonds, including the <code>price</code>, <code>carat</code>, <code>color</code>, <code>clarity</code>, and <code>cut</code> of each diamond. The chart shows that more diamonds are available with high quality cuts than with low quality cuts.</p>
+<pre class="r"><code>diamonds
+#&gt; # A tibble: 53,940 x 10
+#&gt;    carat cut       color clarity depth table price     x     y     z
+#&gt;    &lt;dbl&gt; &lt;ord&gt;     &lt;ord&gt; &lt;ord&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt;  1  0.23 Ideal     E     SI2      61.5    55   326  3.95  3.98  2.43
+#&gt;  2  0.21 Premium   E     SI1      59.8    61   326  3.89  3.84  2.31
+#&gt;  3  0.23 Good      E     VS1      56.9    65   327  4.05  4.07  2.31
+#&gt;  4  0.29 Premium   I     VS2      62.4    58   334  4.2   4.23  2.63
+#&gt;  5  0.31 Good      J     SI2      63.3    58   335  4.34  4.35  2.75
+#&gt;  6  0.24 Very Good J     VVS2     62.8    57   336  3.94  3.96  2.48
+#&gt;  7  0.24 Very Good I     VVS1     62.3    57   336  3.95  3.98  2.47
+#&gt;  8  0.26 Very Good H     SI1      61.9    55   337  4.07  4.11  2.53
+#&gt;  9  0.22 Fair      E     VS2      65.1    61   337  3.87  3.78  2.49
+#&gt; 10  0.23 Very Good H     VS1      59.4    61   338  4     4.05  2.39
+#&gt; # … with 53,930 more rows
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut))</code></pre>
+<p><img src="ggplot2_layers_files/figure-html/unnamed-chunk-12-1.png" width="80%" /></p>
+<p>On the x-axis, the chart displays <code>cut</code>, a variable from <code>diamonds</code>. On the y-axis, it displays count, but count is not a variable in <code>diamonds</code>! Where does count come from? Many graphs, like scatterplots, plot the raw values of your dataset. Other graphs, like bar charts, calculate new values to plot:</p>
+<ul>
+<li><p>bar charts, histograms, and frequency polygons bin your data and then plot bin counts, the number of points that fall in each bin.</p></li>
+<li><p>smoothers fit a model to your data and then plot predictions from the model.</p></li>
+<li><p>boxplots compute a robust summary of the distribution and then display a specially formatted box.</p></li>
+</ul>
+<p>The algorithm used to calculate new values for a graph is called a <strong>stat</strong>, short for statistical transformation. The figure below describes how this process works with <code>geom_bar()</code>.</p>
+<p><img src="images/visualization-stat-bar.png" width="100%" /></p>
+<p>You can learn which stat a geom uses by inspecting the default value for the <code>stat</code> argument. For example, <code>?geom_bar</code> shows that the default value for <code>stat</code> is “count”, which means that <code>geom_bar()</code> uses <code>stat_count()</code>. <code>stat_count()</code> is documented on the same page as <code>geom_bar()</code>, and if you scroll down you can find a section called “Computed variables”. That describes how it computes two new variables: <code>count</code> and <code>prop</code>.</p>
+<p>You can generally use geoms and stats interchangeably. For example, you can recreate the previous plot using <code>stat_count()</code> instead of <code>geom_bar()</code>:</p>
+<pre class="r"><code>ggplot(data = diamonds) + 
+  stat_count(mapping = aes(x = cut))</code></pre>
+<p><img src="ggplot2_layers_files/figure-html/unnamed-chunk-14-1.png" width="80%" /></p>
+<p>This works because every geom has a default stat; and every stat has a default geom. This means that you can typically use geoms without worrying about the underlying statistical transformation. There are three reasons you might need to use a stat explicitly:</p>
+<ol style="list-style-type: decimal">
+<li><p>You might want to override the default stat. In the code below, I change the stat of <code>geom_bar()</code> from count (the default) to identity. This lets me map the height of the bars to the raw values of a <span class="math inline">\(y\)</span> variable. Unfortunately when people talk about bar charts casually, they might be referring to this type of bar chart, where the height of the bar is already present in the data, or the previous bar chart where the height of the bar is generated by counting rows.</p>
+<pre class="r"><code>demo &lt;- tribble(
+  ~cut,         ~freq,
+  &quot;Fair&quot;,       1610,
+  &quot;Good&quot;,       4906,
+  &quot;Very Good&quot;,  12082,
+  &quot;Premium&quot;,    13791,
+  &quot;Ideal&quot;,      21551
+)
+
+ggplot(data = demo) +
+  geom_bar(mapping = aes(x = cut, y = freq), stat = &quot;identity&quot;)</code></pre>
+<p><img src="ggplot2_layers_files/figure-html/unnamed-chunk-15-1.png" width="80%" /></p></li>
+<li><p>You might want to override the default mapping from transformed variables to aesthetics. For example, you might want to display a bar chart of proportion, rather than count:</p>
+<pre class="r"><code>ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, y = stat(prop), group = 1))</code></pre>
+<p><img src="ggplot2_layers_files/figure-html/unnamed-chunk-16-1.png" width="80%" /></p>
+<p>To find the variables computed by the stat, look for the help section titled “computed variables”.</p></li>
+<li><p>You might want to draw greater attention to the statistical transformation in your code. For example, you might use <code>stat_summary()</code>, which summarises the y values for each unique x value, to draw attention to the summary that you’re computing:</p>
+<pre class="r"><code>ggplot(data = diamonds) + 
+  stat_summary(
+    mapping = aes(x = cut, y = depth),
+    fun.min = min,
+    fun.max = max,
+    fun = median
+  )</code></pre>
+<p><img src="ggplot2_layers_files/figure-html/unnamed-chunk-17-1.png" width="80%" /></p></li>
+</ol>
+<p>ggplot2 provides over 20 stats for you to use. Each stat is a function, so you can get help in the usual way, e.g. <code>?stat_bin</code>. To see a complete list of stats, try the ggplot2 cheatsheet.</p>
+</div>
+<div id="reference" class="section level1">
+<h1>Reference</h1>
+<p><a href="https://github.com/rstudio/cheatsheets/blob/master/data-visualization.pdf" target="_blank">Cheatsheet - ggplot2</a></p>
+<p><a href="https://ggplot2-book.org/index.html" target="_blank">ggplot2: Elegant Graphics for Data Analysis</a></p>
+<p><a href="https://r4ds.had.co.nz/index.html" target="_blank">R for Data Science</a></p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,3 @@
+.cols2 {display: grid; grid-template-columns: 1fr 1fr; grid-column-gap: 10px; }
+.cols3 {display: grid; grid-template-columns: 1fr 1fr 1fr; grid-column-gap: 10px; }
+.cols4 {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; grid-column-gap: 10px; }

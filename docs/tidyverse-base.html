@@ -1,0 +1,2979 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>tidyverse base</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<link rel="stylesheet" href="config/style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">R training</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="RStudioIDE.html">RStudio IDE</a>
+</li>
+<li>
+  <a href="base_R.html">Base R</a>
+</li>
+<li>
+  <a href="tidyverse-base.html">tidyverse base</a>
+</li>
+<li>
+  <a href="stringr_hs.html">stringr</a>
+</li>
+<li>
+  <a href="datetime_qw.html">date and time</a>
+</li>
+<li>
+  <a href="read-write.html">data import/export</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    ggplot2
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ggplot2_basic.html">basic</a>
+    </li>
+    <li>
+      <a href="ggplot2_layers.html">layers</a>
+    </li>
+    <li>
+      <a href="arranging-plots.html">arranging plots</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    More
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="pipe.html">Using pipe</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">focusing on package</li>
+    <li>
+      <a href="data-process-dplyr.html">data process - dplyr</a>
+    </li>
+    <li>
+      <a href="data-process-tidyr.html">data process - tidyr</a>
+    </li>
+    <li class="divider"></li>
+    <li class="dropdown-header">Use SQL in R</li>
+    <li>
+      <a href="sqldf.html">sqldf</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">tidyverse base</h1>
+
+</div>
+
+
+<div id="data-transformation" class="section level1">
+<h1>Data transformation</h1>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Visualisation is an important tool for insight generation, but it is rare that you get the data in exactly the right form you need. Often you’ll need to create some new variables or summaries, or maybe you just want to rename the variables or reorder the observations in order to make the data a little easier to work with. You’ll learn how to do all that (and more!) in this chapter, which will teach you how to transform your data using the dplyr package and a new dataset on flights departing New York City in 2013.</p>
+<div id="prerequisites" class="section level3">
+<h3>Prerequisites</h3>
+<p>In this chapter we’re going to focus on how to use the dplyr package, another core member of the tidyverse. We’ll illustrate the key ideas using data from the nycflights13 package, and use ggplot2 to help us understand the data.</p>
+<pre class="r"><code>library(nycflights13)
+library(tidyverse)</code></pre>
+<p>Take careful note of the conflicts message that’s printed when you load the tidyverse. It tells you that dplyr overwrites some functions in base R. If you want to use the base version of these functions after loading dplyr, you’ll need to use their full names: <code>stats::filter()</code> and <code>stats::lag()</code>.</p>
+</div>
+<div id="nycflights13" class="section level3">
+<h3>nycflights13</h3>
+<p>To explore the basic data manipulation verbs of dplyr, we’ll use <code>nycflights13::flights</code>. This data frame contains all 336,776 flights that departed from New York City in 2013. The data comes from the US Bureau of Transportation Statistics, and is documented in <code>?flights</code>.</p>
+<pre class="r"><code>flights</code></pre>
+<pre><code>## # A tibble: 336,776 x 19
+##     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+##  1  2013     1     1      517            515         2      830            819
+##  2  2013     1     1      533            529         4      850            830
+##  3  2013     1     1      542            540         2      923            850
+##  4  2013     1     1      544            545        -1     1004           1022
+##  5  2013     1     1      554            600        -6      812            837
+##  6  2013     1     1      554            558        -4      740            728
+##  7  2013     1     1      555            600        -5      913            854
+##  8  2013     1     1      557            600        -3      709            723
+##  9  2013     1     1      557            600        -3      838            846
+## 10  2013     1     1      558            600        -2      753            745
+## # … with 336,766 more rows, and 11 more variables: arr_delay &lt;dbl&gt;,
+## #   carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
+## #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
+<p>You might notice that this data frame prints a little differently from other data frames you might have used in the past: it only shows the first few rows and all the columns that fit on one screen. (To see the whole dataset, you can run <code>View(flights)</code> which will open the dataset in the RStudio viewer). It prints differently because it’s a <strong>tibble</strong>. Tibbles are data frames, but slightly tweaked to work better in the tidyverse. For now, you don’t need to worry about the differences; we’ll come back to tibbles in more detail in wrangle.</p>
+<p>You might also have noticed the row of three (or four) letter abbreviations under the column names. These describe the type of each variable:</p>
+<ul>
+<li><p><code>int</code> stands for integers.</p></li>
+<li><p><code>dbl</code> stands for doubles, or real numbers.</p></li>
+<li><p><code>chr</code> stands for character vectors, or strings.</p></li>
+<li><p><code>dttm</code> stands for date-times (a date + a time).</p></li>
+</ul>
+<p>There are three other common types of variables that aren’t used in this dataset but you’ll encounter later in the book:</p>
+<ul>
+<li><p><code>lgl</code> stands for logical, vectors that contain only <code>TRUE</code> or <code>FALSE</code>.</p></li>
+<li><p><code>fctr</code> stands for factors, which R uses to represent categorical variables with fixed possible values.</p></li>
+<li><p><code>date</code> stands for dates.</p></li>
+</ul>
+</div>
+<div id="dplyr-basics" class="section level3">
+<h3>dplyr basics</h3>
+<p>In this chapter you are going to learn the five key dplyr functions that allow you to solve the vast majority of your data manipulation challenges:</p>
+<ul>
+<li>Pick observations by their values (<code>filter()</code>).</li>
+<li>Reorder the rows (<code>arrange()</code>).</li>
+<li>Pick variables by their names (<code>select()</code>).</li>
+<li>Create new variables with functions of existing variables (<code>mutate()</code>).</li>
+<li>Collapse many values down to a single summary (<code>summarise()</code>).</li>
+</ul>
+<p>These can all be used in conjunction with <code>group_by()</code> which changes the scope of each function from operating on the entire dataset to operating on it group-by-group. These six functions provide the verbs for a language of data manipulation.</p>
+<p>All verbs work similarly:</p>
+<ol style="list-style-type: decimal">
+<li><p>The first argument is a data frame.</p></li>
+<li><p>The subsequent arguments describe what to do with the data frame, using the variable names (without quotes).</p></li>
+<li><p>The result is a new data frame.</p></li>
+</ol>
+<p>Together these properties make it easy to chain together multiple simple steps to achieve a complex result. Let’s dive in and see how these verbs work.</p>
+</div>
+</div>
+<div id="filter-rows-with-filter" class="section level2">
+<h2>Filter rows with <code>filter()</code></h2>
+<p><code>filter()</code> allows you to subset observations based on their values. The first argument is the name of the data frame. The second and subsequent arguments are the expressions that filter the data frame. For example, we can select all flights on January 1st with:</p>
+<pre class="r"><code>filter(flights, month == 1, day == 1)</code></pre>
+<pre><code>## # A tibble: 842 x 19
+##     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+##  1  2013     1     1      517            515         2      830            819
+##  2  2013     1     1      533            529         4      850            830
+##  3  2013     1     1      542            540         2      923            850
+##  4  2013     1     1      544            545        -1     1004           1022
+##  5  2013     1     1      554            600        -6      812            837
+##  6  2013     1     1      554            558        -4      740            728
+##  7  2013     1     1      555            600        -5      913            854
+##  8  2013     1     1      557            600        -3      709            723
+##  9  2013     1     1      557            600        -3      838            846
+## 10  2013     1     1      558            600        -2      753            745
+## # … with 832 more rows, and 11 more variables: arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;,
+## #   flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;,
+## #   distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
+<p>When you run that line of code, dplyr executes the filtering operation and returns a new data frame. dplyr functions never modify their inputs, so if you want to save the result, you’ll need to use the assignment operator, <code>&lt;-</code>:</p>
+<pre class="r"><code>jan1 &lt;- filter(flights, month == 1, day == 1)</code></pre>
+<p>R either prints out the results, or saves them to a variable. If you want to do both, you can wrap the assignment in parentheses:</p>
+<pre class="r"><code>(dec25 &lt;- filter(flights, month == 12, day == 25))</code></pre>
+<pre><code>## # A tibble: 719 x 19
+##     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+##  1  2013    12    25      456            500        -4      649            651
+##  2  2013    12    25      524            515         9      805            814
+##  3  2013    12    25      542            540         2      832            850
+##  4  2013    12    25      546            550        -4     1022           1027
+##  5  2013    12    25      556            600        -4      730            745
+##  6  2013    12    25      557            600        -3      743            752
+##  7  2013    12    25      557            600        -3      818            831
+##  8  2013    12    25      559            600        -1      855            856
+##  9  2013    12    25      559            600        -1      849            855
+## 10  2013    12    25      600            600         0      850            846
+## # … with 709 more rows, and 11 more variables: arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;,
+## #   flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;,
+## #   distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
+<div id="comparisons" class="section level3">
+<h3>Comparisons</h3>
+<p>To use filtering effectively, you have to know how to select the observations that you want using the comparison operators. R provides the standard suite: <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>!=</code> (not equal), and <code>==</code> (equal).</p>
+<p>When you’re starting out with R, the easiest mistake to make is to use <code>=</code> instead of <code>==</code> when testing for equality. When this happens you’ll get an informative error:</p>
+<pre class="r"><code>filter(flights, month = 1)</code></pre>
+<pre><code>## Error: Problem with `filter()` input `..1`.
+## x Input `..1` is named.
+## ℹ This usually means that you&#39;ve used `=` instead of `==`.
+## ℹ Did you mean `month == 1`?</code></pre>
+<p>There’s another common problem you might encounter when using <code>==</code>: floating point numbers. These results might surprise you!</p>
+<pre class="r"><code>sqrt(2) ^ 2 == 2</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code>1 / 49 * 49 == 1</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<p>Computers use finite precision arithmetic (they obviously can’t store an infinite number of digits!) so remember that every number you see is an approximation. Instead of relying on <code>==</code>, use <code>near()</code>:</p>
+<pre class="r"><code>near(sqrt(2) ^ 2,  2)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>near(1 / 49 * 49, 1)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+</div>
+<div id="logical-operators" class="section level3">
+<h3>Logical operators</h3>
+<p>Multiple arguments to <code>filter()</code> are combined with “and”: every expression must be true in order for a row to be included in the output. For other types of combinations, you’ll need to use Boolean operators yourself: <code>&amp;</code> is “and”, <code>|</code> is “or”, and <code>!</code> is “not”. Figure shows the complete set of Boolean operations.</p>
+<div class="figure">
+<img src="diagrams/transform-logical.png" alt="Complete set of boolean operations. `x` is the left-hand circle, `y` is the right-hand circle, and the shaded region show which parts each operator selects." width="522" />
+<p class="caption">
+Complete set of boolean operations. <code>x</code> is the left-hand circle, <code>y</code> is the right-hand circle, and the shaded region show which parts each operator selects.
+</p>
+</div>
+<p>The following code finds all flights that departed in November or December:</p>
+<pre class="r"><code>filter(flights, month == 11 | month == 12)</code></pre>
+<p>The order of operations doesn’t work like English. You can’t write <code>filter(flights, month == (11 | 12))</code>, which you might literally translate into “finds all flights that departed in November or December”. Instead it finds all months that equal <code>11 | 12</code>, an expression that evaluates to <code>TRUE</code>. In a numeric context (like here), <code>TRUE</code> becomes one, so this finds all flights in January, not November or December. This is quite confusing!</p>
+<p>A useful short-hand for this problem is <code>x %in% y</code>. This will select every row where <code>x</code> is one of the values in <code>y</code>. We could use it to rewrite the code above:</p>
+<pre class="r"><code>nov_dec &lt;- filter(flights, month %in% c(11, 12))</code></pre>
+<p>Sometimes you can simplify complicated subsetting by remembering De Morgan’s law: <code>!(x &amp; y)</code> is the same as <code>!x | !y</code>, and <code>!(x | y)</code> is the same as <code>!x &amp; !y</code>. For example, if you wanted to find flights that weren’t delayed (on arrival or departure) by more than two hours, you could use either of the following two filters:</p>
+<pre class="r"><code>filter(flights, !(arr_delay &gt; 120 | dep_delay &gt; 120))
+filter(flights, arr_delay &lt;= 120, dep_delay &lt;= 120)</code></pre>
+<p>As well as <code>&amp;</code> and <code>|</code>, R also has <code>&amp;&amp;</code> and <code>||</code>. Don’t use them here! You’ll learn when you should use them in [conditional execution].</p>
+<p>Whenever you start using complicated, multipart expressions in <code>filter()</code>, consider making them explicit variables instead. That makes it much easier to check your work. You’ll learn how to create new variables shortly.</p>
+</div>
+<div id="missing-values" class="section level3">
+<h3>Missing values</h3>
+<p>One important feature of R that can make comparison tricky are missing values, or <code>NA</code>s (“not availables”). <code>NA</code> represents an unknown value so missing values are “contagious”: almost any operation involving an unknown value will also be unknown.</p>
+<pre class="r"><code>NA &gt; 5</code></pre>
+<pre><code>## [1] NA</code></pre>
+<pre class="r"><code>10 == NA</code></pre>
+<pre><code>## [1] NA</code></pre>
+<pre class="r"><code>NA + 10</code></pre>
+<pre><code>## [1] NA</code></pre>
+<pre class="r"><code>NA / 2</code></pre>
+<pre><code>## [1] NA</code></pre>
+<p>The most confusing result is this one:</p>
+<pre class="r"><code>NA == NA</code></pre>
+<pre><code>## [1] NA</code></pre>
+<p>It’s easiest to understand why this is true with a bit more context:</p>
+<pre class="r"><code># Let x be Mary&#39;s age. We don&#39;t know how old she is.
+x &lt;- NA
+
+# Let y be John&#39;s age. We don&#39;t know how old he is.
+y &lt;- NA
+
+# Are John and Mary the same age?
+x == y</code></pre>
+<pre><code>## [1] NA</code></pre>
+<pre class="r"><code># We don&#39;t know!</code></pre>
+<p>If you want to determine if a value is missing, use <code>is.na()</code>:</p>
+<pre class="r"><code>is.na(x)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p><code>filter()</code> only includes rows where the condition is <code>TRUE</code>; it excludes both <code>FALSE</code> and <code>NA</code> values. If you want to preserve missing values, ask for them explicitly:</p>
+<pre class="r"><code>df &lt;- tibble(x = c(1, NA, 3))
+filter(df, x &gt; 1)</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##       x
+##   &lt;dbl&gt;
+## 1     3</code></pre>
+<pre class="r"><code>filter(df, is.na(x) | x &gt; 1)</code></pre>
+<pre><code>## # A tibble: 2 x 1
+##       x
+##   &lt;dbl&gt;
+## 1    NA
+## 2     3</code></pre>
+</div>
+<div id="exercises" class="section level3">
+<h3>Exercises</h3>
+<ol style="list-style-type: decimal">
+<li><p>Find all flights that</p>
+<ol style="list-style-type: decimal">
+<li>Had an arrival delay of two or more hours</li>
+<li>Flew to Houston (<code>IAH</code> or <code>HOU</code>)</li>
+<li>Were operated by United, American, or Delta</li>
+<li>Departed in summer (July, August, and September)</li>
+<li>Arrived more than two hours late, but didn’t leave late</li>
+<li>Were delayed by at least an hour, but made up over 30 minutes in flight</li>
+<li>Departed between midnight and 6am (inclusive)</li>
+</ol></li>
+<li><p>Another useful dplyr filtering helper is <code>between()</code>. What does it do? Can you use it to simplify the code needed to answer the previous challenges?</p></li>
+<li><p>How many flights have a missing <code>dep_time</code>? What other variables are missing? What might these rows represent?</p></li>
+<li><p>Why is <code>NA ^ 0</code> not missing? Why is <code>NA | TRUE</code> not missing? Why is <code>FALSE &amp; NA</code> not missing? Can you figure out the general rule? (<code>NA * 0</code> is a tricky counterexample!)</p></li>
+</ol>
+</div>
+</div>
+<div id="arrange-rows-with-arrange" class="section level2">
+<h2>Arrange rows with <code>arrange()</code></h2>
+<p><code>arrange()</code> works similarly to <code>filter()</code> except that instead of selecting rows, it changes their order. It takes a data frame and a set of column names (or more complicated expressions) to order by. If you provide more than one column name, each additional column will be used to break ties in the values of preceding columns:</p>
+<pre class="r"><code>arrange(flights, year, month, day)</code></pre>
+<pre><code>## # A tibble: 336,776 x 19
+##     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+##  1  2013     1     1      517            515         2      830            819
+##  2  2013     1     1      533            529         4      850            830
+##  3  2013     1     1      542            540         2      923            850
+##  4  2013     1     1      544            545        -1     1004           1022
+##  5  2013     1     1      554            600        -6      812            837
+##  6  2013     1     1      554            558        -4      740            728
+##  7  2013     1     1      555            600        -5      913            854
+##  8  2013     1     1      557            600        -3      709            723
+##  9  2013     1     1      557            600        -3      838            846
+## 10  2013     1     1      558            600        -2      753            745
+## # … with 336,766 more rows, and 11 more variables: arr_delay &lt;dbl&gt;,
+## #   carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
+## #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
+<p>Use <code>desc()</code> to re-order by a column in descending order:</p>
+<pre class="r"><code>arrange(flights, desc(dep_delay))</code></pre>
+<pre><code>## # A tibble: 336,776 x 19
+##     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+##  1  2013     1     9      641            900      1301     1242           1530
+##  2  2013     6    15     1432           1935      1137     1607           2120
+##  3  2013     1    10     1121           1635      1126     1239           1810
+##  4  2013     9    20     1139           1845      1014     1457           2210
+##  5  2013     7    22      845           1600      1005     1044           1815
+##  6  2013     4    10     1100           1900       960     1342           2211
+##  7  2013     3    17     2321            810       911      135           1020
+##  8  2013     6    27      959           1900       899     1236           2226
+##  9  2013     7    22     2257            759       898      121           1026
+## 10  2013    12     5      756           1700       896     1058           2020
+## # … with 336,766 more rows, and 11 more variables: arr_delay &lt;dbl&gt;,
+## #   carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
+## #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
+<p>Missing values are always sorted at the end:</p>
+<pre class="r"><code>df &lt;- tibble(x = c(5, 2, NA))
+arrange(df, x)</code></pre>
+<pre><code>## # A tibble: 3 x 1
+##       x
+##   &lt;dbl&gt;
+## 1     2
+## 2     5
+## 3    NA</code></pre>
+<pre class="r"><code>arrange(df, desc(x))</code></pre>
+<pre><code>## # A tibble: 3 x 1
+##       x
+##   &lt;dbl&gt;
+## 1     5
+## 2     2
+## 3    NA</code></pre>
+<div id="exercises-1" class="section level3">
+<h3>Exercises</h3>
+<ol style="list-style-type: decimal">
+<li><p>How could you use <code>arrange()</code> to sort all missing values to the start? (Hint: use <code>is.na()</code>).</p></li>
+<li><p>Sort <code>flights</code> to find the most delayed flights. Find the flights that left earliest.</p></li>
+<li><p>Sort <code>flights</code> to find the fastest (highest speed) flights.</p></li>
+<li><p>Which flights travelled the farthest? Which travelled the shortest?</p></li>
+</ol>
+</div>
+</div>
+<div id="select-columns-with-select" class="section level2">
+<h2>Select columns with <code>select()</code></h2>
+<p>It’s not uncommon to get datasets with hundreds or even thousands of variables. In this case, the first challenge is often narrowing in on the variables you’re actually interested in. <code>select()</code> allows you to rapidly zoom in on a useful subset using operations based on the names of the variables.</p>
+<p><code>select()</code> is not terribly useful with the flights data because we only have 19 variables, but you can still get the general idea:</p>
+<pre class="r"><code># Select columns by name
+select(flights, year, month, day)</code></pre>
+<pre><code>## # A tibble: 336,776 x 3
+##     year month   day
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;
+##  1  2013     1     1
+##  2  2013     1     1
+##  3  2013     1     1
+##  4  2013     1     1
+##  5  2013     1     1
+##  6  2013     1     1
+##  7  2013     1     1
+##  8  2013     1     1
+##  9  2013     1     1
+## 10  2013     1     1
+## # … with 336,766 more rows</code></pre>
+<pre class="r"><code># Select all columns between year and day (inclusive)
+select(flights, year:day)</code></pre>
+<pre><code>## # A tibble: 336,776 x 3
+##     year month   day
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;
+##  1  2013     1     1
+##  2  2013     1     1
+##  3  2013     1     1
+##  4  2013     1     1
+##  5  2013     1     1
+##  6  2013     1     1
+##  7  2013     1     1
+##  8  2013     1     1
+##  9  2013     1     1
+## 10  2013     1     1
+## # … with 336,766 more rows</code></pre>
+<pre class="r"><code># Select all columns except those from year to day (inclusive)
+select(flights, -(year:day))</code></pre>
+<pre><code>## # A tibble: 336,776 x 16
+##    dep_time sched_dep_time dep_delay arr_time sched_arr_time arr_delay carrier
+##       &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt; &lt;chr&gt;  
+##  1      517            515         2      830            819        11 UA     
+##  2      533            529         4      850            830        20 UA     
+##  3      542            540         2      923            850        33 AA     
+##  4      544            545        -1     1004           1022       -18 B6     
+##  5      554            600        -6      812            837       -25 DL     
+##  6      554            558        -4      740            728        12 UA     
+##  7      555            600        -5      913            854        19 B6     
+##  8      557            600        -3      709            723       -14 EV     
+##  9      557            600        -3      838            846        -8 B6     
+## 10      558            600        -2      753            745         8 AA     
+## # … with 336,766 more rows, and 9 more variables: flight &lt;int&gt;, tailnum &lt;chr&gt;,
+## #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
+## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
+<p>There are a number of helper functions you can use within <code>select()</code>:</p>
+<ul>
+<li><p><code>starts_with("abc")</code>: matches names that begin with “abc”.</p></li>
+<li><p><code>ends_with("xyz")</code>: matches names that end with “xyz”.</p></li>
+<li><p><code>contains("ijk")</code>: matches names that contain “ijk”.</p></li>
+<li><p><code>matches("(.)\\1")</code>: selects variables that match a regular expression. This one matches any variables that contain repeated characters. You’ll learn more about regular expressions in [strings].</p></li>
+<li><p><code>num_range("x", 1:3)</code>: matches <code>x1</code>, <code>x2</code> and <code>x3</code>.</p></li>
+</ul>
+<p>See <code>?select</code> for more details.</p>
+<p><code>select()</code> can be used to rename variables, but it’s rarely useful because it drops all of the variables not explicitly mentioned. Instead, use <code>rename()</code>, which is a variant of <code>select()</code> that keeps all the variables that aren’t explicitly mentioned:</p>
+<pre class="r"><code>rename(flights, tail_num = tailnum)</code></pre>
+<pre><code>## # A tibble: 336,776 x 19
+##     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+##  1  2013     1     1      517            515         2      830            819
+##  2  2013     1     1      533            529         4      850            830
+##  3  2013     1     1      542            540         2      923            850
+##  4  2013     1     1      544            545        -1     1004           1022
+##  5  2013     1     1      554            600        -6      812            837
+##  6  2013     1     1      554            558        -4      740            728
+##  7  2013     1     1      555            600        -5      913            854
+##  8  2013     1     1      557            600        -3      709            723
+##  9  2013     1     1      557            600        -3      838            846
+## 10  2013     1     1      558            600        -2      753            745
+## # … with 336,766 more rows, and 11 more variables: arr_delay &lt;dbl&gt;,
+## #   carrier &lt;chr&gt;, flight &lt;int&gt;, tail_num &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
+## #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
+<p>Another option is to use <code>select()</code> in conjunction with the <code>everything()</code> helper. This is useful if you have a handful of variables you’d like to move to the start of the data frame.</p>
+<pre class="r"><code>select(flights, time_hour, air_time, everything())</code></pre>
+<pre><code>## # A tibble: 336,776 x 19
+##    time_hour           air_time  year month   day dep_time sched_dep_time
+##    &lt;dttm&gt;                 &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;
+##  1 2013-01-01 05:00:00      227  2013     1     1      517            515
+##  2 2013-01-01 05:00:00      227  2013     1     1      533            529
+##  3 2013-01-01 05:00:00      160  2013     1     1      542            540
+##  4 2013-01-01 05:00:00      183  2013     1     1      544            545
+##  5 2013-01-01 06:00:00      116  2013     1     1      554            600
+##  6 2013-01-01 05:00:00      150  2013     1     1      554            558
+##  7 2013-01-01 06:00:00      158  2013     1     1      555            600
+##  8 2013-01-01 06:00:00       53  2013     1     1      557            600
+##  9 2013-01-01 06:00:00      140  2013     1     1      557            600
+## 10 2013-01-01 06:00:00      138  2013     1     1      558            600
+## # … with 336,766 more rows, and 12 more variables: dep_delay &lt;dbl&gt;,
+## #   arr_time &lt;int&gt;, sched_arr_time &lt;int&gt;, arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;,
+## #   flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, distance &lt;dbl&gt;,
+## #   hour &lt;dbl&gt;, minute &lt;dbl&gt;</code></pre>
+<div id="exercises-2" class="section level3">
+<h3>Exercises</h3>
+<ol style="list-style-type: decimal">
+<li><p>Brainstorm as many ways as possible to select <code>dep_time</code>, <code>dep_delay</code>, <code>arr_time</code>, and <code>arr_delay</code> from <code>flights</code>.</p></li>
+<li><p>What happens if you include the name of a variable multiple times in a <code>select()</code> call?</p></li>
+<li><p>What does the <code>one_of()</code> function do? Why might it be helpful in conjunction with this vector?</p>
+<pre class="r"><code>vars &lt;- c(&quot;year&quot;, &quot;month&quot;, &quot;day&quot;, &quot;dep_delay&quot;, &quot;arr_delay&quot;)</code></pre></li>
+<li><p>Does the result of running the following code surprise you? How do the select helpers deal with case by default? How can you change that default?</p>
+<pre class="r"><code>select(flights, contains(&quot;TIME&quot;))</code></pre></li>
+</ol>
+</div>
+</div>
+<div id="add-new-variables-with-mutate" class="section level2">
+<h2>Add new variables with <code>mutate()</code></h2>
+<p>Besides selecting sets of existing columns, it’s often useful to add new columns that are functions of existing columns. That’s the job of <code>mutate()</code>.</p>
+<p><code>mutate()</code> always adds new columns at the end of your dataset so we’ll start by creating a narrower dataset so we can see the new variables. Remember that when you’re in RStudio, the easiest way to see all the columns is <code>View()</code>.</p>
+<pre class="r"><code>flights_sml &lt;- select(flights, 
+  year:day, 
+  ends_with(&quot;delay&quot;), 
+  distance, 
+  air_time
+)
+mutate(flights_sml,
+  gain = dep_delay - arr_delay,
+  speed = distance / air_time * 60
+)</code></pre>
+<pre><code>## # A tibble: 336,776 x 9
+##     year month   day dep_delay arr_delay distance air_time  gain speed
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1  2013     1     1         2        11     1400      227    -9  370.
+##  2  2013     1     1         4        20     1416      227   -16  374.
+##  3  2013     1     1         2        33     1089      160   -31  408.
+##  4  2013     1     1        -1       -18     1576      183    17  517.
+##  5  2013     1     1        -6       -25      762      116    19  394.
+##  6  2013     1     1        -4        12      719      150   -16  288.
+##  7  2013     1     1        -5        19     1065      158   -24  404.
+##  8  2013     1     1        -3       -14      229       53    11  259.
+##  9  2013     1     1        -3        -8      944      140     5  405.
+## 10  2013     1     1        -2         8      733      138   -10  319.
+## # … with 336,766 more rows</code></pre>
+<p>Note that you can refer to columns that you’ve just created:</p>
+<pre class="r"><code>mutate(flights_sml,
+  gain = dep_delay - arr_delay,
+  hours = air_time / 60,
+  gain_per_hour = gain / hours
+)</code></pre>
+<pre><code>## # A tibble: 336,776 x 10
+##     year month   day dep_delay arr_delay distance air_time  gain hours
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1  2013     1     1         2        11     1400      227    -9 3.78 
+##  2  2013     1     1         4        20     1416      227   -16 3.78 
+##  3  2013     1     1         2        33     1089      160   -31 2.67 
+##  4  2013     1     1        -1       -18     1576      183    17 3.05 
+##  5  2013     1     1        -6       -25      762      116    19 1.93 
+##  6  2013     1     1        -4        12      719      150   -16 2.5  
+##  7  2013     1     1        -5        19     1065      158   -24 2.63 
+##  8  2013     1     1        -3       -14      229       53    11 0.883
+##  9  2013     1     1        -3        -8      944      140     5 2.33 
+## 10  2013     1     1        -2         8      733      138   -10 2.3  
+## # … with 336,766 more rows, and 1 more variable: gain_per_hour &lt;dbl&gt;</code></pre>
+<p>If you only want to keep the new variables, use <code>transmute()</code>:</p>
+<pre class="r"><code>transmute(flights,
+  gain = dep_delay - arr_delay,
+  hours = air_time / 60,
+  gain_per_hour = gain / hours
+)</code></pre>
+<pre><code>## # A tibble: 336,776 x 3
+##     gain hours gain_per_hour
+##    &lt;dbl&gt; &lt;dbl&gt;         &lt;dbl&gt;
+##  1    -9 3.78          -2.38
+##  2   -16 3.78          -4.23
+##  3   -31 2.67         -11.6 
+##  4    17 3.05           5.57
+##  5    19 1.93           9.83
+##  6   -16 2.5           -6.4 
+##  7   -24 2.63          -9.11
+##  8    11 0.883         12.5 
+##  9     5 2.33           2.14
+## 10   -10 2.3           -4.35
+## # … with 336,766 more rows</code></pre>
+<div id="useful-creation-functions" class="section level3">
+<h3>Useful creation functions</h3>
+<p>There are many functions for creating new variables that you can use with <code>mutate()</code>. The key property is that the function must be vectorised: it must take a vector of values as input, return a vector with the same number of values as output. There’s no way to list every possible function that you might use, but here’s a selection of functions that are frequently useful:</p>
+<ul>
+<li><p>Arithmetic operators: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>^</code>. These are all vectorised, using the so called “recycling rules”. If one parameter is shorter than the other, it will be automatically extended to be the same length. This is most useful when one of the arguments is a single number: <code>air_time / 60</code>, <code>hours * 60 + minute</code>, etc.</p>
+<p>Arithmetic operators are also useful in conjunction with the aggregate functions you’ll learn about later. For example, <code>x / sum(x)</code> calculates the proportion of a total, and <code>y - mean(y)</code> computes the difference from the mean.</p></li>
+<li><p>Modular arithmetic: <code>%/%</code> (integer division) and <code>%%</code> (remainder), where <code>x == y * (x %/% y) + (x %% y)</code>. Modular arithmetic is a handy tool because it allows you to break integers up into pieces. For example, in the flights dataset, you can compute <code>hour</code> and <code>minute</code> from <code>dep_time</code> with:</p>
+<pre class="r"><code>transmute(flights,
+  dep_time,
+  hour = dep_time %/% 100,
+  minute = dep_time %% 100
+)</code></pre>
+<pre><code>## # A tibble: 336,776 x 3
+##    dep_time  hour minute
+##       &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt;
+##  1      517     5     17
+##  2      533     5     33
+##  3      542     5     42
+##  4      544     5     44
+##  5      554     5     54
+##  6      554     5     54
+##  7      555     5     55
+##  8      557     5     57
+##  9      557     5     57
+## 10      558     5     58
+## # … with 336,766 more rows</code></pre></li>
+<li><p>Logs: <code>log()</code>, <code>log2()</code>, <code>log10()</code>. Logarithms are an incredibly useful transformation for dealing with data that ranges across multiple orders of magnitude. They also convert multiplicative relationships to additive, a feature we’ll come back to in modelling.</p>
+<p>All else being equal, I recommend using <code>log2()</code> because it’s easy to interpret: a difference of 1 on the log scale corresponds to doubling on the original scale and a difference of -1 corresponds to halving.</p></li>
+<li><p>Offsets: <code>lead()</code> and <code>lag()</code> allow you to refer to leading or lagging values. This allows you to compute running differences (e.g. <code>x - lag(x)</code>) or find when values change (<code>x != lag(x)</code>). They are most useful in conjunction with <code>group_by()</code>, which you’ll learn about shortly.</p>
+<pre class="r"><code>(x &lt;- 1:10)</code></pre>
+<pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<pre class="r"><code>lag(x)</code></pre>
+<pre><code>##  [1] NA  1  2  3  4  5  6  7  8  9</code></pre>
+<pre class="r"><code>lead(x)</code></pre>
+<pre><code>##  [1]  2  3  4  5  6  7  8  9 10 NA</code></pre></li>
+<li><p>Cumulative and rolling aggregates: R provides functions for running sums, products, mins and maxes: <code>cumsum()</code>, <code>cumprod()</code>, <code>cummin()</code>, <code>cummax()</code>; and dplyr provides <code>cummean()</code> for cumulative means. If you need rolling aggregates (i.e. a sum computed over a rolling window), try the RcppRoll package.</p>
+<pre class="r"><code>x</code></pre>
+<pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10</code></pre>
+<pre class="r"><code>cumsum(x)</code></pre>
+<pre><code>##  [1]  1  3  6 10 15 21 28 36 45 55</code></pre>
+<pre class="r"><code>cummean(x)</code></pre>
+<pre><code>##  [1] 1.0 1.5 2.0 2.5 3.0 3.5 4.0 4.5 5.0 5.5</code></pre></li>
+<li><p>Logical comparisons, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>, <code>!=</code>, and <code>==</code>, which you learned about earlier. If you’re doing a complex sequence of logical operations it’s often a good idea to store the interim values in new variables so you can check that each step is working as expected.</p></li>
+<li><p>Ranking: there are a number of ranking functions, but you should start with <code>min_rank()</code>. It does the most usual type of ranking (e.g. 1st, 2nd, 2nd, 4th). The default gives smallest values the small ranks; use <code>desc(x)</code> to give the largest values the smallest ranks.</p>
+<pre class="r"><code>y &lt;- c(1, 2, 2, NA, 3, 4)
+min_rank(y)</code></pre>
+<pre><code>## [1]  1  2  2 NA  4  5</code></pre>
+<pre class="r"><code>min_rank(desc(y))</code></pre>
+<pre><code>## [1]  5  3  3 NA  2  1</code></pre>
+<p>If <code>min_rank()</code> doesn’t do what you need, look at the variants <code>row_number()</code>, <code>dense_rank()</code>, <code>percent_rank()</code>, <code>cume_dist()</code>, <code>ntile()</code>. See their help pages for more details.</p>
+<pre class="r"><code>row_number(y)</code></pre>
+<pre><code>## [1]  1  2  3 NA  4  5</code></pre>
+<pre class="r"><code>dense_rank(y)</code></pre>
+<pre><code>## [1]  1  2  2 NA  3  4</code></pre>
+<pre class="r"><code>percent_rank(y)</code></pre>
+<pre><code>## [1] 0.00 0.25 0.25   NA 0.75 1.00</code></pre>
+<pre class="r"><code>cume_dist(y)</code></pre>
+<pre><code>## [1] 0.2 0.6 0.6  NA 0.8 1.0</code></pre></li>
+</ul>
+</div>
+<div id="exercises-3" class="section level3">
+<h3>Exercises</h3>
+<ol style="list-style-type: decimal">
+<li><p>Currently <code>dep_time</code> and <code>sched_dep_time</code> are convenient to look at, but hard to compute with because they’re not really continuous numbers. Convert them to a more convenient representation of number of minutes since midnight.</p></li>
+<li><p>Compare <code>air_time</code> with <code>arr_time - dep_time</code>. What do you expect to see? What do you see? What do you need to do to fix it?</p></li>
+<li><p>Compare <code>dep_time</code>, <code>sched_dep_time</code>, and <code>dep_delay</code>. How would you expect those three numbers to be related?</p></li>
+<li><p>Find the 10 most delayed flights using a ranking function. How do you want to handle ties? Carefully read the documentation for <code>min_rank()</code>.</p></li>
+<li><p>What does <code>1:3 + 1:10</code> return? Why?</p></li>
+<li><p>What trigonometric functions does R provide?</p></li>
+</ol>
+</div>
+</div>
+<div id="grouped-summaries-with-summarise" class="section level2">
+<h2>Grouped summaries with <code>summarise()</code></h2>
+<p>The last key verb is <code>summarise()</code>. It collapses a data frame to a single row:</p>
+<pre class="r"><code>summarise(flights, delay = mean(dep_delay, na.rm = TRUE))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   delay
+##   &lt;dbl&gt;
+## 1  12.6</code></pre>
+<p>(We’ll come back to what that <code>na.rm = TRUE</code> means very shortly.)</p>
+<p><code>summarise()</code> is not terribly useful unless we pair it with <code>group_by()</code>. This changes the unit of analysis from the complete dataset to individual groups. Then, when you use the dplyr verbs on a grouped data frame they’ll be automatically applied “by group”. For example, if we applied exactly the same code to a data frame grouped by date, we get the average delay per date:</p>
+<pre class="r"><code>by_day &lt;- group_by(flights, year, month, day)
+summarise(by_day, delay = mean(dep_delay, na.rm = TRUE))</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;month&#39;. You can override using the `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 365 x 4
+## # Groups:   year, month [12]
+##     year month   day delay
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
+##  1  2013     1     1 11.5 
+##  2  2013     1     2 13.9 
+##  3  2013     1     3 11.0 
+##  4  2013     1     4  8.95
+##  5  2013     1     5  5.73
+##  6  2013     1     6  7.15
+##  7  2013     1     7  5.42
+##  8  2013     1     8  2.55
+##  9  2013     1     9  2.28
+## 10  2013     1    10  2.84
+## # … with 355 more rows</code></pre>
+<p>Together <code>group_by()</code> and <code>summarise()</code> provide one of the tools that you’ll use most commonly when working with dplyr: grouped summaries. But before we go any further with this, we need to introduce a powerful new idea: the pipe.</p>
+<div id="combining-multiple-operations-with-the-pipe" class="section level3">
+<h3>Combining multiple operations with the pipe</h3>
+<p>Imagine that we want to explore the relationship between the distance and average delay for each location. Using what you know about dplyr, you might write code like this:</p>
+<pre class="r"><code>by_dest &lt;- group_by(flights, dest)
+delay &lt;- summarise(by_dest,
+  count = n(),
+  dist = mean(distance, na.rm = TRUE),
+  delay = mean(arr_delay, na.rm = TRUE)
+)
+delay &lt;- filter(delay, count &gt; 20, dest != &quot;HNL&quot;)
+
+# It looks like delays increase with distance up to ~750 miles 
+# and then decrease. Maybe as flights get longer there&#39;s more 
+# ability to make up delays in the air?
+ggplot(data = delay, mapping = aes(x = dist, y = delay)) +
+  geom_point(aes(size = count), alpha = 1/3) +
+  geom_smooth(se = FALSE)</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="tidyverse-base_files/figure-html/unnamed-chunk-36-1.png" width="576" /></p>
+<p>There are three steps to prepare this data:</p>
+<ol style="list-style-type: decimal">
+<li><p>Group flights by destination.</p></li>
+<li><p>Summarise to compute distance, average delay, and number of flights.</p></li>
+<li><p>Filter to remove noisy points and Honolulu airport, which is almost twice as far away as the next closest airport.</p></li>
+</ol>
+<p>This code is a little frustrating to write because we have to give each intermediate data frame a name, even though we don’t care about it. Naming things is hard, so this slows down our analysis.</p>
+<p>There’s another way to tackle the same problem with the pipe, <code>%&gt;%</code>:</p>
+<pre class="r"><code>delays &lt;- flights %&gt;% 
+  group_by(dest) %&gt;% 
+  summarise(
+    count = n(),
+    dist = mean(distance, na.rm = TRUE),
+    delay = mean(arr_delay, na.rm = TRUE)
+  ) %&gt;% 
+  filter(count &gt; 20, dest != &quot;HNL&quot;)</code></pre>
+<p>This focuses on the transformations, not what’s being transformed, which makes the code easier to read. You can read it as a series of imperative statements: group, then summarise, then filter. As suggested by this reading, a good way to pronounce <code>%&gt;%</code> when reading code is “then”.</p>
+<p>Behind the scenes, <code>x %&gt;% f(y)</code> turns into <code>f(x, y)</code>, and <code>x %&gt;% f(y) %&gt;% g(z)</code> turns into <code>g(f(x, y), z)</code> and so on. You can use the pipe to rewrite multiple operations in a way that you can read left-to-right, top-to-bottom. We’ll use piping frequently from now on because it considerably improves the readability of code, and we’ll come back to it in more detail in [pipes].</p>
+<p>Working with the pipe is one of the key criteria for belonging to the tidyverse. The only exception is ggplot2: it was written before the pipe was discovered. Unfortunately, the next iteration of ggplot2, ggvis, which does use the pipe, isn’t quite ready for prime time yet.</p>
+</div>
+<div id="missing-values-1" class="section level3">
+<h3>Missing values</h3>
+<p>You may have wondered about the <code>na.rm</code> argument we used above. What happens if we don’t set it?</p>
+<pre class="r"><code>flights %&gt;% 
+  group_by(year, month, day) %&gt;% 
+  summarise(mean = mean(dep_delay))</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;month&#39;. You can override using the `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 365 x 4
+## # Groups:   year, month [12]
+##     year month   day  mean
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
+##  1  2013     1     1    NA
+##  2  2013     1     2    NA
+##  3  2013     1     3    NA
+##  4  2013     1     4    NA
+##  5  2013     1     5    NA
+##  6  2013     1     6    NA
+##  7  2013     1     7    NA
+##  8  2013     1     8    NA
+##  9  2013     1     9    NA
+## 10  2013     1    10    NA
+## # … with 355 more rows</code></pre>
+<p>We get a lot of missing values! That’s because aggregation functions obey the usual rule of missing values: if there’s any missing value in the input, the output will be a missing value. Fortunately, all aggregation functions have an <code>na.rm</code> argument which removes the missing values prior to computation:</p>
+<pre class="r"><code>flights %&gt;% 
+  group_by(year, month, day) %&gt;% 
+  summarise(mean = mean(dep_delay, na.rm = TRUE))</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;month&#39;. You can override using the `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 365 x 4
+## # Groups:   year, month [12]
+##     year month   day  mean
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
+##  1  2013     1     1 11.5 
+##  2  2013     1     2 13.9 
+##  3  2013     1     3 11.0 
+##  4  2013     1     4  8.95
+##  5  2013     1     5  5.73
+##  6  2013     1     6  7.15
+##  7  2013     1     7  5.42
+##  8  2013     1     8  2.55
+##  9  2013     1     9  2.28
+## 10  2013     1    10  2.84
+## # … with 355 more rows</code></pre>
+<p>In this case, where missing values represent cancelled flights, we could also tackle the problem by first removing the cancelled flights. We’ll save this dataset so we can reuse it in the next few examples.</p>
+<pre class="r"><code>not_cancelled &lt;- flights %&gt;% 
+  filter(!is.na(dep_delay), !is.na(arr_delay))
+
+not_cancelled %&gt;% 
+  group_by(year, month, day) %&gt;% 
+  summarise(mean = mean(dep_delay))</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;month&#39;. You can override using the `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 365 x 4
+## # Groups:   year, month [12]
+##     year month   day  mean
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt;
+##  1  2013     1     1 11.4 
+##  2  2013     1     2 13.7 
+##  3  2013     1     3 10.9 
+##  4  2013     1     4  8.97
+##  5  2013     1     5  5.73
+##  6  2013     1     6  7.15
+##  7  2013     1     7  5.42
+##  8  2013     1     8  2.56
+##  9  2013     1     9  2.30
+## 10  2013     1    10  2.84
+## # … with 355 more rows</code></pre>
+</div>
+<div id="counts" class="section level3">
+<h3>Counts</h3>
+<p>Whenever you do any aggregation, it’s always a good idea to include either a count (<code>n()</code>), or a count of non-missing values (<code>sum(!is.na(x))</code>). That way you can check that you’re not drawing conclusions based on very small amounts of data. For example, let’s look at the planes (identified by their tail number) that have the highest average delays:</p>
+<pre class="r"><code>delays &lt;- not_cancelled %&gt;% 
+  group_by(tailnum) %&gt;% 
+  summarise(
+    delay = mean(arr_delay)
+  )
+
+ggplot(data = delays, mapping = aes(x = delay)) + 
+  geom_freqpoly(binwidth = 10)</code></pre>
+<p><img src="tidyverse-base_files/figure-html/unnamed-chunk-41-1.png" width="672" /></p>
+<p>Wow, there are some planes that have an <em>average</em> delay of 5 hours (300 minutes)!</p>
+<p>The story is actually a little more nuanced. We can get more insight if we draw a scatterplot of number of flights vs. average delay:</p>
+<pre class="r"><code>delays &lt;- not_cancelled %&gt;% 
+  group_by(tailnum) %&gt;% 
+  summarise(
+    delay = mean(arr_delay, na.rm = TRUE),
+    n = n()
+  )
+
+ggplot(data = delays, mapping = aes(x = n, y = delay)) + 
+  geom_point(alpha = 1/10)</code></pre>
+<p><img src="tidyverse-base_files/figure-html/unnamed-chunk-42-1.png" width="672" /></p>
+<p>Not surprisingly, there is much greater variation in the average delay when there are few flights. The shape of this plot is very characteristic: whenever you plot a mean (or other summary) vs. group size, you’ll see that the variation decreases as the sample size increases.</p>
+<p>When looking at this sort of plot, it’s often useful to filter out the groups with the smallest numbers of observations, so you can see more of the pattern and less of the extreme variation in the smallest groups. This is what the following code does, as well as showing you a handy pattern for integrating ggplot2 into dplyr flows. It’s a bit painful that you have to switch from <code>%&gt;%</code> to <code>+</code>, but once you get the hang of it, it’s quite convenient.</p>
+<pre class="r"><code>delays %&gt;% 
+  filter(n &gt; 25) %&gt;% 
+  ggplot(mapping = aes(x = n, y = delay)) + 
+    geom_point(alpha = 1/10)</code></pre>
+<p><img src="tidyverse-base_files/figure-html/unnamed-chunk-43-1.png" width="672" /></p>
+<hr />
+<p>RStudio tip: a useful keyboard shortcut is Cmd/Ctrl + Shift + P. This resends the previously sent chunk from the editor to the console. This is very convenient when you’re (e.g.) exploring the value of <code>n</code> in the example above. You send the whole block once with Cmd/Ctrl + Enter, then you modify the value of <code>n</code> and press Cmd/Ctrl + Shift + P to resend the complete block.</p>
+<hr />
+<p>There’s another common variation of this type of pattern. Let’s look at how the average performance of batters in baseball is related to the number of times they’re at bat. Here I use data from the <strong>Lahman</strong> package to compute the batting average (number of hits / number of attempts) of every major league baseball player.</p>
+<p>When I plot the skill of the batter (measured by the batting average, <code>ba</code>) against the number of opportunities to hit the ball (measured by at bat, <code>ab</code>), you see two patterns:</p>
+<ol style="list-style-type: decimal">
+<li><p>As above, the variation in our aggregate decreases as we get more data points.</p></li>
+<li><p>There’s a positive correlation between skill (<code>ba</code>) and opportunities to hit the ball (<code>ab</code>). This is because teams control who gets to play, and obviously they’ll pick their best players.</p></li>
+</ol>
+<pre class="r"><code># Convert to a tibble so it prints nicely
+batting &lt;- as_tibble(Lahman::Batting)
+
+batters &lt;- batting %&gt;% 
+  group_by(playerID) %&gt;% 
+  summarise(
+    ba = sum(H, na.rm = TRUE) / sum(AB, na.rm = TRUE),
+    ab = sum(AB, na.rm = TRUE)
+  )
+
+batters %&gt;% 
+  filter(ab &gt; 100) %&gt;% 
+  ggplot(mapping = aes(x = ab, y = ba)) +
+    geom_point() + 
+    geom_smooth(se = FALSE)</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;gam&#39; and formula &#39;y ~ s(x, bs = &quot;cs&quot;)&#39;</code></pre>
+<p><img src="tidyverse-base_files/figure-html/unnamed-chunk-44-1.png" width="672" /></p>
+<p>This also has important implications for ranking. If you naively sort on <code>desc(ba)</code>, the people with the best batting averages are clearly lucky, not skilled:</p>
+<pre class="r"><code>batters %&gt;% 
+  arrange(desc(ba))</code></pre>
+<pre><code>## # A tibble: 19,898 x 3
+##    playerID     ba    ab
+##    &lt;chr&gt;     &lt;dbl&gt; &lt;int&gt;
+##  1 abramge01     1     1
+##  2 alanirj01     1     1
+##  3 alberan01     1     1
+##  4 banisje01     1     1
+##  5 bartocl01     1     1
+##  6 bassdo01      1     1
+##  7 birasst01     1     2
+##  8 bruneju01     1     1
+##  9 burnscb01     1     1
+## 10 cammaer01     1     1
+## # … with 19,888 more rows</code></pre>
+<p>You can find a good explanation of this problem at <a href="http://varianceexplained.org/r/empirical_bayes_baseball/" target="_blank">http://varianceexplained.org/r/empirical_bayes_baseball/</a> and <a href="http://www.evanmiller.org/how-not-to-sort-by-average-rating.html" target="_blank">http://www.evanmiller.org/how-not-to-sort-by-average-rating.html</a>.</p>
+</div>
+<div id="useful-summary-functions" class="section level3">
+<h3>Useful summary functions</h3>
+<p>Just using means, counts, and sum can get you a long way, but R provides many other useful summary functions:</p>
+<ul>
+<li><p>Measures of location: we’ve used <code>mean(x)</code>, but <code>median(x)</code> is also useful. The mean is the sum divided by the length; the median is a value where 50% of <code>x</code> is above it, and 50% is below it.</p>
+<p>It’s sometimes useful to combine aggregation with logical subsetting. We haven’t talked about this sort of subsetting yet, but you’ll learn more about it in subsetting.</p>
+<pre class="r"><code>not_cancelled %&gt;% 
+  group_by(year, month, day) %&gt;% 
+  summarise(
+    avg_delay1 = mean(arr_delay),
+    avg_delay2 = mean(arr_delay[arr_delay &gt; 0]) # the average positive delay
+  )</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;month&#39;. You can override using the `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 365 x 5
+## # Groups:   year, month [12]
+##     year month   day avg_delay1 avg_delay2
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;      &lt;dbl&gt;      &lt;dbl&gt;
+##  1  2013     1     1     12.7         32.5
+##  2  2013     1     2     12.7         32.0
+##  3  2013     1     3      5.73        27.7
+##  4  2013     1     4     -1.93        28.3
+##  5  2013     1     5     -1.53        22.6
+##  6  2013     1     6      4.24        24.4
+##  7  2013     1     7     -4.95        27.8
+##  8  2013     1     8     -3.23        20.8
+##  9  2013     1     9     -0.264       25.6
+## 10  2013     1    10     -5.90        27.3
+## # … with 355 more rows</code></pre></li>
+<li><p>Measures of spread: <code>sd(x)</code>, <code>IQR(x)</code>, <code>mad(x)</code>. The root mean squared deviation, or standard deviation <code>sd(x)</code>, is the standard measure of spread. The interquartile range <code>IQR(x)</code> and median absolute deviation <code>mad(x)</code> are robust equivalents that may be more useful if you have outliers.</p>
+<pre class="r"><code># Why is distance to some destinations more variable than to others?
+not_cancelled %&gt;% 
+  group_by(dest) %&gt;% 
+  summarise(distance_sd = sd(distance)) %&gt;% 
+  arrange(desc(distance_sd))</code></pre>
+<pre><code>## # A tibble: 104 x 2
+##    dest  distance_sd
+##    &lt;chr&gt;       &lt;dbl&gt;
+##  1 EGE         10.5 
+##  2 SAN         10.4 
+##  3 SFO         10.2 
+##  4 HNL         10.0 
+##  5 SEA          9.98
+##  6 LAS          9.91
+##  7 PDX          9.87
+##  8 PHX          9.86
+##  9 LAX          9.66
+## 10 IND          9.46
+## # … with 94 more rows</code></pre></li>
+<li><p>Measures of rank: <code>min(x)</code>, <code>quantile(x, 0.25)</code>, <code>max(x)</code>. Quantiles are a generalisation of the median. For example, <code>quantile(x, 0.25)</code> will find a value of <code>x</code> that is greater than 25% of the values, and less than the remaining 75%.</p>
+<pre class="r"><code># When do the first and last flights leave each day?
+not_cancelled %&gt;% 
+  group_by(year, month, day) %&gt;% 
+  summarise(
+    first = min(dep_time),
+    last = max(dep_time)
+  )</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;month&#39;. You can override using the `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 365 x 5
+## # Groups:   year, month [12]
+##     year month   day first  last
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
+##  1  2013     1     1   517  2356
+##  2  2013     1     2    42  2354
+##  3  2013     1     3    32  2349
+##  4  2013     1     4    25  2358
+##  5  2013     1     5    14  2357
+##  6  2013     1     6    16  2355
+##  7  2013     1     7    49  2359
+##  8  2013     1     8   454  2351
+##  9  2013     1     9     2  2252
+## 10  2013     1    10     3  2320
+## # … with 355 more rows</code></pre></li>
+<li><p>Measures of position: <code>first(x)</code>, <code>nth(x, 2)</code>, <code>last(x)</code>. These work similarly to <code>x[1]</code>, <code>x[2]</code>, and <code>x[length(x)]</code> but let you set a default value if that position does not exist (i.e. you’re trying to get the 3rd element from a group that only has two elements). For example, we can find the first and last departure for each day:</p>
+<pre class="r"><code>not_cancelled %&gt;% 
+  group_by(year, month, day) %&gt;% 
+  summarise(
+    first_dep = first(dep_time), 
+    last_dep = last(dep_time)
+  )</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;month&#39;. You can override using the `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 365 x 5
+## # Groups:   year, month [12]
+##     year month   day first_dep last_dep
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;     &lt;int&gt;    &lt;int&gt;
+##  1  2013     1     1       517     2356
+##  2  2013     1     2        42     2354
+##  3  2013     1     3        32     2349
+##  4  2013     1     4        25     2358
+##  5  2013     1     5        14     2357
+##  6  2013     1     6        16     2355
+##  7  2013     1     7        49     2359
+##  8  2013     1     8       454     2351
+##  9  2013     1     9         2     2252
+## 10  2013     1    10         3     2320
+## # … with 355 more rows</code></pre>
+<p>These functions are complementary to filtering on ranks. Filtering gives you all variables, with each observation in a separate row:</p>
+<pre class="r"><code>not_cancelled %&gt;% 
+  group_by(year, month, day) %&gt;% 
+  mutate(r = min_rank(desc(dep_time))) %&gt;% 
+  filter(r %in% range(r))</code></pre>
+<pre><code>## # A tibble: 770 x 20
+## # Groups:   year, month, day [365]
+##     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+##  1  2013     1     1      517            515         2      830            819
+##  2  2013     1     1     2356           2359        -3      425            437
+##  3  2013     1     2       42           2359        43      518            442
+##  4  2013     1     2     2354           2359        -5      413            437
+##  5  2013     1     3       32           2359        33      504            442
+##  6  2013     1     3     2349           2359       -10      434            445
+##  7  2013     1     4       25           2359        26      505            442
+##  8  2013     1     4     2358           2359        -1      429            437
+##  9  2013     1     4     2358           2359        -1      436            445
+## 10  2013     1     5       14           2359        15      503            445
+## # … with 760 more rows, and 12 more variables: arr_delay &lt;dbl&gt;, carrier &lt;chr&gt;,
+## #   flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;,
+## #   distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;, r &lt;int&gt;</code></pre></li>
+<li><p>Counts: You’ve seen <code>n()</code>, which takes no arguments, and returns the size of the current group. To count the number of non-missing values, use <code>sum(!is.na(x))</code>. To count the number of distinct (unique) values, use <code>n_distinct(x)</code>.</p>
+<pre class="r"><code># Which destinations have the most carriers?
+not_cancelled %&gt;% 
+  group_by(dest) %&gt;% 
+  summarise(carriers = n_distinct(carrier)) %&gt;% 
+  arrange(desc(carriers))</code></pre>
+<pre><code>## # A tibble: 104 x 2
+##    dest  carriers
+##    &lt;chr&gt;    &lt;int&gt;
+##  1 ATL          7
+##  2 BOS          7
+##  3 CLT          7
+##  4 ORD          7
+##  5 TPA          7
+##  6 AUS          6
+##  7 DCA          6
+##  8 DTW          6
+##  9 IAD          6
+## 10 MSP          6
+## # … with 94 more rows</code></pre>
+<p>Counts are so useful that dplyr provides a simple helper if all you want is a count:</p>
+<pre class="r"><code>not_cancelled %&gt;% 
+  count(dest)</code></pre>
+<pre><code>## # A tibble: 104 x 2
+##    dest      n
+##    &lt;chr&gt; &lt;int&gt;
+##  1 ABQ     254
+##  2 ACK     264
+##  3 ALB     418
+##  4 ANC       8
+##  5 ATL   16837
+##  6 AUS    2411
+##  7 AVL     261
+##  8 BDL     412
+##  9 BGR     358
+## 10 BHM     269
+## # … with 94 more rows</code></pre>
+<p>You can optionally provide a weight variable. For example, you could use this to “count” (sum) the total number of miles a plane flew:</p>
+<pre class="r"><code>not_cancelled %&gt;% 
+  count(tailnum, wt = distance)</code></pre>
+<pre><code>## # A tibble: 4,037 x 2
+##    tailnum      n
+##    &lt;chr&gt;    &lt;dbl&gt;
+##  1 D942DN    3418
+##  2 N0EGMQ  239143
+##  3 N10156  109664
+##  4 N102UW   25722
+##  5 N103US   24619
+##  6 N104UW   24616
+##  7 N10575  139903
+##  8 N105UW   23618
+##  9 N107US   21677
+## 10 N108UW   32070
+## # … with 4,027 more rows</code></pre></li>
+<li><p>Counts and proportions of logical values: <code>sum(x &gt; 10)</code>, <code>mean(y == 0)</code>. When used with numeric functions, <code>TRUE</code> is converted to 1 and <code>FALSE</code> to 0. This makes <code>sum()</code> and <code>mean()</code> very useful: <code>sum(x)</code> gives the number of <code>TRUE</code>s in <code>x</code>, and <code>mean(x)</code> gives the proportion.</p>
+<pre class="r"><code># How many flights left before 5am? (these usually indicate delayed
+# flights from the previous day)
+not_cancelled %&gt;% 
+  group_by(year, month, day) %&gt;% 
+  summarise(n_early = sum(dep_time &lt; 500))</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;month&#39;. You can override using the `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 365 x 4
+## # Groups:   year, month [12]
+##     year month   day n_early
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;   &lt;int&gt;
+##  1  2013     1     1       0
+##  2  2013     1     2       3
+##  3  2013     1     3       4
+##  4  2013     1     4       3
+##  5  2013     1     5       3
+##  6  2013     1     6       2
+##  7  2013     1     7       2
+##  8  2013     1     8       1
+##  9  2013     1     9       3
+## 10  2013     1    10       3
+## # … with 355 more rows</code></pre>
+<pre class="r"><code># What proportion of flights are delayed by more than an hour?
+not_cancelled %&gt;% 
+  group_by(year, month, day) %&gt;% 
+  summarise(hour_prop = mean(arr_delay &gt; 60))</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;month&#39;. You can override using the `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 365 x 4
+## # Groups:   year, month [12]
+##     year month   day hour_prop
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;     &lt;dbl&gt;
+##  1  2013     1     1    0.0722
+##  2  2013     1     2    0.0851
+##  3  2013     1     3    0.0567
+##  4  2013     1     4    0.0396
+##  5  2013     1     5    0.0349
+##  6  2013     1     6    0.0470
+##  7  2013     1     7    0.0333
+##  8  2013     1     8    0.0213
+##  9  2013     1     9    0.0202
+## 10  2013     1    10    0.0183
+## # … with 355 more rows</code></pre></li>
+</ul>
+</div>
+<div id="grouping-by-multiple-variables" class="section level3">
+<h3>Grouping by multiple variables</h3>
+<p>When you group by multiple variables, each summary peels off one level of the grouping. That makes it easy to progressively roll up a dataset:</p>
+<pre class="r"><code>daily &lt;- group_by(flights, year, month, day)
+(per_day   &lt;- summarise(daily, flights = n()))</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;month&#39;. You can override using the `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 365 x 4
+## # Groups:   year, month [12]
+##     year month   day flights
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;   &lt;int&gt;
+##  1  2013     1     1     842
+##  2  2013     1     2     943
+##  3  2013     1     3     914
+##  4  2013     1     4     915
+##  5  2013     1     5     720
+##  6  2013     1     6     832
+##  7  2013     1     7     933
+##  8  2013     1     8     899
+##  9  2013     1     9     902
+## 10  2013     1    10     932
+## # … with 355 more rows</code></pre>
+<pre class="r"><code>(per_month &lt;- summarise(per_day, flights = sum(flights)))</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;. You can override using the `.groups` argument.</code></pre>
+<pre><code>## # A tibble: 12 x 3
+## # Groups:   year [1]
+##     year month flights
+##    &lt;int&gt; &lt;int&gt;   &lt;int&gt;
+##  1  2013     1   27004
+##  2  2013     2   24951
+##  3  2013     3   28834
+##  4  2013     4   28330
+##  5  2013     5   28796
+##  6  2013     6   28243
+##  7  2013     7   29425
+##  8  2013     8   29327
+##  9  2013     9   27574
+## 10  2013    10   28889
+## # … with 2 more rows</code></pre>
+<pre class="r"><code>(per_year  &lt;- summarise(per_month, flights = sum(flights)))</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##    year flights
+##   &lt;int&gt;   &lt;int&gt;
+## 1  2013  336776</code></pre>
+<p>Be careful when progressively rolling up summaries: it’s OK for sums and counts, but you need to think about weighting means and variances, and it’s not possible to do it exactly for rank-based statistics like the median. In other words, the sum of groupwise sums is the overall sum, but the median of groupwise medians is not the overall median.</p>
+</div>
+<div id="ungrouping" class="section level3">
+<h3>Ungrouping</h3>
+<p>If you need to remove grouping, and return to operations on ungrouped data, use <code>ungroup()</code>.</p>
+<pre class="r"><code>daily %&gt;% 
+  ungroup() %&gt;%             # no longer grouped by date
+  summarise(flights = n())  # all flights</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   flights
+##     &lt;int&gt;
+## 1  336776</code></pre>
+</div>
+<div id="exercises-4" class="section level3">
+<h3>Exercises</h3>
+<ol style="list-style-type: decimal">
+<li><p>Brainstorm at least 5 different ways to assess the typical delay characteristics of a group of flights. Consider the following scenarios:</p>
+<ul>
+<li><p>A flight is 15 minutes early 50% of the time, and 15 minutes late 50% of the time.</p></li>
+<li><p>A flight is always 10 minutes late.</p></li>
+<li><p>A flight is 30 minutes early 50% of the time, and 30 minutes late 50% of the time.</p></li>
+<li><p>99% of the time a flight is on time. 1% of the time it’s 2 hours late.</p></li>
+</ul>
+<p>Which is more important: arrival delay or departure delay?</p></li>
+<li><p>Come up with another approach that will give you the same output as <code>not_cancelled %&gt;% count(dest)</code> and <code>not_cancelled %&gt;% count(tailnum, wt = distance)</code> (without using <code>count()</code>).</p></li>
+<li><p>Our definition of cancelled flights (<code>is.na(dep_delay) | is.na(arr_delay)</code> ) is slightly suboptimal. Why? Which is the most important column?</p></li>
+<li><p>Look at the number of cancelled flights per day. Is there a pattern? Is the proportion of cancelled flights related to the average delay?</p></li>
+<li><p>Which carrier has the worst delays? Challenge: can you disentangle the effects of bad airports vs. bad carriers? Why/why not? (Hint: think about <code>flights %&gt;% group_by(carrier, dest) %&gt;% summarise(n())</code>)</p></li>
+<li><p>What does the <code>sort</code> argument to <code>count()</code> do. When might you use it?</p></li>
+</ol>
+</div>
+</div>
+<div id="grouped-mutates-and-filters" class="section level2">
+<h2>Grouped mutates (and filters)</h2>
+<p>Grouping is most useful in conjunction with <code>summarise()</code>, but you can also do convenient operations with <code>mutate()</code> and <code>filter()</code>:</p>
+<ul>
+<li><p>Find the worst members of each group:</p>
+<pre class="r"><code>flights_sml %&gt;% 
+  group_by(year, month, day) %&gt;%
+  filter(rank(desc(arr_delay)) &lt; 10)</code></pre>
+<pre><code>## # A tibble: 3,306 x 7
+## # Groups:   year, month, day [365]
+##     year month   day dep_delay arr_delay distance air_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+##  1  2013     1     1       853       851      184       41
+##  2  2013     1     1       290       338     1134      213
+##  3  2013     1     1       260       263      266       46
+##  4  2013     1     1       157       174      213       60
+##  5  2013     1     1       216       222      708      121
+##  6  2013     1     1       255       250      589      115
+##  7  2013     1     1       285       246     1085      146
+##  8  2013     1     1       192       191      199       44
+##  9  2013     1     1       379       456     1092      222
+## 10  2013     1     2       224       207      550       94
+## # … with 3,296 more rows</code></pre></li>
+<li><p>Find all groups bigger than a threshold:</p>
+<pre class="r"><code>popular_dests &lt;- flights %&gt;% 
+  group_by(dest) %&gt;% 
+  filter(n() &gt; 365)
+popular_dests</code></pre>
+<pre><code>## # A tibble: 332,577 x 19
+## # Groups:   dest [77]
+##     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+##  1  2013     1     1      517            515         2      830            819
+##  2  2013     1     1      533            529         4      850            830
+##  3  2013     1     1      542            540         2      923            850
+##  4  2013     1     1      544            545        -1     1004           1022
+##  5  2013     1     1      554            600        -6      812            837
+##  6  2013     1     1      554            558        -4      740            728
+##  7  2013     1     1      555            600        -5      913            854
+##  8  2013     1     1      557            600        -3      709            723
+##  9  2013     1     1      557            600        -3      838            846
+## 10  2013     1     1      558            600        -2      753            745
+## # … with 332,567 more rows, and 11 more variables: arr_delay &lt;dbl&gt;,
+## #   carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
+## #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre></li>
+<li><p>Standardise to compute per group metrics:</p>
+<pre class="r"><code>popular_dests %&gt;% 
+  filter(arr_delay &gt; 0) %&gt;% 
+  mutate(prop_delay = arr_delay / sum(arr_delay)) %&gt;% 
+  select(year:day, dest, arr_delay, prop_delay)</code></pre>
+<pre><code>## # A tibble: 131,106 x 6
+## # Groups:   dest [77]
+##     year month   day dest  arr_delay prop_delay
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;     &lt;dbl&gt;      &lt;dbl&gt;
+##  1  2013     1     1 IAH          11  0.000111 
+##  2  2013     1     1 IAH          20  0.000201 
+##  3  2013     1     1 MIA          33  0.000235 
+##  4  2013     1     1 ORD          12  0.0000424
+##  5  2013     1     1 FLL          19  0.0000938
+##  6  2013     1     1 ORD           8  0.0000283
+##  7  2013     1     1 LAX           7  0.0000344
+##  8  2013     1     1 DFW          31  0.000282 
+##  9  2013     1     1 ATL          12  0.0000400
+## 10  2013     1     1 DTW          16  0.000116 
+## # … with 131,096 more rows</code></pre></li>
+</ul>
+<p>A grouped filter is a grouped mutate followed by an ungrouped filter. I generally avoid them except for quick and dirty manipulations: otherwise it’s hard to check that you’ve done the manipulation correctly.</p>
+<p>Functions that work most naturally in grouped mutates and filters are known as window functions (vs. the summary functions used for summaries). You can learn more about useful window functions in the corresponding vignette: <code>vignette("window-functions")</code>.</p>
+<div id="exercises-5" class="section level3">
+<h3>Exercises</h3>
+<ol style="list-style-type: decimal">
+<li><p>Refer back to the lists of useful mutate and filtering functions. Describe how each operation changes when you combine it with grouping.</p></li>
+<li><p>Which plane (<code>tailnum</code>) has the worst on-time record?</p></li>
+<li><p>What time of day should you fly if you want to avoid delays as much as possible?</p></li>
+<li><p>For each destination, compute the total minutes of delay. For each flight, compute the proportion of the total delay for its destination.</p></li>
+<li><p>Delays are typically temporally correlated: even once the problem that caused the initial delay has been resolved, later flights are delayed to allow earlier flights to leave. Using <code>lag()</code>, explore how the delay of a flight is related to the delay of the immediately preceding flight.</p></li>
+<li><p>Look at each destination. Can you find flights that are suspiciously fast? (i.e. flights that represent a potential data entry error). Compute the air time of a flight relative to the shortest flight to that destination. Which flights were most delayed in the air?</p></li>
+<li><p>Find all destinations that are flown by at least two carriers. Use that information to rank the carriers.</p></li>
+<li><p>For each plane, count the number of flights before the first delay of greater than 1 hour.</p></li>
+</ol>
+</div>
+</div>
+<div id="datastep" class="section level2">
+<h2>datastep</h2>
+<p>People with experience in SAS® software know that it is sometimes advantageous to process row-by-row. In SAS®, row-by-row processing done with a data step. The data step is one of the most fundamental operations when working in SAS®.</p>
+<p>The <strong>libr</strong> package offers a <code>datastep()</code> function that simulates this style of row-by-row processing. The function includes several of the most basic parameters available to the SAS® datastep: keep, drop, rename, retain, and by.</p>
+<pre class="r"><code>library(sassy) #library(libr)</code></pre>
+<div id="simple-data-step" class="section level3">
+<h3>Simple Data Step</h3>
+<p>The data step itself is passed within the curly braces. You can put any number of conditional statements and assignments inside the curly braces, just like a SAS® data step. Also like a SAS® data step, you do not need to ‘declare’ new variables. Any name not identified as an R function name is assumed to be a new variable, and will be created automatically on the input data.</p>
+<div id="example-1-simple-data-step" class="section level4">
+<h4>Example 1: Simple Data Step</h4>
+<pre class="r"><code># Add some columns to mtcars using data step logic
+df &lt;- datastep(mtcars[1:10, 1:3], {
+
+    if (mpg &gt;= 20) 
+      mpgcat &lt;- &quot;High&quot;
+    else 
+      mpgcat &lt;- &quot;Low&quot;
+      
+    recdt &lt;- as.Date(&quot;1974-06-10&quot;)
+    
+    if (cyl == 8)
+      is8cyl &lt;- TRUE
+
+  })
+  
+# View results  
+df</code></pre>
+<pre><code>##                    mpg cyl  disp recdt mpgcat is8cyl
+## Mazda RX4         21.0   6 160.0  1621   High     NA
+## Mazda RX4 Wag     21.0   6 160.0  1621   High     NA
+## Datsun 710        22.8   4 108.0  1621   High     NA
+## Hornet 4 Drive    21.4   6 258.0  1621   High     NA
+## Hornet Sportabout 18.7   8 360.0  1621    Low   TRUE
+## Valiant           18.1   6 225.0  1621    Low     NA
+## Duster 360        14.3   8 360.0  1621    Low   TRUE
+## Merc 240D         24.4   4 146.7  1621   High     NA
+## Merc 230          22.8   4 140.8  1621   High     NA
+## Merc 280          19.2   6 167.6  1621    Low     NA</code></pre>
+</div>
+</div>
+<div id="keep-drop-and-rename" class="section level3">
+<h3>Keep, Drop, and Rename</h3>
+<p>The data step has parameters to perform basic shaping of the resulting data frame. These parameters are ‘keep’, ‘drop’, and ‘rename’. For example, the above data step could have been performed by sending all columns into the data step, and keeping only the desired columns. Using the <code>keep</code> parameter also allows you to order the resulting columns.</p>
+<div id="example-2-keeping-data-step-variables" class="section level4">
+<h4>Example 2: Keeping Data Step Variables</h4>
+<pre class="r"><code>library(libr)
+
+# Keep and order output columns 
+df &lt;- datastep(mtcars[1:10,], 
+  keep = c(&quot;mpg&quot;, &quot;cyl&quot;, &quot;disp&quot;, &quot;mpgcat&quot;, &quot;recdt&quot;), {
+
+    if (mpg &gt;= 20) 
+      mpgcat &lt;- &quot;High&quot;
+    else 
+      mpgcat &lt;- &quot;Low&quot;
+      
+    recdt &lt;- as.Date(&quot;1974-06-10&quot;)
+    
+    if (cyl == 8)
+      is8cyl &lt;- TRUE
+
+  })
+  
+df</code></pre>
+<pre><code>##                    mpg cyl  disp mpgcat recdt
+## Mazda RX4         21.0   6 160.0   High  1621
+## Mazda RX4 Wag     21.0   6 160.0   High  1621
+## Datsun 710        22.8   4 108.0   High  1621
+## Hornet 4 Drive    21.4   6 258.0   High  1621
+## Hornet Sportabout 18.7   8 360.0    Low  1621
+## Valiant           18.1   6 225.0    Low  1621
+## Duster 360        14.3   8 360.0    Low  1621
+## Merc 240D         24.4   4 146.7   High  1621
+## Merc 230          22.8   4 140.8   High  1621
+## Merc 280          19.2   6 167.6    Low  1621</code></pre>
+</div>
+</div>
+<div id="the-retain-parameter" class="section level3">
+<h3>The Retain Parameter</h3>
+<p>The retain parameter allows you to define variables that will be seeded with the value from the previous step. The retain option is useful for creating cumulative values or for performing conditions based on the value of the previous row.</p>
+<div id="example-3-drop-retain-and-rename-parameters" class="section level4">
+<h4>Example 3: Drop, Retain, and Rename Parameters</h4>
+<pre class="r"><code>library(libr)
+
+df &lt;- datastep(mtcars[1:10, ],
+               drop = c(&quot;disp&quot;, &quot;hp&quot;, &quot;drat&quot;, &quot;qsec&quot;,
+                        &quot;vs&quot;, &quot;am&quot;, &quot;gear&quot;, &quot;carb&quot;),
+               retain = list(cumwt = 0 ),
+               rename = c(mpg = &quot;MPG&quot;, cyl = &quot;Cylinders&quot;, wt = &quot;Wgt&quot;,
+                          cumwt = &quot;Cumulative Wgt&quot;), {
+
+  cumwt &lt;- cumwt + wt
+
+ })
+
+df</code></pre>
+<pre><code>##                    MPG Cylinders   Wgt Cumulative Wgt
+## Mazda RX4         21.0         6 2.620          2.620
+## Mazda RX4 Wag     21.0         6 2.875          5.495
+## Datsun 710        22.8         4 2.320          7.815
+## Hornet 4 Drive    21.4         6 3.215         11.030
+## Hornet Sportabout 18.7         8 3.440         14.470
+## Valiant           18.1         6 3.460         17.930
+## Duster 360        14.3         8 3.570         21.500
+## Merc 240D         24.4         4 3.190         24.690
+## Merc 230          22.8         4 3.150         27.840
+## Merc 280          19.2         6 3.440         31.280</code></pre>
+</div>
+</div>
+<div id="by-group-processing" class="section level3">
+<h3>By Group Processing</h3>
+<p>The <code>datastep()</code> function also has the capabilities of performing by-group processing. A by-group is accomplished using the <code>by</code> parameter, and passing a vector of column names that define the group. Once a by-group is defined, the <code>first.</code> and <code>last.</code> automatic variables become active, which allow you to identify the boundaries between groups. Note that, by default, your data must be sorted properly before sending it into the data step. To turn the sort check off, set the <code>sort_check</code> parameter to FALSE.</p>
+<div id="example-4-by-groups" class="section level4">
+<h4>Example 4: By Groups</h4>
+<pre class="r"><code># Identify start and end of by-groups
+df &lt;- datastep(mtcars[1:10,], 
+  keep = c(&quot;mpg&quot;, &quot;cyl&quot;, &quot;gear&quot;, &quot;grp&quot;), 
+  by = c(&quot;gear&quot;), sort_check = FALSE, {
+
+    if (first. &amp; last.)
+      grp &lt;- &quot;Start - End&quot;
+    else if (first.)
+      grp &lt;- &quot;Start&quot;
+    else if (last.)
+      grp &lt;- &quot;End&quot;
+    else 
+      grp &lt;- &quot;-&quot;
+
+  })
+  
+df</code></pre>
+<pre><code>##                    mpg cyl gear   grp
+## Mazda RX4         21.0   6    4 Start
+## Mazda RX4 Wag     21.0   6    4     -
+## Datsun 710        22.8   4    4   End
+## Hornet 4 Drive    21.4   6    3 Start
+## Hornet Sportabout 18.7   8    3     -
+## Valiant           18.1   6    3     -
+## Duster 360        14.3   8    3   End
+## Merc 240D         24.4   4    4 Start
+## Merc 230          22.8   4    4     -
+## Merc 280          19.2   6    4   End</code></pre>
+</div>
+</div>
+<div id="using-summary-functions" class="section level3">
+<h3>Using Summary Functions</h3>
+<p>There may be times when you want to combine row-by-row conditional processing with column-by-column vector operations. For example, let’s say you want to calculate a mean and then perform conditional processing on that mean. This situation can be handled using the <code>calculate</code> parameter on the <code>datastep()</code> function. The function will execute the <code>calculate</code> block first, add any assigned variables to the data frame, and then execute the data step. Below is an example of such a scenario:</p>
+<div id="example-5-calculate-block" class="section level4">
+<h4>Example 5: Calculate Block</h4>
+<pre class="r"><code># Categorize mpg as above or below the mean
+df &lt;- datastep(mtcars, 
+  keep = c(&quot;mpg&quot;, &quot;cyl&quot;, &quot;mean_mpg&quot;, &quot;mpgcat&quot;), 
+  calculate = { mean_mpg = mean(mpg) },
+  {
+
+    if (mpg &gt;= mean_mpg)
+      mpgcat &lt;- &quot;High&quot;
+    else 
+      mpgcat &lt;- &quot;Low&quot;
+
+  })
+  
+df[1:10,]</code></pre>
+<pre><code>##                    mpg cyl mean_mpg mpgcat
+## Mazda RX4         21.0   6 20.09062   High
+## Mazda RX4 Wag     21.0   6 20.09062   High
+## Datsun 710        22.8   4 20.09062   High
+## Hornet 4 Drive    21.4   6 20.09062   High
+## Hornet Sportabout 18.7   8 20.09062    Low
+## Valiant           18.1   6 20.09062    Low
+## Duster 360        14.3   8 20.09062    Low
+## Merc 240D         24.4   4 20.09062   High
+## Merc 230          22.8   4 20.09062   High
+## Merc 280          19.2   6 20.09062    Low</code></pre>
+</div>
+</div>
+<div id="data-steps-with-dplyr" class="section level3">
+<h3>Data Steps with <code>dplyr</code></h3>
+<p>Note that the <code>datastep()</code> function is pipe-friendly, and can be combined with <strong>dplyr</strong> functions in a data pipeline. Also note that the <code>datastep()</code> function will recognize any group attributes added by the <code>group_by()</code> function. Therefore, within a <strong>dplyr</strong> pipeline, it is not necessary to use any <code>datastep</code> parameters. The following example recreates the above data frame from Example 5, but with a <strong>dplyr</strong> pipeline.</p>
+<div id="example-6-data-pipeline" class="section level4">
+<h4>Example 6: Data Pipeline</h4>
+<pre class="r"><code># Add datastep to dplyr pipeline
+df &lt;- mtcars %&gt;% 
+  select(mpg, cyl, gear) %&gt;% 
+  mutate(mean_mpg = mean(mpg)) %&gt;% 
+  datastep({
+
+    if (mpg &gt;= mean_mpg)
+      mpgcat &lt;- &quot;High&quot;
+    else 
+      mpgcat &lt;- &quot;Low&quot;
+
+  }) %&gt;% 
+  filter(row_number() &lt;= 10)
+  
+df</code></pre>
+<pre><code>##                    mpg cyl gear mean_mpg mpgcat
+## Mazda RX4         21.0   6    4 20.09062   High
+## Mazda RX4 Wag     21.0   6    4 20.09062   High
+## Datsun 710        22.8   4    4 20.09062   High
+## Hornet 4 Drive    21.4   6    3 20.09062   High
+## Hornet Sportabout 18.7   8    3 20.09062    Low
+## Valiant           18.1   6    3 20.09062    Low
+## Duster 360        14.3   8    3 20.09062    Low
+## Merc 240D         24.4   4    4 20.09062   High
+## Merc 230          22.8   4    4 20.09062   High
+## Merc 280          19.2   6    4 20.09062    Low</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div id="tidy-data" class="section level1">
+<h1>Tidy data</h1>
+<div id="introduction-1" class="section level2">
+<h2>Introduction</h2>
+<blockquote>
+<p>“Happy families are all alike; every unhappy family is unhappy in its own way.” –– Leo Tolstoy</p>
+</blockquote>
+<blockquote>
+<p>“Tidy datasets are all alike, but every messy dataset is messy in its own way.” –– Hadley Wickham</p>
+</blockquote>
+<p>In this chapter, you will learn a consistent way to organise your data in R, an organisation called <strong>tidy data</strong>. Getting your data into this format requires some upfront work, but that work pays off in the long term. Once you have tidy data and the tidy tools provided by packages in the tidyverse, you will spend much less time munging data from one representation to another, allowing you to spend more time on the analytic questions at hand.</p>
+<p>This chapter will give you a practical introduction to tidy data and the accompanying tools in the <strong>tidyr</strong> package. If you’d like to learn more about the underlying theory, you might enjoy the <em>Tidy Data</em> paper published in the Journal of Statistical Software, <a href="http://www.jstatsoft.org/v59/i10/paper" class="uri">http://www.jstatsoft.org/v59/i10/paper</a>.</p>
+<div id="prerequisites-1" class="section level3">
+<h3>Prerequisites</h3>
+<p>In this chapter we’ll focus on tidyr, a package that provides a bunch of tools to help tidy up your messy datasets. tidyr is a member of the core tidyverse.</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+</div>
+</div>
+<div id="tidy-data-1" class="section level2">
+<h2>Tidy data</h2>
+<p>You can represent the same underlying data in multiple ways. The example below shows the same data organised in four different ways. Each dataset shows the same values of four variables <em>country</em>, <em>year</em>, <em>population</em>, and <em>cases</em>, but each dataset organises the values in a different way.</p>
+<pre class="r"><code>table1</code></pre>
+<pre><code>## # A tibble: 6 x 4
+##   country      year  cases population
+##   &lt;chr&gt;       &lt;int&gt;  &lt;int&gt;      &lt;int&gt;
+## 1 Afghanistan  1999    745   19987071
+## 2 Afghanistan  2000   2666   20595360
+## 3 Brazil       1999  37737  172006362
+## 4 Brazil       2000  80488  174504898
+## 5 China        1999 212258 1272915272
+## 6 China        2000 213766 1280428583</code></pre>
+<pre class="r"><code>table2</code></pre>
+<pre><code>## # A tibble: 12 x 4
+##    country      year type            count
+##    &lt;chr&gt;       &lt;int&gt; &lt;chr&gt;           &lt;int&gt;
+##  1 Afghanistan  1999 cases             745
+##  2 Afghanistan  1999 population   19987071
+##  3 Afghanistan  2000 cases            2666
+##  4 Afghanistan  2000 population   20595360
+##  5 Brazil       1999 cases           37737
+##  6 Brazil       1999 population  172006362
+##  7 Brazil       2000 cases           80488
+##  8 Brazil       2000 population  174504898
+##  9 China        1999 cases          212258
+## 10 China        1999 population 1272915272
+## # … with 2 more rows</code></pre>
+<pre class="r"><code>table3</code></pre>
+<pre><code>## # A tibble: 6 x 3
+##   country      year rate             
+## * &lt;chr&gt;       &lt;int&gt; &lt;chr&gt;            
+## 1 Afghanistan  1999 745/19987071     
+## 2 Afghanistan  2000 2666/20595360    
+## 3 Brazil       1999 37737/172006362  
+## 4 Brazil       2000 80488/174504898  
+## 5 China        1999 212258/1272915272
+## 6 China        2000 213766/1280428583</code></pre>
+<pre class="r"><code># Spread across two tibbles
+table4a  # cases</code></pre>
+<pre><code>## # A tibble: 3 x 3
+##   country     `1999` `2000`
+## * &lt;chr&gt;        &lt;int&gt;  &lt;int&gt;
+## 1 Afghanistan    745   2666
+## 2 Brazil       37737  80488
+## 3 China       212258 213766</code></pre>
+<pre class="r"><code>table4b  # population</code></pre>
+<pre><code>## # A tibble: 3 x 3
+##   country         `1999`     `2000`
+## * &lt;chr&gt;            &lt;int&gt;      &lt;int&gt;
+## 1 Afghanistan   19987071   20595360
+## 2 Brazil       172006362  174504898
+## 3 China       1272915272 1280428583</code></pre>
+<p>These are all representations of the same underlying data, but they are not equally easy to use. One dataset, the tidy dataset, will be much easier to work with inside the tidyverse.</p>
+<p>There are three interrelated rules which make a dataset tidy:</p>
+<ol style="list-style-type: decimal">
+<li>Each variable must have its own column.</li>
+<li>Each observation must have its own row.</li>
+<li>Each value must have its own cell.</li>
+</ol>
+<p>Figure shows the rules visually.</p>
+<div class="figure">
+<img src="images/tidy-1.png" alt="Following three rules makes a dataset tidy: variables are in columns, observations are in rows, and values are in cells." width="100%" />
+<p class="caption">
+Following three rules makes a dataset tidy: variables are in columns, observations are in rows, and values are in cells.
+</p>
+</div>
+<p>These three rules are interrelated because it’s impossible to only satisfy two of the three. That interrelationship leads to an even simpler set of practical instructions:</p>
+<ol style="list-style-type: decimal">
+<li>Put each dataset in a tibble.</li>
+<li>Put each variable in a column.</li>
+</ol>
+<p>In this example, only <code>table1</code> is tidy. It’s the only representation where each column is a variable.</p>
+<p>Why ensure that your data is tidy? There are two main advantages:</p>
+<ol style="list-style-type: decimal">
+<li><p>There’s a general advantage to picking one consistent way of storing data. If you have a consistent data structure, it’s easier to learn the tools that work with it because they have an underlying uniformity.</p></li>
+<li><p>There’s a specific advantage to placing variables in columns because it allows R’s vectorised nature to shine. As you learned in mutate and summary functions, most built-in R functions work with vectors of values. That makes transforming tidy data feel particularly natural.</p></li>
+</ol>
+<p>dplyr, ggplot2, and all the other packages in the tidyverse are designed to work with tidy data. Here are a couple of small examples showing how you might work with <code>table1</code>.</p>
+<pre class="r"><code># Compute rate per 10,000
+table1 %&gt;% 
+  mutate(rate = cases / population * 10000)</code></pre>
+<pre><code>## # A tibble: 6 x 5
+##   country      year  cases population  rate
+##   &lt;chr&gt;       &lt;int&gt;  &lt;int&gt;      &lt;int&gt; &lt;dbl&gt;
+## 1 Afghanistan  1999    745   19987071 0.373
+## 2 Afghanistan  2000   2666   20595360 1.29 
+## 3 Brazil       1999  37737  172006362 2.19 
+## 4 Brazil       2000  80488  174504898 4.61 
+## 5 China        1999 212258 1272915272 1.67 
+## 6 China        2000 213766 1280428583 1.67</code></pre>
+<pre class="r"><code># Compute cases per year
+table1 %&gt;% 
+  count(year, wt = cases)</code></pre>
+<pre><code>## # A tibble: 2 x 2
+##    year      n
+##   &lt;int&gt;  &lt;int&gt;
+## 1  1999 250740
+## 2  2000 296920</code></pre>
+<pre class="r"><code># Visualise changes over time
+library(ggplot2)
+ggplot(table1, aes(year, cases)) + 
+  geom_line(aes(group = country), colour = &quot;grey50&quot;) + 
+  geom_point(aes(colour = country))</code></pre>
+<p><img src="tidyverse-base_files/figure-html/unnamed-chunk-69-1.png" width="50%" /></p>
+<div id="exercises-6" class="section level3">
+<h3>Exercises</h3>
+<ol style="list-style-type: decimal">
+<li><p>Using prose, describe how the variables and observations are organised in each of the sample tables.</p></li>
+<li><p>Compute the <code>rate</code> for <code>table2</code>, and <code>table4a</code> + <code>table4b</code>. You will need to perform four operations:</p>
+<ol style="list-style-type: decimal">
+<li>Extract the number of TB cases per country per year.</li>
+<li>Extract the matching population per country per year.</li>
+<li>Divide cases by population, and multiply by 10000.</li>
+<li>Store back in the appropriate place.</li>
+</ol>
+<p>Which representation is easiest to work with? Which is hardest? Why?</p></li>
+<li><p>Recreate the plot showing change in cases over time using <code>table2</code> instead of <code>table1</code>. What do you need to do first?</p></li>
+</ol>
+</div>
+</div>
+<div id="pivoting" class="section level2">
+<h2>Pivoting</h2>
+<p>The principles of tidy data seem so obvious that you might wonder if you’ll ever encounter a dataset that isn’t tidy. Unfortunately, however, most data that you will encounter will be untidy. There are two main reasons:</p>
+<ol style="list-style-type: decimal">
+<li><p>Most people aren’t familiar with the principles of tidy data, and it’s hard to derive them yourself unless you spend a <em>lot</em> of time working with data.</p></li>
+<li><p>Data is often organised to facilitate some use other than analysis. For example, data is often organised to make entry as easy as possible.</p></li>
+</ol>
+<p>This means for most real analyses, you’ll need to do some tidying. The first step is always to figure out what the variables and observations are. Sometimes this is easy; other times you’ll need to consult with the people who originally generated the data. The second step is to resolve one of two common problems:</p>
+<ol style="list-style-type: decimal">
+<li><p>One variable might be spread across multiple columns.</p></li>
+<li><p>One observation might be scattered across multiple rows.</p></li>
+</ol>
+<p>Typically a dataset will only suffer from one of these problems; it’ll only suffer from both if you’re really unlucky! To fix these problems, you’ll need the two most important functions in tidyr: <code>pivot_longer()</code> and <code>pivot_wider()</code>.</p>
+<div id="longer" class="section level3">
+<h3>Longer</h3>
+<p>A common problem is a dataset where some of the column names are not names of variables, but <em>values</em> of a variable. Take <code>table4a</code>: the column names <code>1999</code> and <code>2000</code> represent values of the <code>year</code> variable, the values in the <code>1999</code> and <code>2000</code> columns represent values of the <code>cases</code> variable, and each row represents two observations, not one.</p>
+<pre class="r"><code>table4a</code></pre>
+<pre><code>## # A tibble: 3 x 3
+##   country     `1999` `2000`
+## * &lt;chr&gt;        &lt;int&gt;  &lt;int&gt;
+## 1 Afghanistan    745   2666
+## 2 Brazil       37737  80488
+## 3 China       212258 213766</code></pre>
+<p>To tidy a dataset like this, we need to <strong>pivot</strong> the offending columns into a new pair of variables. To describe that operation we need three parameters:</p>
+<ul>
+<li><p>The set of columns whose names are values, not variables. In this example, those are the columns <code>1999</code> and <code>2000</code>.</p></li>
+<li><p>The name of the variable to move the column names to. Here it is <code>year</code>.</p></li>
+<li><p>The name of the variable to move the column values to. Here it’s <code>cases</code>.</p></li>
+</ul>
+<p>Together those parameters generate the call to <code>pivot_longer()</code>:</p>
+<pre class="r"><code>table4a %&gt;% 
+  pivot_longer(c(`1999`, `2000`), names_to = &quot;year&quot;, values_to = &quot;cases&quot;)</code></pre>
+<pre><code>## # A tibble: 6 x 3
+##   country     year   cases
+##   &lt;chr&gt;       &lt;chr&gt;  &lt;int&gt;
+## 1 Afghanistan 1999     745
+## 2 Afghanistan 2000    2666
+## 3 Brazil      1999   37737
+## 4 Brazil      2000   80488
+## 5 China       1999  212258
+## 6 China       2000  213766</code></pre>
+<p>The columns to pivot are specified with <code>dplyr::select()</code> style notation. Here there are only two columns, so we list them individually. Note that “1999” and “2000” are non-syntactic names (because they don’t start with a letter) so we have to surround them in backticks. To refresh your memory of the other ways to select columns, see select.</p>
+<p><code>year</code> and <code>cases</code> do not exist in <code>table4a</code> so we put their names in quotes.</p>
+<div class="figure">
+<img src="images/tidy-9.png" alt="Pivoting `table4` into a longer, tidy form." width="100%" />
+<p class="caption">
+Pivoting <code>table4</code> into a longer, tidy form.
+</p>
+</div>
+<p>In the final result, the pivoted columns are dropped, and we get new <code>year</code> and <code>cases</code> columns. Otherwise, the relationships between the original variables are preserved. Visually, this is shown in Figure.</p>
+<p><code>pivot_longer()</code> makes datasets longer by increasing the number of rows and decreasing the number of columns. I don’t believe it makes sense to describe a dataset as being in “long form”. Length is a relative term, and you can only say (e.g.) that dataset A is longer than dataset B.</p>
+<p>We can use <code>pivot_longer()</code> to tidy <code>table4b</code> in a similar fashion. The only difference is the variable stored in the cell values:</p>
+<pre class="r"><code>table4b %&gt;% 
+  pivot_longer(c(`1999`, `2000`), names_to = &quot;year&quot;, values_to = &quot;population&quot;)</code></pre>
+<pre><code>## # A tibble: 6 x 3
+##   country     year  population
+##   &lt;chr&gt;       &lt;chr&gt;      &lt;int&gt;
+## 1 Afghanistan 1999    19987071
+## 2 Afghanistan 2000    20595360
+## 3 Brazil      1999   172006362
+## 4 Brazil      2000   174504898
+## 5 China       1999  1272915272
+## 6 China       2000  1280428583</code></pre>
+<p>To combine the tidied versions of <code>table4a</code> and <code>table4b</code> into a single tibble, we need to use <code>dplyr::left_join()</code>, which you’ll learn about in <a href="#relational-data">relational data</a>.</p>
+<pre class="r"><code>tidy4a &lt;- table4a %&gt;% 
+  pivot_longer(c(`1999`, `2000`), names_to = &quot;year&quot;, values_to = &quot;cases&quot;)
+tidy4b &lt;- table4b %&gt;% 
+  pivot_longer(c(`1999`, `2000`), names_to = &quot;year&quot;, values_to = &quot;population&quot;)
+left_join(tidy4a, tidy4b)</code></pre>
+<pre><code>## Joining, by = c(&quot;country&quot;, &quot;year&quot;)</code></pre>
+<pre><code>## # A tibble: 6 x 4
+##   country     year   cases population
+##   &lt;chr&gt;       &lt;chr&gt;  &lt;int&gt;      &lt;int&gt;
+## 1 Afghanistan 1999     745   19987071
+## 2 Afghanistan 2000    2666   20595360
+## 3 Brazil      1999   37737  172006362
+## 4 Brazil      2000   80488  174504898
+## 5 China       1999  212258 1272915272
+## 6 China       2000  213766 1280428583</code></pre>
+</div>
+<div id="wider" class="section level3">
+<h3>Wider</h3>
+<p><code>pivot_wider()</code> is the opposite of <code>pivot_longer()</code>. You use it when an observation is scattered across multiple rows. For example, take <code>table2</code>: an observation is a country in a year, but each observation is spread across two rows.</p>
+<pre class="r"><code>table2</code></pre>
+<pre><code>## # A tibble: 12 x 4
+##    country      year type            count
+##    &lt;chr&gt;       &lt;int&gt; &lt;chr&gt;           &lt;int&gt;
+##  1 Afghanistan  1999 cases             745
+##  2 Afghanistan  1999 population   19987071
+##  3 Afghanistan  2000 cases            2666
+##  4 Afghanistan  2000 population   20595360
+##  5 Brazil       1999 cases           37737
+##  6 Brazil       1999 population  172006362
+##  7 Brazil       2000 cases           80488
+##  8 Brazil       2000 population  174504898
+##  9 China        1999 cases          212258
+## 10 China        1999 population 1272915272
+## # … with 2 more rows</code></pre>
+<p>To tidy this up, we first analyse the representation in similar way to <code>pivot_longer()</code>. This time, however, we only need two parameters:</p>
+<ul>
+<li><p>The column to take variable names from. Here, it’s <code>type</code>.</p></li>
+<li><p>The column to take values from. Here it’s <code>count</code>.</p></li>
+</ul>
+<p>Once we’ve figured that out, we can use <code>pivot_wider()</code>, as shown programmatically below, and visually in Figure.</p>
+<pre class="r"><code>table2 %&gt;%
+    pivot_wider(names_from = type, values_from = count)</code></pre>
+<pre><code>## # A tibble: 6 x 4
+##   country      year  cases population
+##   &lt;chr&gt;       &lt;int&gt;  &lt;int&gt;      &lt;int&gt;
+## 1 Afghanistan  1999    745   19987071
+## 2 Afghanistan  2000   2666   20595360
+## 3 Brazil       1999  37737  172006362
+## 4 Brazil       2000  80488  174504898
+## 5 China        1999 212258 1272915272
+## 6 China        2000 213766 1280428583</code></pre>
+<div class="figure">
+<img src="images/tidy-8.png" alt="Pivoting `table2` into a &quot;wider&quot;, tidy form." width="100%" />
+<p class="caption">
+Pivoting <code>table2</code> into a “wider”, tidy form.
+</p>
+</div>
+<p>As you might have guessed from their names, <code>pivot_wider()</code> and <code>pivot_longer()</code> are complements. <code>pivot_longer()</code> makes wide tables narrower and longer; <code>pivot_wider()</code> makes long tables shorter and wider.</p>
+</div>
+<div id="exercises-7" class="section level3">
+<h3>Exercises</h3>
+<ol style="list-style-type: decimal">
+<li><p>Why are <code>pivot_longer()</code> and <code>pivot_wider()</code> not perfectly symmetrical?<br />
+Carefully consider the following example:</p>
+<pre class="r"><code>stocks &lt;- tibble(
+  year   = c(2015, 2015, 2016, 2016),
+  half  = c(   1,    2,     1,    2),
+  return = c(1.88, 0.59, 0.92, 0.17)
+)
+stocks %&gt;% 
+  pivot_wider(names_from = year, values_from = return) %&gt;% 
+  pivot_longer(`2015`:`2016`, names_to = &quot;year&quot;, values_to = &quot;return&quot;)</code></pre>
+<p>(Hint: look at the variable types and think about column <em>names</em>.)</p>
+<p><code>pivot_longer()</code> has a <code>names_ptype</code> argument, e.g.  <code>names_ptype = list(year = double())</code>. What does it do?</p></li>
+<li><p>Why does this code fail?</p>
+<pre class="r"><code>table4a %&gt;% 
+  pivot_longer(c(1999, 2000), names_to = &quot;year&quot;, values_to = &quot;cases&quot;)</code></pre>
+<pre><code>## Error: Can&#39;t subset columns that don&#39;t exist.
+## x Locations 1999 and 2000 don&#39;t exist.
+## ℹ There are only 3 columns.</code></pre></li>
+<li><p>What would happen if you widen this table? Why? How could you add a new column to uniquely identify each value?</p>
+<pre class="r"><code>people &lt;- tribble(
+  ~name,             ~names,  ~values,
+  #-----------------|--------|------
+  &quot;Phillip Woods&quot;,   &quot;age&quot;,       45,
+  &quot;Phillip Woods&quot;,   &quot;height&quot;,   186,
+  &quot;Phillip Woods&quot;,   &quot;age&quot;,       50,
+  &quot;Jessica Cordero&quot;, &quot;age&quot;,       37,
+  &quot;Jessica Cordero&quot;, &quot;height&quot;,   156
+)</code></pre></li>
+<li><p>Tidy the simple tibble below. Do you need to make it wider or longer? What are the variables?</p>
+<pre class="r"><code>preg &lt;- tribble(
+  ~pregnant, ~male, ~female,
+  &quot;yes&quot;,     NA,    10,
+  &quot;no&quot;,      20,    12
+)</code></pre></li>
+</ol>
+</div>
+</div>
+<div id="separating-and-uniting" class="section level2">
+<h2>Separating and uniting</h2>
+<p>So far you’ve learned how to tidy <code>table2</code> and <code>table4</code>, but not <code>table3</code>. <code>table3</code> has a different problem: we have one column (<code>rate</code>) that contains two variables (<code>cases</code> and <code>population</code>). To fix this problem, we’ll need the <code>separate()</code> function. You’ll also learn about the complement of <code>separate()</code>: <code>unite()</code>, which you use if a single variable is spread across multiple columns.</p>
+<div id="separate" class="section level3">
+<h3>Separate</h3>
+<p><code>separate()</code> pulls apart one column into multiple columns, by splitting wherever a separator character appears. Take <code>table3</code>:</p>
+<pre class="r"><code>table3</code></pre>
+<pre><code>## # A tibble: 6 x 3
+##   country      year rate             
+## * &lt;chr&gt;       &lt;int&gt; &lt;chr&gt;            
+## 1 Afghanistan  1999 745/19987071     
+## 2 Afghanistan  2000 2666/20595360    
+## 3 Brazil       1999 37737/172006362  
+## 4 Brazil       2000 80488/174504898  
+## 5 China        1999 212258/1272915272
+## 6 China        2000 213766/1280428583</code></pre>
+<p>The <code>rate</code> column contains both <code>cases</code> and <code>population</code> variables, and we need to split it into two variables. <code>separate()</code> takes the name of the column to separate, and the names of the columns to separate into, as shown in Figure and the code below.</p>
+<pre class="r"><code>table3 %&gt;% 
+  separate(rate, into = c(&quot;cases&quot;, &quot;population&quot;))</code></pre>
+<pre><code>## # A tibble: 6 x 4
+##   country      year cases  population
+##   &lt;chr&gt;       &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;     
+## 1 Afghanistan  1999 745    19987071  
+## 2 Afghanistan  2000 2666   20595360  
+## 3 Brazil       1999 37737  172006362 
+## 4 Brazil       2000 80488  174504898 
+## 5 China        1999 212258 1272915272
+## 6 China        2000 213766 1280428583</code></pre>
+<div class="figure">
+<img src="images/tidy-17.png" alt="Separating `table3` makes it tidy" width="75%" />
+<p class="caption">
+Separating <code>table3</code> makes it tidy
+</p>
+</div>
+<p>By default, <code>separate()</code> will split values wherever it sees a non-alphanumeric character (i.e. a character that isn’t a number or letter). For example, in the code above, <code>separate()</code> split the values of <code>rate</code> at the forward slash characters. If you wish to use a specific character to separate a column, you can pass the character to the <code>sep</code> argument of <code>separate()</code>. For example, we could rewrite the code above as:</p>
+<pre class="r"><code>table3 %&gt;% 
+  separate(rate, into = c(&quot;cases&quot;, &quot;population&quot;), sep = &quot;/&quot;)</code></pre>
+<p>(Formally, <code>sep</code> is a regular expression, which you’ll learn more about in [strings].)</p>
+<p>Look carefully at the column types: you’ll notice that <code>cases</code> and <code>population</code> are character columns. This is the default behaviour in <code>separate()</code>: it leaves the type of the column as is. Here, however, it’s not very useful as those really are numbers. We can ask <code>separate()</code> to try and convert to better types using <code>convert = TRUE</code>:</p>
+<pre class="r"><code>table3 %&gt;% 
+  separate(rate, into = c(&quot;cases&quot;, &quot;population&quot;), convert = TRUE)</code></pre>
+<pre><code>## # A tibble: 6 x 4
+##   country      year  cases population
+##   &lt;chr&gt;       &lt;int&gt;  &lt;int&gt;      &lt;int&gt;
+## 1 Afghanistan  1999    745   19987071
+## 2 Afghanistan  2000   2666   20595360
+## 3 Brazil       1999  37737  172006362
+## 4 Brazil       2000  80488  174504898
+## 5 China        1999 212258 1272915272
+## 6 China        2000 213766 1280428583</code></pre>
+<p>You can also pass a vector of integers to <code>sep</code>. <code>separate()</code> will interpret the integers as positions to split at. Positive values start at 1 on the far-left of the strings; negative value start at -1 on the far-right of the strings. When using integers to separate strings, the length of <code>sep</code> should be one less than the number of names in <code>into</code>.</p>
+<p>You can use this arrangement to separate the last two digits of each year. This make this data less tidy, but is useful in other cases, as you’ll see in a little bit.</p>
+<pre class="r"><code>table3 %&gt;% 
+  separate(year, into = c(&quot;century&quot;, &quot;year&quot;), sep = 2)</code></pre>
+<pre><code>## # A tibble: 6 x 4
+##   country     century year  rate             
+##   &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;            
+## 1 Afghanistan 19      99    745/19987071     
+## 2 Afghanistan 20      00    2666/20595360    
+## 3 Brazil      19      99    37737/172006362  
+## 4 Brazil      20      00    80488/174504898  
+## 5 China       19      99    212258/1272915272
+## 6 China       20      00    213766/1280428583</code></pre>
+</div>
+<div id="unite" class="section level3">
+<h3>Unite</h3>
+<p><code>unite()</code> is the inverse of <code>separate()</code>: it combines multiple columns into a single column. You’ll need it much less frequently than <code>separate()</code>, but it’s still a useful tool to have in your back pocket.</p>
+<div class="figure">
+<img src="images/tidy-18.png" alt="Uniting `table5` makes it tidy" width="75%" />
+<p class="caption">
+Uniting <code>table5</code> makes it tidy
+</p>
+</div>
+<p>We can use <code>unite()</code> to rejoin the <em>century</em> and <em>year</em> columns that we created in the last example. That data is saved as <code>tidyr::table5</code>. <code>unite()</code> takes a data frame, the name of the new variable to create, and a set of columns to combine, again specified in <code>dplyr::select()</code> style:</p>
+<pre class="r"><code>table5 %&gt;% 
+  unite(new, century, year)</code></pre>
+<pre><code>## # A tibble: 6 x 3
+##   country     new   rate             
+##   &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;            
+## 1 Afghanistan 19_99 745/19987071     
+## 2 Afghanistan 20_00 2666/20595360    
+## 3 Brazil      19_99 37737/172006362  
+## 4 Brazil      20_00 80488/174504898  
+## 5 China       19_99 212258/1272915272
+## 6 China       20_00 213766/1280428583</code></pre>
+<p>In this case we also need to use the <code>sep</code> argument. The default will place an underscore (<code>_</code>) between the values from different columns. Here we don’t want any separator so we use <code>""</code>:</p>
+<pre class="r"><code>table5 %&gt;% 
+  unite(new, century, year, sep = &quot;&quot;)</code></pre>
+<pre><code>## # A tibble: 6 x 3
+##   country     new   rate             
+##   &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;            
+## 1 Afghanistan 1999  745/19987071     
+## 2 Afghanistan 2000  2666/20595360    
+## 3 Brazil      1999  37737/172006362  
+## 4 Brazil      2000  80488/174504898  
+## 5 China       1999  212258/1272915272
+## 6 China       2000  213766/1280428583</code></pre>
+</div>
+<div id="exercises-8" class="section level3">
+<h3>Exercises</h3>
+<ol style="list-style-type: decimal">
+<li><p>What do the <code>extra</code> and <code>fill</code> arguments do in <code>separate()</code>? Experiment with the various options for the following two toy datasets.</p>
+<pre class="r"><code>tibble(x = c(&quot;a,b,c&quot;, &quot;d,e,f,g&quot;, &quot;h,i,j&quot;)) %&gt;% 
+  separate(x, c(&quot;one&quot;, &quot;two&quot;, &quot;three&quot;))
+
+tibble(x = c(&quot;a,b,c&quot;, &quot;d,e&quot;, &quot;f,g,i&quot;)) %&gt;% 
+  separate(x, c(&quot;one&quot;, &quot;two&quot;, &quot;three&quot;))</code></pre></li>
+<li><p>Both <code>unite()</code> and <code>separate()</code> have a <code>remove</code> argument. What does it do? Why would you set it to <code>FALSE</code>?</p></li>
+<li><p>Compare and contrast <code>separate()</code> and <code>extract()</code>. Why are there three variations of separation (by position, by separator, and with groups), but only one unite?</p></li>
+</ol>
+</div>
+</div>
+<div id="missing-values-2" class="section level2">
+<h2>Missing values</h2>
+<p>Changing the representation of a dataset brings up an important subtlety of missing values. Surprisingly, a value can be missing in one of two possible ways:</p>
+<ul>
+<li><strong>Explicitly</strong>, i.e. flagged with <code>NA</code>.</li>
+<li><strong>Implicitly</strong>, i.e. simply not present in the data.</li>
+</ul>
+<p>Let’s illustrate this idea with a very simple data set:</p>
+<pre class="r"><code>stocks &lt;- tibble(
+  year   = c(2015, 2015, 2015, 2015, 2016, 2016, 2016),
+  qtr    = c(   1,    2,    3,    4,    2,    3,    4),
+  return = c(1.88, 0.59, 0.35,   NA, 0.92, 0.17, 2.66)
+)</code></pre>
+<p>There are two missing values in this dataset:</p>
+<ul>
+<li><p>The return for the fourth quarter of 2015 is explicitly missing, because the cell where its value should be instead contains <code>NA</code>.</p></li>
+<li><p>The return for the first quarter of 2016 is implicitly missing, because it simply does not appear in the dataset.</p></li>
+</ul>
+<p>One way to think about the difference is with this Zen-like koan: An explicit missing value is the presence of an absence; an implicit missing value is the absence of a presence.</p>
+<p>The way that a dataset is represented can make implicit values explicit. For example, we can make the implicit missing value explicit by putting years in the columns:</p>
+<pre class="r"><code>stocks %&gt;% 
+  pivot_wider(names_from = year, values_from = return)</code></pre>
+<pre><code>## # A tibble: 4 x 3
+##     qtr `2015` `2016`
+##   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+## 1     1   1.88  NA   
+## 2     2   0.59   0.92
+## 3     3   0.35   0.17
+## 4     4  NA      2.66</code></pre>
+<p>Because these explicit missing values may not be important in other representations of the data, you can set <code>values_drop_na = TRUE</code> in <code>pivot_longer()</code> to turn explicit missing values implicit:</p>
+<pre class="r"><code>stocks %&gt;% 
+  pivot_wider(names_from = year, values_from = return) %&gt;% 
+  pivot_longer(
+    cols = c(`2015`, `2016`), 
+    names_to = &quot;year&quot;, 
+    values_to = &quot;return&quot;, 
+    values_drop_na = TRUE
+  )</code></pre>
+<pre><code>## # A tibble: 6 x 3
+##     qtr year  return
+##   &lt;dbl&gt; &lt;chr&gt;  &lt;dbl&gt;
+## 1     1 2015    1.88
+## 2     2 2015    0.59
+## 3     2 2016    0.92
+## 4     3 2015    0.35
+## 5     3 2016    0.17
+## 6     4 2016    2.66</code></pre>
+<p>Another important tool for making missing values explicit in tidy data is <code>complete()</code>:</p>
+<pre class="r"><code>stocks %&gt;% 
+  complete(year, qtr)</code></pre>
+<pre><code>## # A tibble: 8 x 3
+##    year   qtr return
+##   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+## 1  2015     1   1.88
+## 2  2015     2   0.59
+## 3  2015     3   0.35
+## 4  2015     4  NA   
+## 5  2016     1  NA   
+## 6  2016     2   0.92
+## 7  2016     3   0.17
+## 8  2016     4   2.66</code></pre>
+<p><code>complete()</code> takes a set of columns, and finds all unique combinations. It then ensures the original dataset contains all those values, filling in explicit <code>NA</code>s where necessary.</p>
+<p>There’s one other important tool that you should know for working with missing values. Sometimes when a data source has primarily been used for data entry, missing values indicate that the previous value should be carried forward:</p>
+<pre class="r"><code>treatment &lt;- tribble(
+  ~ person,           ~ treatment, ~response,
+  &quot;Derrick Whitmore&quot;, 1,           7,
+  NA,                 2,           10,
+  NA,                 3,           9,
+  &quot;Katherine Burke&quot;,  1,           4
+)</code></pre>
+<p>You can fill in these missing values with <code>fill()</code>. It takes a set of columns where you want missing values to be replaced by the most recent non-missing value (sometimes called last observation carried forward).</p>
+<pre class="r"><code>treatment %&gt;% 
+  fill(person)</code></pre>
+<pre><code>## # A tibble: 4 x 3
+##   person           treatment response
+##   &lt;chr&gt;                &lt;dbl&gt;    &lt;dbl&gt;
+## 1 Derrick Whitmore         1        7
+## 2 Derrick Whitmore         2       10
+## 3 Derrick Whitmore         3        9
+## 4 Katherine Burke          1        4</code></pre>
+<div id="exercises-9" class="section level3">
+<h3>Exercises</h3>
+<ol style="list-style-type: decimal">
+<li><p>Compare and contrast the <code>fill</code> arguments to <code>pivot_wider()</code> and <code>complete()</code>.</p></li>
+<li><p>What does the direction argument to <code>fill()</code> do?</p></li>
+</ol>
+</div>
+</div>
+</div>
+<div id="relational-data" class="section level1">
+<h1>Relational data</h1>
+<div id="introduction-2" class="section level2">
+<h2>Introduction</h2>
+<p>It’s rare that a data analysis involves only a single table of data. Typically you have many tables of data, and you must combine them to answer the questions that you’re interested in. Collectively, multiple tables of data are called <strong>relational data</strong> because it is the relations, not just the individual datasets, that are important.</p>
+<p>Relations are always defined between a pair of tables. All other relations are built up from this simple idea: the relations of three or more tables are always a property of the relations between each pair. Sometimes both elements of a pair can be the same table! This is needed if, for example, you have a table of people, and each person has a reference to their parents.</p>
+<p>To work with relational data you need verbs that work with pairs of tables. There are three families of verbs designed to work with relational data:</p>
+<ul>
+<li><p><strong>Mutating joins</strong>, which add new variables to one data frame from matching observations in another.</p></li>
+<li><p><strong>Filtering joins</strong>, which filter observations from one data frame based on whether or not they match an observation in the other table.</p></li>
+<li><p><strong>Set operations</strong>, which treat observations as if they were set elements.</p></li>
+</ul>
+<p>The most common place to find relational data is in a <em>relational</em> database management system (or RDBMS), a term that encompasses almost all modern databases. If you’ve used a database before, you’ve almost certainly used SQL. If so, you should find the concepts in this chapter familiar, although their expression in dplyr is a little different. Generally, dplyr is a little easier to use than SQL because dplyr is specialised to do data analysis: it makes common data analysis operations easier, at the expense of making it more difficult to do other things that aren’t commonly needed for data analysis.</p>
+<div id="prerequisites-2" class="section level3">
+<h3>Prerequisites</h3>
+<p>We will explore relational data from <code>nycflights13</code> using the two-table verbs from dplyr.</p>
+<pre class="r"><code>library(tidyverse)
+library(nycflights13)</code></pre>
+</div>
+</div>
+<div id="nycflights13-1" class="section level2">
+<h2>nycflights13</h2>
+<p>We will use the nycflights13 package to learn about relational data. nycflights13 contains four tibbles that are related to the <code>flights</code> table that you used in <a href="#data-transformation">data transformation</a>:</p>
+<ul>
+<li><p><code>airlines</code> lets you look up the full carrier name from its abbreviated code:</p>
+<pre class="r"><code>airlines</code></pre>
+<pre><code>## # A tibble: 16 x 2
+##    carrier name                       
+##    &lt;chr&gt;   &lt;chr&gt;                      
+##  1 9E      Endeavor Air Inc.          
+##  2 AA      American Airlines Inc.     
+##  3 AS      Alaska Airlines Inc.       
+##  4 B6      JetBlue Airways            
+##  5 DL      Delta Air Lines Inc.       
+##  6 EV      ExpressJet Airlines Inc.   
+##  7 F9      Frontier Airlines Inc.     
+##  8 FL      AirTran Airways Corporation
+##  9 HA      Hawaiian Airlines Inc.     
+## 10 MQ      Envoy Air                  
+## # … with 6 more rows</code></pre></li>
+<li><p><code>airports</code> gives information about each airport, identified by the <code>faa</code> airport code:</p>
+<pre class="r"><code>airports</code></pre>
+<pre><code>## # A tibble: 1,458 x 8
+##    faa   name                       lat    lon   alt    tz dst   tzone          
+##    &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;          
+##  1 04G   Lansdowne Airport         41.1  -80.6  1044    -5 A     America/New_Yo…
+##  2 06A   Moton Field Municipal A…  32.5  -85.7   264    -6 A     America/Chicago
+##  3 06C   Schaumburg Regional       42.0  -88.1   801    -6 A     America/Chicago
+##  4 06N   Randall Airport           41.4  -74.4   523    -5 A     America/New_Yo…
+##  5 09J   Jekyll Island Airport     31.1  -81.4    11    -5 A     America/New_Yo…
+##  6 0A9   Elizabethton Municipal …  36.4  -82.2  1593    -5 A     America/New_Yo…
+##  7 0G6   Williams County Airport   41.5  -84.5   730    -5 A     America/New_Yo…
+##  8 0G7   Finger Lakes Regional A…  42.9  -76.8   492    -5 A     America/New_Yo…
+##  9 0P2   Shoestring Aviation Air…  39.8  -76.6  1000    -5 U     America/New_Yo…
+## 10 0S9   Jefferson County Intl     48.1 -123.    108    -8 A     America/Los_An…
+## # … with 1,448 more rows</code></pre></li>
+<li><p><code>planes</code> gives information about each plane, identified by its <code>tailnum</code>:</p>
+<pre class="r"><code>planes</code></pre>
+<pre><code>## # A tibble: 3,322 x 9
+##    tailnum  year type          manufacturer   model  engines seats speed engine 
+##    &lt;chr&gt;   &lt;int&gt; &lt;chr&gt;         &lt;chr&gt;          &lt;chr&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;  
+##  1 N10156   2004 Fixed wing m… EMBRAER        EMB-1…       2    55    NA Turbo-…
+##  2 N102UW   1998 Fixed wing m… AIRBUS INDUST… A320-…       2   182    NA Turbo-…
+##  3 N103US   1999 Fixed wing m… AIRBUS INDUST… A320-…       2   182    NA Turbo-…
+##  4 N104UW   1999 Fixed wing m… AIRBUS INDUST… A320-…       2   182    NA Turbo-…
+##  5 N10575   2002 Fixed wing m… EMBRAER        EMB-1…       2    55    NA Turbo-…
+##  6 N105UW   1999 Fixed wing m… AIRBUS INDUST… A320-…       2   182    NA Turbo-…
+##  7 N107US   1999 Fixed wing m… AIRBUS INDUST… A320-…       2   182    NA Turbo-…
+##  8 N108UW   1999 Fixed wing m… AIRBUS INDUST… A320-…       2   182    NA Turbo-…
+##  9 N109UW   1999 Fixed wing m… AIRBUS INDUST… A320-…       2   182    NA Turbo-…
+## 10 N110UW   1999 Fixed wing m… AIRBUS INDUST… A320-…       2   182    NA Turbo-…
+## # … with 3,312 more rows</code></pre></li>
+<li><p><code>weather</code> gives the weather at each NYC airport for each hour:</p>
+<pre class="r"><code>weather</code></pre>
+<pre><code>## # A tibble: 26,115 x 15
+##    origin  year month   day  hour  temp  dewp humid wind_dir wind_speed
+##    &lt;chr&gt;  &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;      &lt;dbl&gt;
+##  1 EWR     2013     1     1     1  39.0  26.1  59.4      270      10.4 
+##  2 EWR     2013     1     1     2  39.0  27.0  61.6      250       8.06
+##  3 EWR     2013     1     1     3  39.0  28.0  64.4      240      11.5 
+##  4 EWR     2013     1     1     4  39.9  28.0  62.2      250      12.7 
+##  5 EWR     2013     1     1     5  39.0  28.0  64.4      260      12.7 
+##  6 EWR     2013     1     1     6  37.9  28.0  67.2      240      11.5 
+##  7 EWR     2013     1     1     7  39.0  28.0  64.4      240      15.0 
+##  8 EWR     2013     1     1     8  39.9  28.0  62.2      250      10.4 
+##  9 EWR     2013     1     1     9  39.9  28.0  62.2      260      15.0 
+## 10 EWR     2013     1     1    10  41    28.0  59.6      260      13.8 
+## # … with 26,105 more rows, and 5 more variables: wind_gust &lt;dbl&gt;, precip &lt;dbl&gt;,
+## #   pressure &lt;dbl&gt;, visib &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre></li>
+</ul>
+<p>One way to show the relationships between the different tables is with a drawing:</p>
+<p><img src="diagrams/relational-nycflights.png" width="396" /></p>
+<p>This diagram is a little overwhelming, but it’s simple compared to some you’ll see in the wild! The key to understanding diagrams like this is to remember each relation always concerns a pair of tables. You don’t need to understand the whole thing; you just need to understand the chain of relations between the tables that you are interested in.</p>
+<p>For nycflights13:</p>
+<ul>
+<li><p><code>flights</code> connects to <code>planes</code> via a single variable, <code>tailnum</code>.</p></li>
+<li><p><code>flights</code> connects to <code>airlines</code> through the <code>carrier</code> variable.</p></li>
+<li><p><code>flights</code> connects to <code>airports</code> in two ways: via the <code>origin</code> and <code>dest</code> variables.</p></li>
+<li><p><code>flights</code> connects to <code>weather</code> via <code>origin</code> (the location), and <code>year</code>, <code>month</code>, <code>day</code> and <code>hour</code> (the time).</p></li>
+</ul>
+<div id="exercises-10" class="section level3">
+<h3>Exercises</h3>
+<ol style="list-style-type: decimal">
+<li><p>Imagine you wanted to draw (approximately) the route each plane flies from its origin to its destination. What variables would you need? What tables would you need to combine?</p></li>
+<li><p>I forgot to draw the relationship between <code>weather</code> and <code>airports</code>. What is the relationship and how should it appear in the diagram?</p></li>
+<li><p><code>weather</code> only contains information for the origin (NYC) airports. If it contained weather records for all airports in the USA, what additional relation would it define with <code>flights</code>?</p></li>
+<li><p>We know that some days of the year are “special”, and fewer people than usual fly on them. How might you represent that data as a data frame? What would be the primary keys of that table? How would it connect to the existing tables?</p></li>
+</ol>
+</div>
+</div>
+<div id="keys" class="section level2">
+<h2>Keys</h2>
+<p>The variables used to connect each pair of tables are called <strong>keys</strong>. A key is a variable (or set of variables) that uniquely identifies an observation. In simple cases, a single variable is sufficient to identify an observation. For example, each plane is uniquely identified by its <code>tailnum</code>. In other cases, multiple variables may be needed. For example, to identify an observation in <code>weather</code> you need five variables: <code>year</code>, <code>month</code>, <code>day</code>, <code>hour</code>, and <code>origin</code>.</p>
+<p>There are two types of keys:</p>
+<ul>
+<li><p>A <strong>primary key</strong> uniquely identifies an observation in its own table. For example, <code>planes$tailnum</code> is a primary key because it uniquely identifies each plane in the <code>planes</code> table.</p></li>
+<li><p>A <strong>foreign key</strong> uniquely identifies an observation in another table. For example, <code>flights$tailnum</code> is a foreign key because it appears in the <code>flights</code> table where it matches each flight to a unique plane.</p></li>
+</ul>
+<p>A variable can be both a primary key <em>and</em> a foreign key. For example, <code>origin</code> is part of the <code>weather</code> primary key, and is also a foreign key for the <code>airport</code> table.</p>
+<p>Once you’ve identified the primary keys in your tables, it’s good practice to verify that they do indeed uniquely identify each observation. One way to do that is to <code>count()</code> the primary keys and look for entries where <code>n</code> is greater than one:</p>
+<pre class="r"><code>planes %&gt;% 
+  count(tailnum) %&gt;% 
+  filter(n &gt; 1)</code></pre>
+<pre><code>## # A tibble: 0 x 2
+## # … with 2 variables: tailnum &lt;chr&gt;, n &lt;int&gt;</code></pre>
+<pre class="r"><code>weather %&gt;% 
+  count(year, month, day, hour, origin) %&gt;% 
+  filter(n &gt; 1)</code></pre>
+<pre><code>## # A tibble: 3 x 6
+##    year month   day  hour origin     n
+##   &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;  &lt;int&gt;
+## 1  2013    11     3     1 EWR        2
+## 2  2013    11     3     1 JFK        2
+## 3  2013    11     3     1 LGA        2</code></pre>
+<p>Sometimes a table doesn’t have an explicit primary key: each row is an observation, but no combination of variables reliably identifies it. For example, what’s the primary key in the <code>flights</code> table? You might think it would be the date plus the flight or tail number, but neither of those are unique:</p>
+<pre class="r"><code>flights %&gt;% 
+  count(year, month, day, flight) %&gt;% 
+  filter(n &gt; 1)</code></pre>
+<pre><code>## # A tibble: 29,768 x 5
+##     year month   day flight     n
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;  &lt;int&gt; &lt;int&gt;
+##  1  2013     1     1      1     2
+##  2  2013     1     1      3     2
+##  3  2013     1     1      4     2
+##  4  2013     1     1     11     3
+##  5  2013     1     1     15     2
+##  6  2013     1     1     21     2
+##  7  2013     1     1     27     4
+##  8  2013     1     1     31     2
+##  9  2013     1     1     32     2
+## 10  2013     1     1     35     2
+## # … with 29,758 more rows</code></pre>
+<pre class="r"><code>flights %&gt;% 
+  count(year, month, day, tailnum) %&gt;% 
+  filter(n &gt; 1)</code></pre>
+<pre><code>## # A tibble: 64,928 x 5
+##     year month   day tailnum     n
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;chr&gt;   &lt;int&gt;
+##  1  2013     1     1 N0EGMQ      2
+##  2  2013     1     1 N11189      2
+##  3  2013     1     1 N11536      2
+##  4  2013     1     1 N11544      3
+##  5  2013     1     1 N11551      2
+##  6  2013     1     1 N12540      2
+##  7  2013     1     1 N12567      2
+##  8  2013     1     1 N13123      2
+##  9  2013     1     1 N13538      3
+## 10  2013     1     1 N13566      3
+## # … with 64,918 more rows</code></pre>
+<p>When starting to work with this data, I had naively assumed that each flight number would be only used once per day: that would make it much easier to communicate problems with a specific flight. Unfortunately that is not the case! If a table lacks a primary key, it’s sometimes useful to add one with <code>mutate()</code> and <code>row_number()</code>. That makes it easier to match observations if you’ve done some filtering and want to check back in with the original data. This is called a <strong>surrogate key</strong>.</p>
+<p>A primary key and the corresponding foreign key in another table form a <strong>relation</strong>. Relations are typically one-to-many. For example, each flight has one plane, but each plane has many flights. In other data, you’ll occasionally see a 1-to-1 relationship. You can think of this as a special case of 1-to-many. You can model many-to-many relations with a many-to-1 relation plus a 1-to-many relation. For example, in this data there’s a many-to-many relationship between airlines and airports: each airline flies to many airports; each airport hosts many airlines.</p>
+<div id="exercises-11" class="section level3">
+<h3>Exercises</h3>
+<ol style="list-style-type: decimal">
+<li><p>Add a surrogate key to <code>flights</code>.</p></li>
+<li><p>Identify the keys in the following datasets</p>
+<ol style="list-style-type: decimal">
+<li><code>Lahman::Batting</code>,</li>
+<li><code>babynames::babynames</code></li>
+<li><code>nasaweather::atmos</code></li>
+<li><code>fueleconomy::vehicles</code></li>
+<li><code>ggplot2::diamonds</code></li>
+</ol>
+<p>(You might need to install some packages and read some documentation.)</p></li>
+<li><p>Draw a diagram illustrating the connections between the <code>Batting</code>, <code>Master</code>, and <code>Salaries</code> tables in the Lahman package. Draw another diagram that shows the relationship between <code>Master</code>, <code>Managers</code>, <code>AwardsManagers</code>.</p>
+<p>How would you characterise the relationship between the <code>Batting</code>, <code>Pitching</code>, and <code>Fielding</code> tables?</p></li>
+</ol>
+</div>
+</div>
+<div id="mutating-joins" class="section level2">
+<h2>Mutating joins</h2>
+<p>The first tool we’ll look at for combining a pair of tables is the <strong>mutating join</strong>. A mutating join allows you to combine variables from two tables. It first matches observations by their keys, then copies across variables from one table to the other.</p>
+<p>Like <code>mutate()</code>, the join functions add variables to the right, so if you have a lot of variables already, the new variables won’t get printed out. For these examples, we’ll make it easier to see what’s going on in the examples by creating a narrower dataset:</p>
+<pre class="r"><code>flights2 &lt;- flights %&gt;% 
+  select(year:day, hour, origin, dest, tailnum, carrier)
+flights2</code></pre>
+<pre><code>## # A tibble: 336,776 x 8
+##     year month   day  hour origin dest  tailnum carrier
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;  
+##  1  2013     1     1     5 EWR    IAH   N14228  UA     
+##  2  2013     1     1     5 LGA    IAH   N24211  UA     
+##  3  2013     1     1     5 JFK    MIA   N619AA  AA     
+##  4  2013     1     1     5 JFK    BQN   N804JB  B6     
+##  5  2013     1     1     6 LGA    ATL   N668DN  DL     
+##  6  2013     1     1     5 EWR    ORD   N39463  UA     
+##  7  2013     1     1     6 EWR    FLL   N516JB  B6     
+##  8  2013     1     1     6 LGA    IAD   N829AS  EV     
+##  9  2013     1     1     6 JFK    MCO   N593JB  B6     
+## 10  2013     1     1     6 LGA    ORD   N3ALAA  AA     
+## # … with 336,766 more rows</code></pre>
+<p>(Remember, when you’re in RStudio, you can also use <code>View()</code> to avoid this problem.)</p>
+<p>Imagine you want to add the full airline name to the <code>flights2</code> data. You can combine the <code>airlines</code> and <code>flights2</code> data frames with <code>left_join()</code>:</p>
+<pre class="r"><code>flights2 %&gt;%
+  select(-origin, -dest) %&gt;% 
+  left_join(airlines, by = &quot;carrier&quot;)</code></pre>
+<pre><code>## # A tibble: 336,776 x 7
+##     year month   day  hour tailnum carrier name                    
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;                   
+##  1  2013     1     1     5 N14228  UA      United Air Lines Inc.   
+##  2  2013     1     1     5 N24211  UA      United Air Lines Inc.   
+##  3  2013     1     1     5 N619AA  AA      American Airlines Inc.  
+##  4  2013     1     1     5 N804JB  B6      JetBlue Airways         
+##  5  2013     1     1     6 N668DN  DL      Delta Air Lines Inc.    
+##  6  2013     1     1     5 N39463  UA      United Air Lines Inc.   
+##  7  2013     1     1     6 N516JB  B6      JetBlue Airways         
+##  8  2013     1     1     6 N829AS  EV      ExpressJet Airlines Inc.
+##  9  2013     1     1     6 N593JB  B6      JetBlue Airways         
+## 10  2013     1     1     6 N3ALAA  AA      American Airlines Inc.  
+## # … with 336,766 more rows</code></pre>
+<p>The result of joining airlines to flights2 is an additional variable: <code>name</code>. This is why I call this type of join a mutating join. In this case, you could have got to the same place using <code>mutate()</code> and R’s base subsetting:</p>
+<pre class="r"><code>flights2 %&gt;%
+  select(-origin, -dest) %&gt;% 
+  mutate(name = airlines$name[match(carrier, airlines$carrier)])</code></pre>
+<pre><code>## # A tibble: 336,776 x 7
+##     year month   day  hour tailnum carrier name                    
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;                   
+##  1  2013     1     1     5 N14228  UA      United Air Lines Inc.   
+##  2  2013     1     1     5 N24211  UA      United Air Lines Inc.   
+##  3  2013     1     1     5 N619AA  AA      American Airlines Inc.  
+##  4  2013     1     1     5 N804JB  B6      JetBlue Airways         
+##  5  2013     1     1     6 N668DN  DL      Delta Air Lines Inc.    
+##  6  2013     1     1     5 N39463  UA      United Air Lines Inc.   
+##  7  2013     1     1     6 N516JB  B6      JetBlue Airways         
+##  8  2013     1     1     6 N829AS  EV      ExpressJet Airlines Inc.
+##  9  2013     1     1     6 N593JB  B6      JetBlue Airways         
+## 10  2013     1     1     6 N3ALAA  AA      American Airlines Inc.  
+## # … with 336,766 more rows</code></pre>
+<p>But this is hard to generalise when you need to match multiple variables, and takes close reading to figure out the overall intent.</p>
+<p>The following sections explain, in detail, how mutating joins work. You’ll start by learning a useful visual representation of joins. We’ll then use that to explain the four mutating join functions: the inner join, and the three outer joins. When working with real data, keys don’t always uniquely identify observations, so next we’ll talk about what happens when there isn’t a unique match. Finally, you’ll learn how to tell dplyr which variables are the keys for a given join.</p>
+<div id="understanding-joins" class="section level3">
+<h3>Understanding joins</h3>
+<p>To help you learn how joins work, I’m going to use a visual representation:</p>
+<p><img src="diagrams/join-setup.png" width="118" /></p>
+<pre class="r"><code>x &lt;- tribble(
+  ~key, ~val_x,
+     1, &quot;x1&quot;,
+     2, &quot;x2&quot;,
+     3, &quot;x3&quot;
+)
+y &lt;- tribble(
+  ~key, ~val_y,
+     1, &quot;y1&quot;,
+     2, &quot;y2&quot;,
+     4, &quot;y3&quot;
+)</code></pre>
+<p>The coloured column represents the “key” variable: these are used to match the rows between the tables. The grey column represents the “value” column that is carried along for the ride. In these examples I’ll show a single key variable, but the idea generalises in a straightforward way to multiple keys and multiple values.</p>
+<p>A join is a way of connecting each row in <code>x</code> to zero, one, or more rows in <code>y</code>. The following diagram shows each potential match as an intersection of a pair of lines.</p>
+<p><img src="diagrams/join-setup2.png" width="166" /></p>
+<p>(If you look closely, you might notice that we’ve switched the order of the key and value columns in <code>x</code>. This is to emphasise that joins match based on the key; the value is just carried along for the ride.)</p>
+<p>In an actual join, matches will be indicated with dots. The number of dots = the number of matches = the number of rows in the output.</p>
+<p><img src="diagrams/join-inner.png" width="338" /></p>
+</div>
+<div id="inner-join" class="section level3">
+<h3>Inner join</h3>
+<p>The simplest type of join is the <strong>inner join</strong>. An inner join matches pairs of observations whenever their keys are equal:</p>
+<p><img src="diagrams/join-inner.png" width="338" /></p>
+<p>(To be precise, this is an inner <strong>equijoin</strong> because the keys are matched using the equality operator. Since most joins are equijoins we usually drop that specification.)</p>
+<p>The output of an inner join is a new data frame that contains the key, the x values, and the y values. We use <code>by</code> to tell dplyr which variable is the key:</p>
+<pre class="r"><code>x %&gt;% 
+  inner_join(y, by = &quot;key&quot;)</code></pre>
+<pre><code>## # A tibble: 2 x 3
+##     key val_x val_y
+##   &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;
+## 1     1 x1    y1   
+## 2     2 x2    y2</code></pre>
+<p>The most important property of an inner join is that unmatched rows are not included in the result. This means that generally inner joins are usually not appropriate for use in analysis because it’s too easy to lose observations.</p>
+</div>
+<div id="outer-joins" class="section level3">
+<h3>Outer joins</h3>
+<p>An inner join keeps observations that appear in both tables. An <strong>outer join</strong> keeps observations that appear in at least one of the tables. There are three types of outer joins:</p>
+<ul>
+<li>A <strong>left join</strong> keeps all observations in <code>x</code>.</li>
+<li>A <strong>right join</strong> keeps all observations in <code>y</code>.</li>
+<li>A <strong>full join</strong> keeps all observations in <code>x</code> and <code>y</code>.</li>
+</ul>
+<p>These joins work by adding an additional “virtual” observation to each table. This observation has a key that always matches (if no other key matches), and a value filled with <code>NA</code>.</p>
+<p>Graphically, that looks like:</p>
+<p><img src="diagrams/join-outer.png" width="355" /></p>
+<p>The most commonly used join is the left join: you use this whenever you look up additional data from another table, because it preserves the original observations even when there isn’t a match. The left join should be your default join: use it unless you have a strong reason to prefer one of the others.</p>
+<p>Another way to depict the different types of joins is with a Venn diagram:</p>
+<p><img src="diagrams/join-venn.png" width="551" /></p>
+<p>However, this is not a great representation. It might jog your memory about which join preserves the observations in which table, but it suffers from a major limitation: a Venn diagram can’t show what happens when keys don’t uniquely identify an observation.</p>
+</div>
+<div id="duplicate-keys" class="section level3">
+<h3>Duplicate keys</h3>
+<p>So far all the diagrams have assumed that the keys are unique. But that’s not always the case. This section explains what happens when the keys are not unique. There are two possibilities:</p>
+<ol style="list-style-type: decimal">
+<li><p>One table has duplicate keys. This is useful when you want to add in additional information as there is typically a one-to-many relationship.</p>
+<p><img src="diagrams/join-one-to-many.png" width="279" /></p>
+<p>Note that I’ve put the key column in a slightly different position in the output. This reflects that the key is a primary key in <code>y</code> and a foreign key in <code>x</code>.</p>
+<pre class="r"><code>x &lt;- tribble(
+  ~key, ~val_x,
+     1, &quot;x1&quot;,
+     2, &quot;x2&quot;,
+     2, &quot;x3&quot;,
+     1, &quot;x4&quot;
+)
+y &lt;- tribble(
+  ~key, ~val_y,
+     1, &quot;y1&quot;,
+     2, &quot;y2&quot;
+)
+left_join(x, y, by = &quot;key&quot;)</code></pre>
+<pre><code>## # A tibble: 4 x 3
+##     key val_x val_y
+##   &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;
+## 1     1 x1    y1   
+## 2     2 x2    y2   
+## 3     2 x3    y2   
+## 4     1 x4    y1</code></pre></li>
+<li><p>Both tables have duplicate keys. This is usually an error because in neither table do the keys uniquely identify an observation. When you join duplicated keys, you get all possible combinations, the Cartesian product:</p>
+<p><img src="diagrams/join-many-to-many.png" width="342" /></p>
+<pre class="r"><code>x &lt;- tribble(
+  ~key, ~val_x,
+     1, &quot;x1&quot;,
+     2, &quot;x2&quot;,
+     2, &quot;x3&quot;,
+     3, &quot;x4&quot;
+)
+y &lt;- tribble(
+  ~key, ~val_y,
+     1, &quot;y1&quot;,
+     2, &quot;y2&quot;,
+     2, &quot;y3&quot;,
+     3, &quot;y4&quot;
+)
+left_join(x, y, by = &quot;key&quot;)</code></pre>
+<pre><code>## # A tibble: 6 x 3
+##     key val_x val_y
+##   &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;
+## 1     1 x1    y1   
+## 2     2 x2    y2   
+## 3     2 x2    y3   
+## 4     2 x3    y2   
+## 5     2 x3    y3   
+## 6     3 x4    y4</code></pre></li>
+</ol>
+</div>
+<div id="defining-the-key-columns" class="section level3">
+<h3>Defining the key columns</h3>
+<p>So far, the pairs of tables have always been joined by a single variable, and that variable has the same name in both tables. That constraint was encoded by <code>by = "key"</code>. You can use other values for <code>by</code> to connect the tables in other ways:</p>
+<ul>
+<li><p>The default, <code>by = NULL</code>, uses all variables that appear in both tables, the so called <strong>natural</strong> join. For example, the flights and weather tables match on their common variables: <code>year</code>, <code>month</code>, <code>day</code>, <code>hour</code> and <code>origin</code>.</p>
+<pre class="r"><code>flights2 %&gt;% 
+  left_join(weather)</code></pre>
+<pre><code>## Joining, by = c(&quot;year&quot;, &quot;month&quot;, &quot;day&quot;, &quot;hour&quot;, &quot;origin&quot;)</code></pre>
+<pre><code>## # A tibble: 336,776 x 18
+##     year month   day  hour origin dest  tailnum carrier  temp  dewp humid
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1  2013     1     1     5 EWR    IAH   N14228  UA       39.0  28.0  64.4
+##  2  2013     1     1     5 LGA    IAH   N24211  UA       39.9  25.0  54.8
+##  3  2013     1     1     5 JFK    MIA   N619AA  AA       39.0  27.0  61.6
+##  4  2013     1     1     5 JFK    BQN   N804JB  B6       39.0  27.0  61.6
+##  5  2013     1     1     6 LGA    ATL   N668DN  DL       39.9  25.0  54.8
+##  6  2013     1     1     5 EWR    ORD   N39463  UA       39.0  28.0  64.4
+##  7  2013     1     1     6 EWR    FLL   N516JB  B6       37.9  28.0  67.2
+##  8  2013     1     1     6 LGA    IAD   N829AS  EV       39.9  25.0  54.8
+##  9  2013     1     1     6 JFK    MCO   N593JB  B6       37.9  27.0  64.3
+## 10  2013     1     1     6 LGA    ORD   N3ALAA  AA       39.9  25.0  54.8
+## # … with 336,766 more rows, and 7 more variables: wind_dir &lt;dbl&gt;,
+## #   wind_speed &lt;dbl&gt;, wind_gust &lt;dbl&gt;, precip &lt;dbl&gt;, pressure &lt;dbl&gt;,
+## #   visib &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre></li>
+<li><p>A character vector, <code>by = "x"</code>. This is like a natural join, but uses only some of the common variables. For example, <code>flights</code> and <code>planes</code> have <code>year</code> variables, but they mean different things so we only want to join by <code>tailnum</code>.</p>
+<pre class="r"><code>flights2 %&gt;% 
+  left_join(planes, by = &quot;tailnum&quot;)</code></pre>
+<pre><code>## # A tibble: 336,776 x 16
+##    year.x month   day  hour origin dest  tailnum carrier year.y type            
+##     &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;    &lt;int&gt; &lt;chr&gt;           
+##  1   2013     1     1     5 EWR    IAH   N14228  UA        1999 Fixed wing mult…
+##  2   2013     1     1     5 LGA    IAH   N24211  UA        1998 Fixed wing mult…
+##  3   2013     1     1     5 JFK    MIA   N619AA  AA        1990 Fixed wing mult…
+##  4   2013     1     1     5 JFK    BQN   N804JB  B6        2012 Fixed wing mult…
+##  5   2013     1     1     6 LGA    ATL   N668DN  DL        1991 Fixed wing mult…
+##  6   2013     1     1     5 EWR    ORD   N39463  UA        2012 Fixed wing mult…
+##  7   2013     1     1     6 EWR    FLL   N516JB  B6        2000 Fixed wing mult…
+##  8   2013     1     1     6 LGA    IAD   N829AS  EV        1998 Fixed wing mult…
+##  9   2013     1     1     6 JFK    MCO   N593JB  B6        2004 Fixed wing mult…
+## 10   2013     1     1     6 LGA    ORD   N3ALAA  AA          NA &lt;NA&gt;            
+## # … with 336,766 more rows, and 6 more variables: manufacturer &lt;chr&gt;,
+## #   model &lt;chr&gt;, engines &lt;int&gt;, seats &lt;int&gt;, speed &lt;int&gt;, engine &lt;chr&gt;</code></pre>
+<p>Note that the <code>year</code> variables (which appear in both input data frames, but are not constrained to be equal) are disambiguated in the output with a suffix.</p></li>
+<li><p>A named character vector: <code>by = c("a" = "b")</code>. This will match variable <code>a</code> in table <code>x</code> to variable <code>b</code> in table <code>y</code>. The variables from <code>x</code> will be used in the output.</p>
+<p>For example, if we want to draw a map we need to combine the flights data with the airports data which contains the location (<code>lat</code> and <code>lon</code>) of each airport. Each flight has an origin and destination <code>airport</code>, so we need to specify which one we want to join to:</p>
+<pre class="r"><code>flights2 %&gt;% 
+  left_join(airports, c(&quot;dest&quot; = &quot;faa&quot;))</code></pre>
+<pre><code>## # A tibble: 336,776 x 15
+##     year month   day  hour origin dest  tailnum carrier name     lat   lon   alt
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1  2013     1     1     5 EWR    IAH   N14228  UA      Georg…  30.0 -95.3    97
+##  2  2013     1     1     5 LGA    IAH   N24211  UA      Georg…  30.0 -95.3    97
+##  3  2013     1     1     5 JFK    MIA   N619AA  AA      Miami…  25.8 -80.3     8
+##  4  2013     1     1     5 JFK    BQN   N804JB  B6      &lt;NA&gt;    NA    NA      NA
+##  5  2013     1     1     6 LGA    ATL   N668DN  DL      Harts…  33.6 -84.4  1026
+##  6  2013     1     1     5 EWR    ORD   N39463  UA      Chica…  42.0 -87.9   668
+##  7  2013     1     1     6 EWR    FLL   N516JB  B6      Fort …  26.1 -80.2     9
+##  8  2013     1     1     6 LGA    IAD   N829AS  EV      Washi…  38.9 -77.5   313
+##  9  2013     1     1     6 JFK    MCO   N593JB  B6      Orlan…  28.4 -81.3    96
+## 10  2013     1     1     6 LGA    ORD   N3ALAA  AA      Chica…  42.0 -87.9   668
+## # … with 336,766 more rows, and 3 more variables: tz &lt;dbl&gt;, dst &lt;chr&gt;,
+## #   tzone &lt;chr&gt;</code></pre>
+<pre class="r"><code>flights2 %&gt;% 
+  left_join(airports, c(&quot;origin&quot; = &quot;faa&quot;))</code></pre>
+<pre><code>## # A tibble: 336,776 x 15
+##     year month   day  hour origin dest  tailnum carrier name     lat   lon   alt
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1  2013     1     1     5 EWR    IAH   N14228  UA      Newar…  40.7 -74.2    18
+##  2  2013     1     1     5 LGA    IAH   N24211  UA      La Gu…  40.8 -73.9    22
+##  3  2013     1     1     5 JFK    MIA   N619AA  AA      John …  40.6 -73.8    13
+##  4  2013     1     1     5 JFK    BQN   N804JB  B6      John …  40.6 -73.8    13
+##  5  2013     1     1     6 LGA    ATL   N668DN  DL      La Gu…  40.8 -73.9    22
+##  6  2013     1     1     5 EWR    ORD   N39463  UA      Newar…  40.7 -74.2    18
+##  7  2013     1     1     6 EWR    FLL   N516JB  B6      Newar…  40.7 -74.2    18
+##  8  2013     1     1     6 LGA    IAD   N829AS  EV      La Gu…  40.8 -73.9    22
+##  9  2013     1     1     6 JFK    MCO   N593JB  B6      John …  40.6 -73.8    13
+## 10  2013     1     1     6 LGA    ORD   N3ALAA  AA      La Gu…  40.8 -73.9    22
+## # … with 336,766 more rows, and 3 more variables: tz &lt;dbl&gt;, dst &lt;chr&gt;,
+## #   tzone &lt;chr&gt;</code></pre></li>
+</ul>
+</div>
+<div id="exercises-12" class="section level3">
+<h3>Exercises</h3>
+<ol style="list-style-type: decimal">
+<li><p>Compute the average delay by destination, then join on the <code>airports</code> data frame so you can show the spatial distribution of delays. Here’s an easy way to draw a map of the United States:</p>
+<pre class="r"><code>airports %&gt;%
+  semi_join(flights, c(&quot;faa&quot; = &quot;dest&quot;)) %&gt;%
+  ggplot(aes(lon, lat)) +
+    borders(&quot;state&quot;) +
+    geom_point() +
+    coord_quickmap()</code></pre>
+<p>(Don’t worry if you don’t understand what <code>semi_join()</code> does — you’ll learn about it next.)</p>
+<p>You might want to use the <code>size</code> or <code>colour</code> of the points to display the average delay for each airport.</p></li>
+<li><p>Add the location of the origin <em>and</em> destination (i.e. the <code>lat</code> and <code>lon</code>) to <code>flights</code>.</p></li>
+<li><p>Is there a relationship between the age of a plane and its delays?</p></li>
+<li><p>What weather conditions make it more likely to see a delay?</p></li>
+<li><p>What happened on June 13 2013? Display the spatial pattern of delays, and then use Google to cross-reference with the weather.</p></li>
+</ol>
+</div>
+<div id="other-implementations" class="section level3">
+<h3>Other implementations</h3>
+<p><code>base::merge()</code> can perform all four types of mutating join:</p>
+<table>
+<thead>
+<tr class="header">
+<th>dplyr</th>
+<th>merge</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>inner_join(x, y)</code></td>
+<td><code>merge(x, y)</code></td>
+</tr>
+<tr class="even">
+<td><code>left_join(x, y)</code></td>
+<td><code>merge(x, y, all.x = TRUE)</code></td>
+</tr>
+<tr class="odd">
+<td><code>right_join(x, y)</code></td>
+<td><code>merge(x, y, all.y = TRUE)</code>,</td>
+</tr>
+<tr class="even">
+<td><code>full_join(x, y)</code></td>
+<td><code>merge(x, y, all.x = TRUE, all.y = TRUE)</code></td>
+</tr>
+</tbody>
+</table>
+<p>The advantages of the specific dplyr verbs is that they more clearly convey the intent of your code: the difference between the joins is really important but concealed in the arguments of <code>merge()</code>. dplyr’s joins are considerably faster and don’t mess with the order of the rows.</p>
+<p>SQL is the inspiration for dplyr’s conventions, so the translation is straightforward:</p>
+<table>
+<thead>
+<tr class="header">
+<th>dplyr</th>
+<th>SQL</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>inner_join(x, y, by = "z")</code></td>
+<td><code>SELECT * FROM x INNER JOIN y USING (z)</code></td>
+</tr>
+<tr class="even">
+<td><code>left_join(x, y, by = "z")</code></td>
+<td><code>SELECT * FROM x LEFT OUTER JOIN y USING (z)</code></td>
+</tr>
+<tr class="odd">
+<td><code>right_join(x, y, by = "z")</code></td>
+<td><code>SELECT * FROM x RIGHT OUTER JOIN y USING (z)</code></td>
+</tr>
+<tr class="even">
+<td><code>full_join(x, y, by = "z")</code></td>
+<td><code>SELECT * FROM x FULL OUTER JOIN y USING (z)</code></td>
+</tr>
+</tbody>
+</table>
+<p>Note that “INNER” and “OUTER” are optional, and often omitted.</p>
+<p>Joining different variables between the tables, e.g. <code>inner_join(x, y, by = c("a" = "b"))</code> uses a slightly different syntax in SQL: <code>SELECT * FROM x INNER JOIN y ON x.a = y.b</code>. As this syntax suggests, SQL supports a wider range of join types than dplyr because you can connect the tables using constraints other than equality (sometimes called non-equijoins).</p>
+</div>
+</div>
+<div id="filtering-joins" class="section level2">
+<h2>Filtering joins</h2>
+<p>Filtering joins match observations in the same way as mutating joins, but affect the observations, not the variables. There are two types:</p>
+<ul>
+<li><code>semi_join(x, y)</code> <strong>keeps</strong> all observations in <code>x</code> that have a match in <code>y</code>.</li>
+<li><code>anti_join(x, y)</code> <strong>drops</strong> all observations in <code>x</code> that have a match in <code>y</code>.</li>
+</ul>
+<p>Semi-joins are useful for matching filtered summary tables back to the original rows. For example, imagine you’ve found the top ten most popular destinations:</p>
+<pre class="r"><code>top_dest &lt;- flights %&gt;%
+  count(dest, sort = TRUE) %&gt;%
+  head(10)
+top_dest</code></pre>
+<pre><code>## # A tibble: 10 x 2
+##    dest      n
+##    &lt;chr&gt; &lt;int&gt;
+##  1 ORD   17283
+##  2 ATL   17215
+##  3 LAX   16174
+##  4 BOS   15508
+##  5 MCO   14082
+##  6 CLT   14064
+##  7 SFO   13331
+##  8 FLL   12055
+##  9 MIA   11728
+## 10 DCA    9705</code></pre>
+<p>Now you want to find each flight that went to one of those destinations. You could construct a filter yourself:</p>
+<pre class="r"><code>flights %&gt;% 
+  filter(dest %in% top_dest$dest)</code></pre>
+<pre><code>## # A tibble: 141,145 x 19
+##     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+##  1  2013     1     1      542            540         2      923            850
+##  2  2013     1     1      554            600        -6      812            837
+##  3  2013     1     1      554            558        -4      740            728
+##  4  2013     1     1      555            600        -5      913            854
+##  5  2013     1     1      557            600        -3      838            846
+##  6  2013     1     1      558            600        -2      753            745
+##  7  2013     1     1      558            600        -2      924            917
+##  8  2013     1     1      558            600        -2      923            937
+##  9  2013     1     1      559            559         0      702            706
+## 10  2013     1     1      600            600         0      851            858
+## # … with 141,135 more rows, and 11 more variables: arr_delay &lt;dbl&gt;,
+## #   carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
+## #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
+<p>But it’s difficult to extend that approach to multiple variables. For example, imagine that you’d found the 10 days with highest average delays. How would you construct the filter statement that used <code>year</code>, <code>month</code>, and <code>day</code> to match it back to <code>flights</code>?</p>
+<p>Instead you can use a semi-join, which connects the two tables like a mutating join, but instead of adding new columns, only keeps the rows in <code>x</code> that have a match in <code>y</code>:</p>
+<pre class="r"><code>flights %&gt;% 
+  semi_join(top_dest)</code></pre>
+<pre><code>## Joining, by = &quot;dest&quot;</code></pre>
+<pre><code>## # A tibble: 141,145 x 19
+##     year month   day dep_time sched_dep_time dep_delay arr_time sched_arr_time
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt;          &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;          &lt;int&gt;
+##  1  2013     1     1      542            540         2      923            850
+##  2  2013     1     1      554            600        -6      812            837
+##  3  2013     1     1      554            558        -4      740            728
+##  4  2013     1     1      555            600        -5      913            854
+##  5  2013     1     1      557            600        -3      838            846
+##  6  2013     1     1      558            600        -2      753            745
+##  7  2013     1     1      558            600        -2      924            917
+##  8  2013     1     1      558            600        -2      923            937
+##  9  2013     1     1      559            559         0      702            706
+## 10  2013     1     1      600            600         0      851            858
+## # … with 141,135 more rows, and 11 more variables: arr_delay &lt;dbl&gt;,
+## #   carrier &lt;chr&gt;, flight &lt;int&gt;, tailnum &lt;chr&gt;, origin &lt;chr&gt;, dest &lt;chr&gt;,
+## #   air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;, minute &lt;dbl&gt;, time_hour &lt;dttm&gt;</code></pre>
+<p>Graphically, a semi-join looks like this:</p>
+<p><img src="diagrams/join-semi.png" width="307" /></p>
+<p>Only the existence of a match is important; it doesn’t matter which observation is matched. This means that filtering joins never duplicate rows like mutating joins do:</p>
+<p><img src="diagrams/join-semi-many.png" width="312" /></p>
+<p>The inverse of a semi-join is an anti-join. An anti-join keeps the rows that <em>don’t</em> have a match:</p>
+<p><img src="diagrams/join-anti.png" width="307" /></p>
+<p>Anti-joins are useful for diagnosing join mismatches. For example, when connecting <code>flights</code> and <code>planes</code>, you might be interested to know that there are many <code>flights</code> that don’t have a match in <code>planes</code>:</p>
+<pre class="r"><code>flights %&gt;%
+  anti_join(planes, by = &quot;tailnum&quot;) %&gt;%
+  count(tailnum, sort = TRUE)</code></pre>
+<pre><code>## # A tibble: 722 x 2
+##    tailnum     n
+##    &lt;chr&gt;   &lt;int&gt;
+##  1 &lt;NA&gt;     2512
+##  2 N725MQ    575
+##  3 N722MQ    513
+##  4 N723MQ    507
+##  5 N713MQ    483
+##  6 N735MQ    396
+##  7 N0EGMQ    371
+##  8 N534MQ    364
+##  9 N542MQ    363
+## 10 N531MQ    349
+## # … with 712 more rows</code></pre>
+<div id="exercises-13" class="section level3">
+<h3>Exercises</h3>
+<ol style="list-style-type: decimal">
+<li><p>What does it mean for a flight to have a missing <code>tailnum</code>? What do the tail numbers that don’t have a matching record in <code>planes</code> have in common? (Hint: one variable explains ~90% of the problems.)</p></li>
+<li><p>Filter flights to only show flights with planes that have flown at least 100 flights.</p></li>
+<li><p>Combine <code>fueleconomy::vehicles</code> and <code>fueleconomy::common</code> to find only the records for the most common models.</p></li>
+<li><p>Find the 48 hours (over the course of the whole year) that have the worst delays. Cross-reference it with the <code>weather</code> data. Can you see any patterns?</p></li>
+<li><p>What does <code>anti_join(flights, airports, by = c("dest" = "faa"))</code> tell you? What does <code>anti_join(airports, flights, by = c("faa" = "dest"))</code> tell you?</p></li>
+<li><p>You might expect that there’s an implicit relationship between plane and airline, because each plane is flown by a single airline. Confirm or reject this hypothesis using the tools you’ve learned above.</p></li>
+</ol>
+</div>
+</div>
+<div id="join-problems" class="section level2">
+<h2>Join problems</h2>
+<p>The data you’ve been working with in this chapter has been cleaned up so that you’ll have as few problems as possible. Your own data is unlikely to be so nice, so there are a few things that you should do with your own data to make your joins go smoothly.</p>
+<ol style="list-style-type: decimal">
+<li><p>Start by identifying the variables that form the primary key in each table. You should usually do this based on your understanding of the data, not empirically by looking for a combination of variables that give a unique identifier. If you just look for variables without thinking about what they mean, you might get (un)lucky and find a combination that’s unique in your current data but the relationship might not be true in general.</p>
+<p>For example, the altitude and longitude uniquely identify each airport, but they are not good identifiers!</p>
+<pre class="r"><code>airports %&gt;% count(alt, lon) %&gt;% filter(n &gt; 1)</code></pre>
+<pre><code>## # A tibble: 0 x 3
+## # … with 3 variables: alt &lt;dbl&gt;, lon &lt;dbl&gt;, n &lt;int&gt;</code></pre></li>
+<li><p>Check that none of the variables in the primary key are missing. If a value is missing then it can’t identify an observation!</p></li>
+<li><p>Check that your foreign keys match primary keys in another table. The best way to do this is with an <code>anti_join()</code>. It’s common for keys not to match because of data entry errors. Fixing these is often a lot of work.</p>
+<p>If you do have missing keys, you’ll need to be thoughtful about your use of inner vs. outer joins, carefully considering whether or not you want to drop rows that don’t have a match.</p></li>
+</ol>
+<p>Be aware that simply checking the number of rows before and after the join is not sufficient to ensure that your join has gone smoothly. If you have an inner join with duplicate keys in both tables, you might get unlucky as the number of dropped rows might exactly equal the number of duplicated rows!</p>
+</div>
+<div id="set-operations" class="section level2">
+<h2>Set operations</h2>
+<p>The final type of two-table verb are the set operations. Generally, I use these the least frequently, but they are occasionally useful when you want to break a single complex filter into simpler pieces. All these operations work with a complete row, comparing the values of every variable. These expect the <code>x</code> and <code>y</code> inputs to have the same variables, and treat the observations like sets:</p>
+<ul>
+<li><code>intersect(x, y)</code>: return only observations in both <code>x</code> and <code>y</code>.</li>
+<li><code>union(x, y)</code>: return unique observations in <code>x</code> and <code>y</code>.</li>
+<li><code>setdiff(x, y)</code>: return observations in <code>x</code>, but not in <code>y</code>.</li>
+</ul>
+<p>Given this simple data:</p>
+<pre class="r"><code>df1 &lt;- tribble(
+  ~x, ~y,
+   1,  1,
+   2,  1
+)
+df2 &lt;- tribble(
+  ~x, ~y,
+   1,  1,
+   1,  2
+)</code></pre>
+<p>The four possibilities are:</p>
+<pre class="r"><code>intersect(df1, df2)</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##       x     y
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1     1     1</code></pre>
+<pre class="r"><code># Note that we get 3 rows, not 4
+union(df1, df2)</code></pre>
+<pre><code>## # A tibble: 3 x 2
+##       x     y
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1     1     1
+## 2     2     1
+## 3     1     2</code></pre>
+<pre class="r"><code>setdiff(df1, df2)</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##       x     y
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1     2     1</code></pre>
+<pre class="r"><code>setdiff(df2, df1)</code></pre>
+<pre><code>## # A tibble: 1 x 2
+##       x     y
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1     1     2</code></pre>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4,h5",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
