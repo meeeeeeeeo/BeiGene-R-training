@@ -1,0 +1,45 @@
+name: "r-training"
+navbar:
+  title: "R training"
+  type: inverse
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "RStudio IDE"
+      href: RStudioIDE.html
+    - text: "Base R"
+      href: base_R.html
+    - text: "tidyverse base"
+      href: tidyverse-base.html
+    - text: "stringr"
+      href: stringr_hs.html
+    - text: "date and time"
+      href: datetime_qw.html
+    - text: "data import/export"
+      href: read-write.html
+    - text: "ggplot2"
+      menu:
+        - text: "basic"
+          href: ggplot2_basic.html
+        - text: "layers"
+          href: ggplot2_layers.html
+        - text: "arranging plots"
+          href: arranging-plots.html
+    - text: "More"
+      menu:
+        - text: "Using pipe"
+          href: pipe.html
+        - text: "---------"
+        - text: "focusing on package"
+        - text: "data process - dplyr"
+          href: data-process-dplyr.html
+        - text: "data process - tidyr"
+          href: data-process-tidyr.html
+        - text: "---------"
+        - text: "Use SQL in R"
+        - text: "sqldf"
+          href: sqldf.html
+output:
+  html_document:
+    theme: cosmo
+output_dir: "."
